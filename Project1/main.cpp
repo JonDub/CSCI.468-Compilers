@@ -8,6 +8,8 @@ int main ( int argc, char* argv[] )
 	// name of the file to parse through
 	const char* fName = argv[1];
 
+	mp* dispatcher = new mp();
+
 	// press enter to exit
 	printf("Done. Press Enter to exit.\n");
 	std::cin.get();
