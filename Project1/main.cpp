@@ -9,6 +9,9 @@ int main ( int argc, char* argv[] )
 	const char* fName = argv[1];
 
 	mp* dispatcher = new mp();
+	dispatcher->openFile(fName);
+
+	
 
 	// press enter to exit
 	printf("Done. Press Enter to exit.\n");
