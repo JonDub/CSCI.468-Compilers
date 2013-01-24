@@ -5,8 +5,14 @@
 class mp
 {
 public:
-	mp(const char*);
+	mp(void);
 	virtual ~mp(void);
+
+	bool openFile(const char*);
+	bool getToken();
+	char getLexeme();
+	int getLineNumber();
+	int getColumnNumber();
 
 protected:
 private:
@@ -15,5 +21,7 @@ private:
 	bool handleAlpa();
 	bool handleNumberic();
 	bool handleSymbol();
+
+	
 };
 

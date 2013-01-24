@@ -1,16 +1,43 @@
 #include "mp.h"
-//#include <stdio.h>
 
 
-mp::mp(const char* fName)
+mp::mp()
 {
-	// constructor. opens the file pointer for all FSA's to use
-	FILE* file = fopen(fName, "r");
+	// constructor
 }
-
 
 mp::~mp(void)
 {
 	// destructor. release resources
 	fclose(file);
 }
+
+bool mp::openFile(const char* fName)
+{
+	// Opens the file pointer for FSA's to use
+	file = fopen(fName, "r");
+
+	if (!file)
+		return false;
+	return true;
+}
+
+bool mp::getToken()
+{
+	return true;
+};
+
+char mp::getLexeme()
+{
+	return 'a';
+};
+
+int mp::getLineNumber()
+{
+	return 0;
+};
+
+int mp::getColumnNumber()
+{
+	return 0;
+};
