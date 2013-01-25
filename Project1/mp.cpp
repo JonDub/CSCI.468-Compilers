@@ -17,18 +17,29 @@ bool mp::openFile(const char* fName)
 	file.open(fName, fstream::in);
 
 	if (file.is_open())
+	{
+		lines = 1;
+		cols = 1;
 		return true;
+	}
 	return false;
 }
 
 bool mp::hasToken()
 {
 	// consume white space & newlines until we see a character or reach EOF
-	char next = file.peek();
-	while (next == ' ' | next == '\n')
+	char next = peek();
+	while ((next == ' ') | (next == '\n'))
 	{
-		next = file.get();
-		next = file.peek();		
+		cols++;
+		if (next == '\n')
+		{
+			// reset the col counter, add to line counter
+			lines++;
+			cols = 1;
+		}
+		next = get();
+		next = peek();		
 	}
 	if (next != EOF)
 			return true;
@@ -37,32 +48,32 @@ bool mp::hasToken()
 
 string mp::getToken()
 {
-	char next = file.peek();
+	char next = peek();
 	string token = "";
 
 	// don't return anything if EOF
-	if (next == EOF)
+	/*if (next == EOF)
 	{
-		next = file.get();
+		next = get();
 		token.push_back(next);
 		return token;
-	}
+	}*/
 	
 	// consume white space until we reach a character or EOF
-	while (next != EOF && next == ' ')
+	/*while (next != EOF && next == ' ')
 	{
-		next = file.get();
-		next = file.peek();
-	}
+		next = get();
+		next = peek();
+	}*/
 
 	// which FSA to call 	
 	if (isdigit(next))
 		return handleNumberic();
 	else if (isalpha(next))
-		int n = file.get();
+		int n = get();
 		//return handleAlpa();
 	else if (ispunct(next))
-		int n = file.get();
+		int n = get();
 		//return handleSymbol();
 
 	// convert to string before sending back??
@@ -76,14 +87,13 @@ char mp::getLexeme()
 
 int mp::getLineNumber()
 {
-	return file.cur;
+	return lines;
 };
 
 int mp::getColumnNumber()
 {
-	// Gets the current position in the file. 
-	int loc = file.tellg();
-	return loc;
+	// gets the column 
+	return cols;
 };
 
 string mp::handleAlpa()
@@ -103,7 +113,7 @@ string mp::handleNumberic()
 	// cycle through states until done
 	while (!done)
 	{
-		char next = file.peek();
+		char next = peek();
 
 		switch(state)
 		{
@@ -111,7 +121,7 @@ string mp::handleNumberic()
 			accept = false;
 			if (isdigit((int)next))
 			{
-				next = file.get();
+				next = get();
 				token.push_back(next);
 				numMoves++;
 				state = 1;
@@ -125,13 +135,13 @@ string mp::handleNumberic()
 			accept = true;
 			if (isdigit((int)next))
 			{
-				next = file.get();
+				next = get();
 				token.push_back(next);
 				numMoves++;
 			} 
 			else if (next == '.') 
 			{
-				next = file.get();
+				next = get();
 				token.push_back(next);
 				numMoves++;
 				state = 2;
@@ -145,7 +155,7 @@ string mp::handleNumberic()
 			accept = false;
 			if (isdigit((int)next))
 			{
-				next = file.get();
+				next = get();
 				token.push_back(next);
 				numMoves++;
 				state = 3;
@@ -159,13 +169,13 @@ string mp::handleNumberic()
 			accept = true;
 			if (isdigit((int)next))
 			{
-				next = file.get();
+				next = get();
 				token.push_back(next);
 				numMoves++;
 			}
-			else if (next == 'e' | next == 'E')
+			else if ((next == 'e') | (next == 'E'))
 			{
-				next = file.get();
+				next = get();
 				token.push_back(next);
 				numMoves++;
 				state = 4;
@@ -177,9 +187,9 @@ string mp::handleNumberic()
 			break;
 		case 4:
 			accept = false;
-			if (next == '+' | next == '-')
+			if ((next == '+') | (next == '-'))
 			{
-				next = file.get();
+				next = get();
 				token.push_back(next);
 				numMoves++;
 				state = 5;
@@ -193,7 +203,7 @@ string mp::handleNumberic()
 			accept = true;
 			if (isdigit((int)next))
 			{
-				next = file.get();
+				next = get();
 				token.push_back(next);
 				numMoves++;
 			}
@@ -218,3 +228,17 @@ string mp::handleSymbol()
 {
 	return "";
 };
+
+char mp::peek()
+{
+	// Peek ahead at the next character in the file
+	return file.peek();
+}
+
+char mp::get()
+{
+	// Get the next character in the file stream. Increment the columns.
+	char n = file.get();
+	cols++;
+	return n;
+}

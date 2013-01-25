@@ -20,7 +20,11 @@ public:
 protected:
 private:
 	ifstream file;
+	int lines;
+	int cols;
 
+	char peek();
+	char get();
 	string handleAlpa();
 	string handleNumberic();
 	string handleSymbol();	
