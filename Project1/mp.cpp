@@ -210,14 +210,220 @@ string mp::handleNumberic()
 	if (!accept)
 	{
 		seek(-1);
-		token.pop_back();
+		lexeme.pop_back();
 	} 
 	return token;
 };
 
 string mp::handleSymbol()
 {
-	return "";
+	// Assuming on the beginning of the next possible token
+	string token = "";
+	lexeme = "";
+	int state = 0;
+	bool done = false;
+	bool accept = false;
+
+	// cycle through states until done
+	while (!done)
+	{
+		char next = peek();
+
+		switch(state)
+		{
+		case 0: //setup
+			accept = false;
+			if(next == '.')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 1;
+			}
+			else if(next == ',')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 2;
+			}
+			else if(next == ';')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 3;
+			}
+			else if(next == '(')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 4;
+			}
+			else if(next == ')')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 5;
+			}
+			else if(next == '=')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 6;
+			}
+			else if(next == '+')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 7;
+			}
+			else if(next == '-')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 8;
+			}
+			else if(next == '*')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 9;
+			}
+			else if(next == '>')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 10;
+			}
+			else if(next == '<')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 11;
+			}
+			else if(next == ':')
+			{
+				next = get();
+				lexeme.push_back(next);
+				state = 12;
+			}
+			break;
+		//Trivial cases
+		case 1: //symbol is period
+			accept = true;
+			token = "MP_PERIOD";
+			done = true;
+			break;
+
+		case 2: //symbol is comma
+			accept = true;
+			token = "MP_COMMA";
+			done = true;
+			break;
+
+		case 3: //symbol is semicolon
+			accept = true;
+			token = "MP_SCOLON";
+			done = true;
+			break;
+
+		case 4: //symbol is left paren
+			accept = true;
+			token = "MP_LPAREN";
+			done = true;
+			break;
+
+		case 5: //symbol is right paren
+			accept = true;
+			token = "MP_RPAREN";
+			done = true;
+			break;
+
+		case 6: //symbol is equal
+			accept = true;
+			token = "MP_PERIOD";
+			done = true;
+			break;
+
+		case 7: //symbol is plus
+			accept = true;
+			token = "MP_PLUS";
+			done = true;
+			break;
+
+		case 8: //symbol is minus
+			accept = true;
+			token = "MP_MINUS";
+			done = true;
+			break;
+
+		case 9: //symbol is times
+			accept = true;
+			token = "MP_TIMES";
+			done = true;
+			break;
+
+		//Non trivial cases
+		case 10: //symbol is greater than
+			accept = true;
+			if (next == '=') 
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_GEQUAL";
+				done = true;
+			} 
+			else 
+			{
+				token = "MP_GTHAN";
+				done = true;
+			}
+			break;
+		case 11: //symbol is less than
+			accept = true;
+			if (next == '=') 
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_LEQUAL";
+				done = true;
+			} 
+			else if (next == '>') 
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_NEQUAL";
+				done = true;
+			} 
+			else 
+			{
+				token = "MP_LTHAN";
+				done = true;
+			}
+			break;
+		case 12: //symbol is colon
+			accept = true;
+			if (next == '=') 
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_ASSIGN";
+				done = true;
+			} 
+			else 
+			{
+				token="MP_COLON";
+				done = true;
+			}
+			break;
+		}
+	}
+	
+	// back up the file pointer to the last acceptable state
+	if (!accept)
+	{
+		seek(-1);
+		lexeme.pop_back();
+	} 
+	return token;
 };
 
 char mp::peek()
