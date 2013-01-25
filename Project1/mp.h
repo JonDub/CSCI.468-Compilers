@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdio.h>
+#include <fstream>
+using namespace std;
 
 class mp
 {
@@ -9,19 +11,18 @@ public:
 	virtual ~mp(void);
 
 	bool openFile(const char*);
-	bool getToken();
+	string getToken();
 	char getLexeme();
 	int getLineNumber();
 	int getColumnNumber();
+	bool hasToken();
 
 protected:
 private:
-	FILE* file;
+	ifstream file;
 
-	bool handleAlpa();
-	bool handleNumberic();
-	bool handleSymbol();
-
-	
+	string handleAlpa();
+	string handleNumberic();
+	string handleSymbol();	
 };
 
