@@ -23,6 +23,8 @@ private:
 	ifstream file;
 	int lines;
 	int cols;
+	string token;
+	string lexeme;
 
 	// File Operations
 	char peek();
