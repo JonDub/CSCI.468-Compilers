@@ -19,12 +19,17 @@ public:
 
 protected:
 private:
+	// Variables
 	ifstream file;
 	int lines;
 	int cols;
 
+	// File Operations
 	char peek();
 	char get();
+	void seek(int);
+
+	// FSA's
 	string handleAlpa();
 	string handleNumberic();
 	string handleSymbol();	

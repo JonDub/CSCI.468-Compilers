@@ -31,12 +31,11 @@ bool mp::hasToken()
 	char next = peek();
 	while ((next == ' ') | (next == '\n'))
 	{
-		cols++;
 		if (next == '\n')
 		{
 			// reset the col counter, add to line counter
 			lines++;
-			cols = 1;
+			cols = 0;
 		}
 		next = get();
 		next = peek();		
@@ -105,7 +104,6 @@ string mp::handleNumberic()
 {
 	// Assuming on the beginning of the next possible token
 	string token = "";
-	int numMoves = 0;
 	int state = 0;
 	bool done = false;
 	bool accept = false;
@@ -123,7 +121,6 @@ string mp::handleNumberic()
 			{
 				next = get();
 				token.push_back(next);
-				numMoves++;
 				state = 1;
 			} 
 			else 
@@ -137,13 +134,11 @@ string mp::handleNumberic()
 			{
 				next = get();
 				token.push_back(next);
-				numMoves++;
 			} 
 			else if (next == '.') 
 			{
 				next = get();
 				token.push_back(next);
-				numMoves++;
 				state = 2;
 			} 
 			else 
@@ -157,7 +152,6 @@ string mp::handleNumberic()
 			{
 				next = get();
 				token.push_back(next);
-				numMoves++;
 				state = 3;
 			}  
 			else 
@@ -171,13 +165,11 @@ string mp::handleNumberic()
 			{
 				next = get();
 				token.push_back(next);
-				numMoves++;
 			}
 			else if ((next == 'e') | (next == 'E'))
 			{
 				next = get();
 				token.push_back(next);
-				numMoves++;
 				state = 4;
 			}
 			else
@@ -191,7 +183,6 @@ string mp::handleNumberic()
 			{
 				next = get();
 				token.push_back(next);
-				numMoves++;
 				state = 5;
 			}
 			else
@@ -205,7 +196,6 @@ string mp::handleNumberic()
 			{
 				next = get();
 				token.push_back(next);
-				numMoves++;
 			}
 			else
 			{
@@ -218,7 +208,7 @@ string mp::handleNumberic()
 	// back up the file pointer to the last acceptable state
 	if (!accept)
 	{
-		file.seekg(-1, ios::cur);
+		seek(-1);
 		token.pop_back();
 	} 
 	return token;
@@ -241,4 +231,11 @@ char mp::get()
 	char n = file.get();
 	cols++;
 	return n;
+}
+
+void mp::seek(int n)
+{
+	// Move forward/backward in the file by n spaces 
+	file.seekg(n, ios::cur);
+	cols += n;
 }
