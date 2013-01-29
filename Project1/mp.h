@@ -35,5 +35,6 @@ private:
 	string handleAlpa();
 	string handleNumberic();
 	string handleSymbol();	
+	string handleComment();
 };
 

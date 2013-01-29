@@ -61,8 +61,11 @@ string mp::getToken()
 	else if (isalpha(next))
 		int n = get();
 		//return handleAlpa();
+	else if (next == '{') // handle comments first becuase {} are considered punctation in C std lib
+		handleComment();
 	else if (ispunct(next))
 		handleSymbol();
+	
 
 	// convert to string before sending back??
 	return token;
@@ -83,6 +86,27 @@ unsigned int mp::getColumnNumber()
 	// gets the column 
 	return (cols - lexeme.length());
 };
+
+string mp::handleComment()
+{
+	// handle input for a comment. try to detect a run-on comment when
+	// EOF is reached before the closing brace is reached
+	char next = get();
+
+	while (next != '}')
+	{
+		if (next == EOF){
+			token = "MP_RUN_COMMENT";
+			return token;
+		} 
+
+		next = get();
+		next = peek();
+	}
+	next = get();
+	token = "MP_COMMENT";
+	return token;
+}
 
 string mp::handleAlpa()
 {
