@@ -3,6 +3,8 @@
 mp::mp()
 {
 	// constructor
+	lines = 0;
+	cols = 0;
 }
 
 mp::~mp(void)
@@ -48,32 +50,19 @@ bool mp::hasToken()
 string mp::getToken()
 {
 	char next = peek();
-	//string token = "";
 
-	// don't return anything if EOF
-	/*if (next == EOF)
-	{
-		next = get();
-		token.push_back(next);
-		return token;
-	}*/
-	
-	// consume white space until we reach a character or EOF
-	/*while (next != EOF && next == ' ')
-	{
-		next = get();
-		next = peek();
-	}*/
+	// reset the TOKEN and LEXEME variables, FSA will set new values
+	token = "";
+	lexeme = "";
 
 	// which FSA to call 	
 	if (isdigit(next))
-		return handleNumberic();
+		handleNumberic();
 	else if (isalpha(next))
 		int n = get();
 		//return handleAlpa();
 	else if (ispunct(next))
-		int n = get();
-		//return handleSymbol();
+		handleSymbol();
 
 	// convert to string before sending back??
 	return token;
@@ -84,15 +73,15 @@ string mp::getLexeme()
 	return lexeme;
 };
 
-int mp::getLineNumber()
+unsigned int mp::getLineNumber()
 {
 	return lines;
 };
 
-int mp::getColumnNumber()
+unsigned int mp::getColumnNumber()
 {
 	// gets the column 
-	return cols;
+	return (cols - lexeme.length());
 };
 
 string mp::handleAlpa()
@@ -103,8 +92,6 @@ string mp::handleAlpa()
 string mp::handleNumberic()
 {
 	// Assuming on the beginning of the next possible token
-	string token = "";
-	lexeme = "";
 	int state = 0;
 	bool done = false;
 	bool accept = false;
@@ -116,25 +103,28 @@ string mp::handleNumberic()
 
 		switch(state)
 		{
-		case 0:
+		case 0:	// DO NOT ACCEPT
 			accept = false;
 			if (isdigit((int)next))
 			{
 				next = get();
 				lexeme.push_back(next);
 				state = 1;
+				token = "MP_INTEGER_LIT";
 			} 
 			else 
 			{
 				done = true;
 			}
 			break;
-		case 1: //This case should set token as either MP_FIXED_LIT | MP_INTEGEGER_LIT | MP_FLOAT_LIT
+		case 1: // Accept MP_INTEGER_LIT  {digit}+1	ex: 134323
 			accept = true;
+
 			if (isdigit((int)next))
 			{
 				next = get();
 				lexeme.push_back(next);
+				token = "MP_INTEGER_LIT";
 			} 
 			else if (next == '.') 
 			{
@@ -147,20 +137,21 @@ string mp::handleNumberic()
 				done = true;
 			}
 			break;
-		case 2:
+		case 2:	// DO NOT ACCEPT
 			accept = false;
 			if (isdigit((int)next))
 			{
 				next = get();
 				lexeme.push_back(next);
 				state = 3;
+				token = "MP_FIXED_LIT";
 			}  
 			else 
 			{
 				done = true;
 			}
 			break;
-		case 3: //This case should set token as either MP_FIXED_LIT | MP_INTEGEGER_LIT | MP_FLOAT_LIT
+		case 3: // MP_FIXED_LIT  {digit}.{digit}+1		ex: 234.234234
 			accept = true;
 			if (isdigit((int)next))
 			{
@@ -178,7 +169,7 @@ string mp::handleNumberic()
 				done = true;
 			}
 			break;
-		case 4:
+		case 4: // DO NOT ACCEPT
 			accept = false;
 			if ((next == '+') | (next == '-'))
 			{
@@ -191,12 +182,13 @@ string mp::handleNumberic()
 				done = true;
 			}
 			break;
-		case 5: //This case should set token as either MP_FIXED_LIT | MP_INTEGEGER_LIT | MP_FLOAT_LIT
+		case 5: // MP_FLOAT_LIT		{digit}.{digit}+1 {+|-}1{e|E}1{digit}+1  ex: 01.2234E+1234
 			accept = true;
 			if (isdigit((int)next))
 			{
 				next = get();
 				lexeme.push_back(next);
+				token = "MP_FLOAT_LIT";
 			}
 			else
 			{
@@ -218,8 +210,6 @@ string mp::handleNumberic()
 string mp::handleSymbol()
 {
 	// Assuming on the beginning of the next possible token
-	string token = "";
-	lexeme = "";
 	int state = 0;
 	bool done = false;
 	bool accept = false;

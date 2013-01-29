@@ -12,17 +12,17 @@ public:
 
 	bool openFile(const char*);
 	string getToken();
-	char getLexeme();
-	int getLineNumber();
-	int getColumnNumber();
+	string getLexeme();
+	unsigned int getLineNumber();
+	unsigned int getColumnNumber();
 	bool hasToken();
 
 protected:
 private:
 	// Variables
 	ifstream file;
-	int lines;
-	int cols;
+	unsigned int lines;
+	unsigned int cols;
 	string token;
 	string lexeme;
 

@@ -14,11 +14,13 @@ int main ( int argc, char* argv[] )
 	mp* dispatcher = new mp();
 	dispatcher->openFile(fName);
 
-	cout << setw(30) << left << "Token" << setw(20) << "Line Number" << "Column Number" << endl;
+	cout << setw(15) << left << "Token" << setw(30) << "Lexeme" << setw(8) << "Line #" << setw(8) << "Column #" << endl;
 	while (dispatcher->hasToken())
 	{
-		cout << setw(30) << left << dispatcher->getToken() << setw(20) << dispatcher->getLineNumber()
-			<< dispatcher->getColumnNumber() << endl;
+		// Keep on separate couts so that getToken() executes first
+		cout << setw(15) << left << dispatcher->getToken();
+		cout << setw(30) << dispatcher->getLexeme() << setw(8) << dispatcher->getLineNumber() 
+			 << setw(8) << dispatcher->getColumnNumber() << endl;
 	}
 
 	// press enter to exit
