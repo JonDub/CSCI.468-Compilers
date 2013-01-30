@@ -63,6 +63,8 @@ string mp::getToken()
 		//return handleAlpa();
 	else if (next == '{') // handle comments first becuase {} are considered punctation in C std lib
 		handleComment();
+	else if (next == '"') // handl strings, start with "
+		handleString();
 	else if (ispunct(next))
 		handleSymbol();
 	
@@ -109,6 +111,27 @@ string mp::handleComment()
 	return token;
 }
 
+string mp::handleString()
+{
+	// handle input for a strings. try to detect a run-on string when
+	// EOF is reached before the closing brace is reached
+	char next = get();
+	next = peek(); // don't include first "
+
+	while (next != '"')
+	{
+		if (next == EOF){
+			token = "MP_RUN_STRING";
+			return token;
+		} 
+		lexeme.push_back(next);
+		next = get();
+		next = peek();
+	}
+	next = get(); // consume last "
+	token = "MP_STRING";
+	return token;
+}
 string mp::handleAlpa()
 {
 	return "";

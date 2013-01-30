@@ -36,5 +36,6 @@ private:
 	string handleNumberic();
 	string handleSymbol();	
 	string handleComment();
+	string handleString();
 };
 
