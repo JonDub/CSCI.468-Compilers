@@ -99,10 +99,11 @@ string mp::handleComment()
 			token = "MP_RUN_COMMENT";
 			return token;
 		} 
-
+		lexeme.push_back(next);
 		next = get();
 		next = peek();
 	}
+	lexeme.push_back(next);
 	next = get();
 	token = "MP_COMMENT";
 	return token;
