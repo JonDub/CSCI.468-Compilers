@@ -26,10 +26,11 @@ private:
 	string token;
 	string lexeme;
 
-	// File Operations
+	// File Operations and Utilities
 	char peek();
 	char get();
 	void seek(int);
+	char toLowerCase(char);
 
 	// FSA's
 	string handleAlpa();
@@ -37,5 +38,6 @@ private:
 	string handleSymbol();	
 	string handleComment();
 	string handleString();
+	string handleWord();
 };
 

@@ -31,7 +31,7 @@ bool mp::hasToken()
 {
 	// consume white space & newlines until we see a character or reach EOF
 	char next = peek();
-	while ((next == ' ') | (next == '\n'))
+	while ((next == ' ') | (next == '\n') | (next == '\t'))
 	{
 		if (next == '\n')
 		{
@@ -43,7 +43,9 @@ bool mp::hasToken()
 		next = peek();		
 	}
 	if (next != EOF)
-			return true;
+		return true;
+
+	token = "MP_EOF";
 	return false;
 }
 
@@ -58,8 +60,8 @@ string mp::getToken()
 	// which FSA to call 	
 	if (isdigit(next))
 		handleNumberic();
-	else if (isalpha(next))
-		int n = get();
+	else if (isalpha(next) | next == '_') // check for identifier
+		handleWord();
 		//return handleAlpa();
 	else if (next == '{') // handle comments first becuase {} are considered punctation in C std lib
 		handleComment();
@@ -67,9 +69,9 @@ string mp::getToken()
 		handleString();
 	else if (ispunct(next))
 		handleSymbol();
+	else // final case. just read the word in and check if its a keyword or identifier
+		handleWord();
 	
-
-	// convert to string before sending back??
 	return token;
 };
 
@@ -88,6 +90,84 @@ unsigned int mp::getColumnNumber()
 	// gets the column 
 	return (cols - lexeme.length());
 };
+
+char mp::toLowerCase(char c)
+{
+	if (isalpha(c))
+		if ( c < 91) // convert uppercase to lowercase
+			c += 32;
+	return c;
+}
+
+string mp::handleWord()
+{
+	// handle input for reserved words as well as identiers. 
+	// Read in a word, when done check if its a reserved word or an identifier
+	// Then set the token and lexeme accordingly
+	bool done = false;
+	bool accept = false;
+	char next;
+	int state = 0;
+
+	while (!done)
+	{
+		// see whats next, dont consume
+		next = peek();
+
+		switch (state)
+		{
+		case 0:
+			// the start of an identifier
+			accept = false;
+			if (next == '_'){
+				state = 2;
+				next = get();
+				lexeme.push_back(next);				
+			} else if (isalpha(next)){
+				state = 1;
+				next = get();
+				lexeme.push_back(next);
+			} else {
+				done = true;
+			}
+			break;
+		case 1:
+			// Accept state. 
+			accept = true;
+			token = "MP_IDENTIFIER";
+			if (isalpha(next) | isdigit(next)){
+				state = 1;
+				next = get();
+				lexeme.push_back(next);
+			} else if (next == '_'){
+				state = 2;
+				next = get();
+				lexeme.push_back(next);
+			} else {
+				done = true;
+			}
+			break;
+		case 2:
+			// do not accept
+			accept = false;
+			if (isalpha(next) | isdigit(next)){
+				state = 1;
+				next = get();
+				lexeme.push_back(next);
+			} else {
+				done = true;
+			}
+			break;
+		}
+	}
+
+	if (!accept){
+		seek(-1);
+		lexeme.pop_back();
+	}
+
+	return token;
+}
 
 string mp::handleComment()
 {
@@ -116,7 +196,7 @@ string mp::handleString()
 	// handle input for a strings. try to detect a run-on string when
 	// EOF is reached before the closing brace is reached
 	char next = get();
-	next = peek(); // don't include first "
+	next = peek(); // consume first "
 
 	while (next != '"')
 	{

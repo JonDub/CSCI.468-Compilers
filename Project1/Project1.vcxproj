@@ -64,6 +64,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="mp.h" />
+    <ClInclude Include="ReservedWords.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
