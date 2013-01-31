@@ -5,6 +5,39 @@ mp::mp()
 	// constructor
 	lines = 0;
 	cols = 0;
+
+	// initialize the hash map of reserved words
+	//unordered_map <string, string> reservedWords;
+/*
+	reservedWords["and"]		= "MP_AND";
+	reservedWords["begin"]		= "MP_BEGIN";
+	reservedWords["div"]		= "MP_DIV";
+	reservedWords["do"]			= "MP_DO";
+	reservedWords["downto"]		= "MP_DOWNTO";
+	reservedWords["else"]		= "MP_ELSE";
+	reservedWords["end"]		= "MP_END";
+	reservedWords["fixed"]		= "MP_FIXED";
+	reservedWords["float"]		= "MP_FLOAT";
+	reservedWords["for"]		= "MP_FOR";
+	reservedWords["function"]	= "MP_FUNCTION";
+	reservedWords["if"]			= "MP_IF";
+	reservedWords["integer"]	= "MP_INTEGER";
+	reservedWords["mod"]		= "MP_MOD";
+	reservedWords["not"]		= "MP_NOT";
+	reservedWords["or"]			= "MP_OR";
+	reservedWords["procedure"]	= "MP_PROCEDURE";
+	reservedWords["program"]	= "MP_PROGRAM";
+	reservedWords["read"]		= "MP_READ";
+	reservedWords["repeat"]		= "MP_REPEAT";
+	reservedWords["then"]		= "MP_THEN";
+	reservedWords["to"]			= "MP_TO";
+	reservedWords["until"]		= "MP_UNTIL";
+	reservedWords["var"]		= "MP_VAR";
+	reservedWords["while"]		= "MP_WHILE";
+	reservedWords["write"]		= "MP_WRITE";
+
+	string s = reservedWords["read"];
+*/
 }
 
 mp::~mp(void)
@@ -62,10 +95,9 @@ string mp::getToken()
 		handleNumberic();
 	else if (isalpha(next) | next == '_') // check for identifier
 		handleWord();
-		//return handleAlpa();
-	else if (next == '{') // handle comments first becuase {} are considered punctation in C std lib
+	else if (next == '{') // handle comments first becuase {} are considered punctation C std lib
 		handleComment();
-	else if (next == '"') // handl strings, start with "
+	else if (next == '"') // handle strings, start with "
 		handleString();
 	else if (ispunct(next))
 		handleSymbol();
