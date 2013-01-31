@@ -242,9 +242,161 @@ string mp::handleString()
 	token = "MP_STRING";
 	return token;
 }
-string mp::handleAlpa()
-{
-	return "";
+string mp::handleAlhpa()
+{// Assuming on the beginning of the next possible token
+	string token = "";
+	lexeme = "";
+	int state = 0;
+	bool done = false;
+	bool accept = false;
+	int underscoreCount=0;
+	
+
+	while (!done)
+	{
+		char next = peek();
+
+		switch(state)
+		{
+		case 0: //starts with standard alphabet char?
+			if(isalpha(next) )
+			{
+				next = get();
+				next=tolower(next); //Let's keep every thing lowercase to make life easier
+				lexeme.push_back(next);
+				accept=true;
+				state=1; //advance to test second char case
+			}
+			else
+			{
+				done=true;
+			}
+			break; //end case 0
+			//////////////////////////////////
+		case 1: //test next char and branch for reservered words
+			if(isalpha(next) || isdigit((int)next)||(next='_')&&(underscoreCount<2)) //Is the second char alpha, digit, or underscore and have we seen less than two underscores so far
+			{
+				next = get();
+				if (next=='_') {underscoreCount++;}
+				next=tolower(next);//Let's keep every thing lowercase to make life easier
+				lexeme.push_back(next);
+				accept=true;
+				// Given the existing code implementation of state pattern seemed overkill however this code imposes an unnessecary number of string compares, time to code however is reduced.
+				// The alternative however will invariably include a large number of states or a large number of nested if statements, which will negatively impact readibility but positively impact total runtime
+				if (lexeme.compare("and")==0 )
+				{
+					token="MP_AND";
+				}
+				else if (lexeme.compare("begin")==0 )
+				{
+					token="MP_BEGIN";
+				}
+				else if (lexeme.compare("div")==0 )
+				{
+					token="MP_DIV";
+				}
+				else if (lexeme.compare("do")==0 )
+				{
+					token="MP_DO";
+				}
+				else if (lexeme.compare("downto")==0 )
+				{
+					token="MP_DOWNTO";
+				}
+				else if (lexeme.compare("else")==0 )
+				{
+					token="MP_ELSE";
+				}
+				else if (lexeme.compare("end")==0 )
+				{
+					token="MP_END";
+				}
+				else if (lexeme.compare("for")==0 )
+				{
+					token="MP_FOR";
+				}
+				else if (lexeme.compare("function")==0 )
+				{
+					token="MP_FUNCTION";
+				}
+				else if (lexeme.compare("if")==0 )
+				{
+					token="MP_IF";
+				}
+				else if (lexeme.compare("mod")==0 )
+				{
+					token="MP_MOD";
+				}
+				else if (lexeme.compare("not")==0 )
+				{
+					token="MP_NOT";
+				}
+				else if (lexeme.compare("or")==0 )
+				{
+					token="MP_OR";
+				}
+				else if (lexeme.compare("procedure")==0 )
+				{
+					token="MP_PROCEDURE";
+				}
+				else if (lexeme.compare("program")==0 )
+				{
+					token="MP_PROGRAM";
+				}
+				else if (lexeme.compare("read")==0 )
+				{
+					token="MP_READ";
+				}
+				else if (lexeme.compare("repeat")==0 )
+				{
+					token="MP_REPEAT";
+				}
+				else if (lexeme.compare("then")==0 )
+				{
+					token="MP_THEN";
+				}
+				else if (lexeme.compare("to")==0 )
+				{
+					token="MP_TO";
+				}
+				else if (lexeme.compare("until")==0 )
+				{
+					token="MP_UNTIL";
+				}
+				else if (lexeme.compare("var")==0 )
+				{
+					token="MP_VAR";
+				}
+				else if (lexeme.compare("while")==0 )
+				{
+					token="MP_WHILE";
+				}
+				else if (lexeme.compare("write")==0 )
+				{
+					token="MP_WRITE";
+				}
+				else
+				{
+					token="MP_IDENTIFIER";
+				}
+				state=1;
+			}
+			else
+			{
+				done=true;
+			}
+			break; //end case 1
+		}//end switch
+	}//end while
+	 
+	
+
+	if (!accept)
+	{
+		seek(-1);
+		lexeme.pop_back();
+	} 
+	return token;
 };
 
 string mp::handleNumberic()
