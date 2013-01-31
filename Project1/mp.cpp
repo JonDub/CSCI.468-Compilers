@@ -7,8 +7,6 @@ mp::mp()
 	cols = 0;
 
 	// initialize the hash map of reserved words
-	//unordered_map <string, string> reservedWords;
-/*
 	reservedWords["and"]		= "MP_AND";
 	reservedWords["begin"]		= "MP_BEGIN";
 	reservedWords["div"]		= "MP_DIV";
@@ -36,8 +34,8 @@ mp::mp()
 	reservedWords["while"]		= "MP_WHILE";
 	reservedWords["write"]		= "MP_WRITE";
 
-	string s = reservedWords["read"];
-*/
+	// to retrieve values from hash map --> string s = reservedWords["read"];
+	// string will be empty if the value is not in there
 }
 
 mp::~mp(void)

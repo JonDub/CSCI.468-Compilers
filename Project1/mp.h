@@ -26,6 +26,7 @@ private:
 	unsigned int cols;
 	string token;
 	string lexeme;
+	unordered_map <char*, string, hash<char*> > reservedWords;
 
 	// File Operations and Utilities
 	char peek();
