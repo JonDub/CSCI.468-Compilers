@@ -266,7 +266,7 @@ string mp::handleAlpha()
 				lexeme.push_back(next);
 				if (next=='_'){underscoreCount++;accept=false;state=1;}
 				else {accept=true;token="MP_IDENTIFIER";state=2;} //for single letter variable name case
-				state=1; //advance to test second char case
+				 
 				
 				
 			}
