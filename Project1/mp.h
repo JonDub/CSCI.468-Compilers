@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <stdio.h>
 #include <fstream>
+#include <ctype.h>
 using namespace std;
 
 class mp
@@ -35,7 +36,7 @@ private:
 	char toLowerCase(char);
 
 	// FSA's
-	string handleAlpa();
+	string handleAlpha();
 	string handleNumberic();
 	string handleSymbol();	
 	string handleComment();

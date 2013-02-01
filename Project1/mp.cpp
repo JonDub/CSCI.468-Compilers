@@ -91,16 +91,16 @@ string mp::getToken()
 	// which FSA to call 	
 	if (isdigit(next))
 		handleNumberic();
-	else if (isalpha(next) | next == '_') // check for identifier
-		handleWord();
+	else if (isalpha(next) ) // check for identifier
+		handleAlpha();
 	else if (next == '{') // handle comments first becuase {} are considered punctation C std lib
 		handleComment();
 	else if (next == '"') // handle strings, start with "
 		handleString();
 	else if (ispunct(next))
 		handleSymbol();
-	else // final case. just read the word in and check if its a keyword or identifier
-		handleWord();
+	//else // final case. just read the word in and check if its a keyword or identifier
+		//handleWord();
 	
 	return token;
 };
@@ -242,9 +242,9 @@ string mp::handleString()
 	token = "MP_STRING";
 	return token;
 }
-string mp::handleAlhpa()
+string mp::handleAlpha()
 {// Assuming on the beginning of the next possible token
-	string token = "";
+	
 	lexeme = "";
 	int state = 0;
 	bool done = false;
@@ -266,6 +266,8 @@ string mp::handleAlhpa()
 				lexeme.push_back(next);
 				accept=true;
 				state=1; //advance to test second char case
+				token="MP_IDENTIFIER"; //for single letter variable name case
+				
 			}
 			else
 			{
@@ -274,7 +276,7 @@ string mp::handleAlhpa()
 			break; //end case 0
 			//////////////////////////////////
 		case 1: //test next char and branch for reservered words
-			if(isalpha(next) || isdigit((int)next)||(next='_')&&(underscoreCount<2)&&(!isblank(next)) //Is the second char alpha, digit, or underscore and have we seen less than two underscores so far
+			if( isalpha(next) || isdigit((int)next)||next=='_'&& underscoreCount<2 && next !=' ') //Is the second char alpha, digit, or underscore and have we seen less than two underscores so far
 			{
 				next = get();
 				if (next=='_') {underscoreCount++;}
