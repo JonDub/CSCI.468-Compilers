@@ -259,11 +259,12 @@ string mp::handleAlpha()
 		switch(state)
 		{
 		case 0: //starts with standard alphabet char?
-			if(isalpha(next) )
+			if(isalpha(next) || next=='_' )
 			{
 				next = get();
 				next=tolower(next); //Let's keep every thing lowercase to make life easier
 				lexeme.push_back(next);
+				if (next=='_'){underscoreCount++;}
 				accept=true;
 				state=1; //advance to test second char case
 				token="MP_IDENTIFIER"; //for single letter variable name case
