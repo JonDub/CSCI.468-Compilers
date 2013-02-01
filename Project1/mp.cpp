@@ -274,7 +274,7 @@ string mp::handleAlhpa()
 			break; //end case 0
 			//////////////////////////////////
 		case 1: //test next char and branch for reservered words
-			if(isalpha(next) || isdigit((int)next)||(next='_')&&(underscoreCount<2)) //Is the second char alpha, digit, or underscore and have we seen less than two underscores so far
+			if(isalpha(next) || isdigit((int)next)||(next='_')&&(underscoreCount<2)&&(!isblank(next)) //Is the second char alpha, digit, or underscore and have we seen less than two underscores so far
 			{
 				next = get();
 				if (next=='_') {underscoreCount++;}
