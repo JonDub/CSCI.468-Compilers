@@ -91,7 +91,7 @@ string mp::getToken()
 	// which FSA to call 	
 	if (isdigit(next))
 		handleNumberic();
-	else if (isalpha(next) ) // check for identifier
+	else if (isalpha(next) || next=='_' ) // check for identifier
 		handleAlpha();
 	else if (next == '{') // handle comments first becuase {} are considered punctation C std lib
 		handleComment();
@@ -251,23 +251,23 @@ string mp::handleAlpha()
 	bool accept = false;
 	int underscoreCount=0;
 	
-
+	//Needs modification to prevent two underscores 
 	while (!done)
 	{
 		char next = peek();
 
 		switch(state)
 		{
-		case 0: //starts with standard alphabet char?
-			if(isalpha(next) || next=='_' )
+		case 0: //starts with standard alphabet char or _ ?
+			if(isalpha(next) || next=='_')
 			{
 				next = get();
 				next=tolower(next); //Let's keep every thing lowercase to make life easier
 				lexeme.push_back(next);
-				if (next=='_'){underscoreCount++;}
-				accept=true;
+				if (next=='_'){underscoreCount++;accept=false;state=1;}
+				else {accept=true;token="MP_IDENTIFIER";state=2;} //for single letter variable name case
 				state=1; //advance to test second char case
-				token="MP_IDENTIFIER"; //for single letter variable name case
+				
 				
 			}
 			else
@@ -276,11 +276,29 @@ string mp::handleAlpha()
 			}
 			break; //end case 0
 			//////////////////////////////////
-		case 1: //test next char and branch for reservered words
+		case 1:
+			if( isalpha(next) || isdigit((int)next) && next !=' ' && next!='_') //Last character seen was _
+			{
+				next = get();
+				next=tolower(next);//Let's keep every thing lowercase to make life easier
+				lexeme.push_back(next);
+				token="MP_IDENTIFIER";
+				state=2;	
+			}
+				
+			
+			else
+			{
+				done=true;
+			}
+			break; //end case 1
+
+			
+		case 2: //test chars where _ not most recent seen and branch for reservered words
 			if( isalpha(next) || isdigit((int)next)||next=='_'&& underscoreCount<2 && next !=' ') //Is the second char alpha, digit, or underscore and have we seen less than two underscores so far
 			{
 				next = get();
-				if (next=='_') {underscoreCount++;}
+				if (next=='_') {underscoreCount++;state=1;}else{state=2;}
 				next=tolower(next);//Let's keep every thing lowercase to make life easier
 				lexeme.push_back(next);
 				accept=true;
@@ -382,13 +400,13 @@ string mp::handleAlpha()
 				{
 					token="MP_IDENTIFIER";
 				}
-				state=1;
+				
 			}
 			else
 			{
 				done=true;
 			}
-			break; //end case 1
+			break; //end case 2
 		}//end switch
 	}//end while
 	 
