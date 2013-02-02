@@ -82,27 +82,30 @@ bool mp::hasToken()
 
 string mp::getToken()
 {
+	error=false;
 	char next = peek();
 
 	// reset the TOKEN and LEXEME variables, FSA will set new values
 	token = "";
 	lexeme = "";
 
-	// which FSA to call 	
-	if (isdigit(next))
+	// which FSA to call 
+	if (next == 39) // handle strings, start with "
+		handleString();
+	else if (isdigit(next))
 		handleNumberic();
 	else if (isalpha(next) || next=='_' ) // check for identifier
 		handleAlpha();
 	else if (next == '{') // handle comments first becuase {} are considered punctation C std lib
 		handleComment();
-	else if (next == '"') // handle strings, start with "
-		handleString();
+	
 	else if (ispunct(next))
 		handleSymbol();
-	//else // final case. just read the word in and check if its a keyword or identifier
-		//handleWord();
 	
-	return token;
+	if (error==true){
+		lexeme=get();token="MP_ERROR"; 
+	}
+	return token; 
 };
 
 string mp::getLexeme()
@@ -228,7 +231,7 @@ string mp::handleString()
 	char next = get();
 	next = peek(); // consume first "
 
-	while (next != '"')
+	while (next != 39)
 	{
 		if (next == EOF){
 			token = "MP_RUN_STRING";
@@ -251,7 +254,7 @@ string mp::handleAlpha()
 	bool accept = false;
 	int underscoreCount=0;
 	
-	//Needs modification to prevent two underscores 
+	 
 	while (!done)
 	{
 		char next = peek();
@@ -267,11 +270,12 @@ string mp::handleAlpha()
 				if (next=='_'){underscoreCount++;accept=false;state=1;}
 				else {accept=true;token="MP_IDENTIFIER";state=2;} //for single letter variable name case
 				 
-				
+				int othersilly=9;
 				
 			}
 			else
 			{
+				
 				done=true;
 			}
 			break; //end case 0
@@ -286,9 +290,9 @@ string mp::handleAlpha()
 				state=2;	
 			}
 				
-			
 			else
 			{
+				if (lexeme.compare("_")==0){accept=true;error=true;}
 				done=true;
 			}
 			break; //end case 1
@@ -625,6 +629,13 @@ string mp::handleSymbol()
 				next = get();
 				lexeme.push_back(next);
 				state = 12;
+			}
+			else
+			{
+				int silly=9;
+				error=true;
+				done=true;
+				accept=true;
 			}
 			break;
 		//Trivial cases
