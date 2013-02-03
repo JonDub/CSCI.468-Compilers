@@ -234,12 +234,10 @@ string mp::handleComment()
 
 	while (next != '}')
 	{
-		if (next == EOF){
+		if (next == EOF || next == '\n'){
 			get(); // consume EOF
 			token = "MP_RUN_COMMENT";
 			return token;
-		} else if (next == '\n'){ // consume newlines but keep going
-			get();
 		} else {
 			lexeme.push_back(next);
 			get();
@@ -267,7 +265,7 @@ string mp::handleString()
 
 	while (next != '\'') // consume
 	{
-		if (next == EOF || next == '\n'){ // comments stay on single line
+		if (next == EOF || next == '\n'){
 			token = "MP_RUN_STRING";
 			return token;
 		} 
