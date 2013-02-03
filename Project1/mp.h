@@ -2,7 +2,6 @@
 
 #include <unordered_map>
 #include <string>
-#include <stdio.h>
 #include <fstream>
 #include <ctype.h>
 using namespace std;
@@ -29,7 +28,7 @@ private:
 	string token;
 	string lexeme;
 	bool error;
-	unordered_map < string, string> reservedWords;
+	unordered_map < string, string> tokens;
 
 	// File Operations and Utilities
 	char peek();
@@ -37,7 +36,6 @@ private:
 	void seek(int);
 
 	// FSA's
-	string handleAlpha();
 	string handleNumberic();
 	string handleSymbol();	
 	string handleComment();

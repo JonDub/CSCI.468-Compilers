@@ -6,34 +6,34 @@ mp::mp()
 	lines = 0;
 	cols = 0;
 
-	// initialize the hash map of reserved words
-	reservedWords["and"]		= "MP_AND";
-	reservedWords["begin"]		= "MP_BEGIN";
-	reservedWords["div"]		= "MP_DIV";
-	reservedWords["do"]			= "MP_DO";
-	reservedWords["downto"]		= "MP_DOWNTO";
-	reservedWords["else"]		= "MP_ELSE";
-	reservedWords["end"]		= "MP_END";
-	reservedWords["fixed"]		= "MP_FIXED";
-	reservedWords["float"]		= "MP_FLOAT";
-	reservedWords["for"]		= "MP_FOR";
-	reservedWords["function"]	= "MP_FUNCTION";
-	reservedWords["if"]			= "MP_IF";
-	reservedWords["integer"]	= "MP_INTEGER";
-	reservedWords["mod"]		= "MP_MOD";
-	reservedWords["not"]		= "MP_NOT";
-	reservedWords["or"]			= "MP_OR";
-	reservedWords["procedure"]	= "MP_PROCEDURE";
-	reservedWords["program"]	= "MP_PROGRAM";
-	reservedWords["read"]		= "MP_READ";
-	reservedWords["repeat"]		= "MP_REPEAT";
-	reservedWords["then"]		= "MP_THEN";
-	reservedWords["to"]			= "MP_TO";
-	reservedWords["until"]		= "MP_UNTIL";
-	reservedWords["var"]		= "MP_VAR";
-	reservedWords["while"]		= "MP_WHILE";
-	reservedWords["write"]		= "MP_WRITE";
-	// to retrieve values from hash map --> string s = reservedWords["read"];
+	// initialize the hash map of all our tokens
+	tokens["and"]		= "MP_AND";
+	tokens["begin"]		= "MP_BEGIN";
+	tokens["div"]		= "MP_DIV";
+	tokens["do"]			= "MP_DO";
+	tokens["downto"]		= "MP_DOWNTO";
+	tokens["else"]		= "MP_ELSE";
+	tokens["end"]		= "MP_END";
+	tokens["fixed"]		= "MP_FIXED";
+	tokens["float"]		= "MP_FLOAT";
+	tokens["for"]		= "MP_FOR";
+	tokens["function"]	= "MP_FUNCTION";
+	tokens["if"]			= "MP_IF";
+	tokens["integer"]	= "MP_INTEGER";
+	tokens["mod"]		= "MP_MOD";
+	tokens["not"]		= "MP_NOT";
+	tokens["or"]			= "MP_OR";
+	tokens["procedure"]	= "MP_PROCEDURE";
+	tokens["program"]	= "MP_PROGRAM";
+	tokens["read"]		= "MP_READ";
+	tokens["repeat"]		= "MP_REPEAT";
+	tokens["then"]		= "MP_THEN";
+	tokens["to"]			= "MP_TO";
+	tokens["until"]		= "MP_UNTIL";
+	tokens["var"]		= "MP_VAR";
+	tokens["while"]		= "MP_WHILE";
+	tokens["write"]		= "MP_WRITE";
+	// to retrieve values from hash map --> string s = tokens["read"];
 	// string will be empty if the value is not in there
 }
 
@@ -81,7 +81,7 @@ bool mp::hasToken()
 
 string mp::getToken()
 {
-	error=false;
+	error = false;
 	char next = peek();
 
 	// reset the TOKEN and LEXEME variables, FSA will set new values
@@ -89,7 +89,7 @@ string mp::getToken()
 	lexeme = "";
 
 	// which FSA to call 
-	if (next == 39) // handle strings, start with "
+	if (next == '\'') // handle strings, start with ' (single quote)
 		handleString();
 	else if (isdigit(next))
 		handleNumberic();
@@ -97,12 +97,12 @@ string mp::getToken()
 		handleWord();
 	else if (next == '{') // handle comments first becuase {} are considered punctation C std lib
 		handleComment();
-	
 	else if (ispunct(next))
 		handleSymbol();
 	
 	if (error==true){
-		lexeme=get();token="MP_ERROR"; 
+		lexeme=get();
+		token="MP_ERROR"; 
 	}
 	return token; 
 };
@@ -202,18 +202,25 @@ string mp::handleComment()
 {
 	// handle input for a comment. try to detect a run-on comment when
 	// EOF is reached before the closing brace is reached
-	char next = get();
+	// Comments must stay on the same line
+	char next = peek();
 
 	while (next != '}')
 	{
 		if (next == EOF){
+			get();
 			token = "MP_RUN_COMMENT";
 			return token;
-		} 
-		lexeme.push_back(next);
-		next = get();
-		next = peek();
+		} else if (next == '\n'){ // consume newlines but keep going
+			get();	
+			next = peek();
+		} else {
+			lexeme.push_back(next);
+			next = get();
+			next = peek();
+		}
 	}
+	// consume the closing }
 	lexeme.push_back(next);
 	next = get();
 	token = "MP_COMMENT";
@@ -229,7 +236,7 @@ string mp::handleString()
 
 	while (next != 39)
 	{
-		if (next == EOF){
+		if (next == EOF || next == '\n'){
 			token = "MP_RUN_STRING";
 			return token;
 		} 
@@ -237,189 +244,10 @@ string mp::handleString()
 		next = get();
 		next = peek();
 	}
-	next = get(); // consume last "
+	next = get(); // consume closing "
 	token = "MP_STRING";
 	return token;
 }
-
-string mp::handleAlpha()
-{// Assuming on the beginning of the next possible token
-	
-	lexeme = "";
-	int state = 0;
-	bool done = false;
-	bool accept = false;
-	int underscoreCount=0;
-	
-	 
-	while (!done)
-	{
-		char next = peek();
-
-		switch(state)
-		{
-		case 0: //starts with standard alphabet char or _ ?
-			if(isalpha(next) || next=='_')
-			{
-				next = get();
-				next=tolower(next); //Let's keep every thing lowercase to make life easier
-				lexeme.push_back(next);
-				if (next=='_'){underscoreCount++;accept=false;state=1;}
-				else {accept=true;token="MP_IDENTIFIER";state=2;} //for single letter variable name case
-				 
-				int othersilly=9;
-				
-			}
-			else
-			{
-				
-				done=true;
-			}
-			break; //end case 0
-			//////////////////////////////////
-		case 1:
-			if( isalpha(next) || isdigit((int)next) && next !=' ' && next!='_') //Last character seen was _
-			{
-				next = get();
-				next=tolower(next);//Let's keep every thing lowercase to make life easier
-				lexeme.push_back(next);
-				token="MP_IDENTIFIER";
-				state=2;	
-			}
-				
-			else
-			{
-				if (lexeme.compare("_")==0){accept=true;error=true;}
-				done=true;
-			}
-			break; //end case 1
-
-			
-		case 2: //test chars where _ not most recent seen and branch for reservered words
-			if( isalpha(next) || isdigit((int)next)||next=='_'&& underscoreCount<2 && next !=' ') //Is the second char alpha, digit, or underscore and have we seen less than two underscores so far
-			{
-				next = get();
-				if (next=='_') {underscoreCount++;state=1;}else{state=2;}
-				next=tolower(next);//Let's keep every thing lowercase to make life easier
-				lexeme.push_back(next);
-				accept=true;
-				// Given the existing code implementation of state pattern seemed overkill however this code imposes an unnessecary number of string compares, time to code however is reduced.
-				// The alternative however will invariably include a large number of states or a large number of nested if statements, which will negatively impact readibility but positively impact total runtime
-				if (lexeme.compare("and")==0 )
-				{
-					token="MP_AND";
-				}
-				else if (lexeme.compare("begin")==0 )
-				{
-					token="MP_BEGIN";
-				}
-				else if (lexeme.compare("div")==0 )
-				{
-					token="MP_DIV";
-				}
-				else if (lexeme.compare("do")==0 )
-				{
-					token="MP_DO";
-				}
-				else if (lexeme.compare("downto")==0 )
-				{
-					token="MP_DOWNTO";
-				}
-				else if (lexeme.compare("else")==0 )
-				{
-					token="MP_ELSE";
-				}
-				else if (lexeme.compare("end")==0 )
-				{
-					token="MP_END";
-				}
-				else if (lexeme.compare("for")==0 )
-				{
-					token="MP_FOR";
-				}
-				else if (lexeme.compare("function")==0 )
-				{
-					token="MP_FUNCTION";
-				}
-				else if (lexeme.compare("if")==0 )
-				{
-					token="MP_IF";
-				}
-				else if (lexeme.compare("mod")==0 )
-				{
-					token="MP_MOD";
-				}
-				else if (lexeme.compare("not")==0 )
-				{
-					token="MP_NOT";
-				}
-				else if (lexeme.compare("or")==0 )
-				{
-					token="MP_OR";
-				}
-				else if (lexeme.compare("procedure")==0 )
-				{
-					token="MP_PROCEDURE";
-				}
-				else if (lexeme.compare("program")==0 )
-				{
-					token="MP_PROGRAM";
-				}
-				else if (lexeme.compare("read")==0 )
-				{
-					token="MP_READ";
-				}
-				else if (lexeme.compare("repeat")==0 )
-				{
-					token="MP_REPEAT";
-				}
-				else if (lexeme.compare("then")==0 )
-				{
-					token="MP_THEN";
-				}
-				else if (lexeme.compare("to")==0 )
-				{
-					token="MP_TO";
-				}
-				else if (lexeme.compare("until")==0 )
-				{
-					token="MP_UNTIL";
-				}
-				else if (lexeme.compare("var")==0 )
-				{
-					token="MP_VAR";
-				}
-				else if (lexeme.compare("while")==0 )
-				{
-					token="MP_WHILE";
-				}
-				else if (lexeme.compare("write")==0 )
-				{
-					token="MP_WRITE";
-				}
-				else
-				{
-					token="MP_IDENTIFIER";
-				}
-				
-			}
-			else
-			{
-				done=true;
-			}
-			break; //end case 2
-		}//end switch
-	}//end while
-	 
-	
-
-	if (!accept)
-	{
-		seek(-1);
-		lexeme.pop_back();
-	} 
-	return token;
-};
 
 string mp::handleNumberic()
 {
@@ -763,9 +591,9 @@ bool mp::isReservedWord(string word)
 	for (int i = 0; i < word.size(); i++)
 		w.at(i) = tolower(word.at(i));
 
-	unordered_map<string, string>::const_iterator got = reservedWords.find (w);
+	unordered_map<string, string>::const_iterator got = tokens.find (w);
 	
-	if (got != reservedWords.end()) {
+	if (got != tokens.end()) {
 		token = got->second;
 		return true;
 	}
