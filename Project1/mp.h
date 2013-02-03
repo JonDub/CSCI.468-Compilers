@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
 #include <stdio.h>
 #include <fstream>
 #include <ctype.h>
@@ -27,13 +28,13 @@ private:
 	unsigned int cols;
 	string token;
 	string lexeme;
-	unordered_map <char*, string, hash<char*> > reservedWords;
+	bool error;
+	unordered_map < string, string> reservedWords;
 
 	// File Operations and Utilities
 	char peek();
 	char get();
 	void seek(int);
-	char toLowerCase(char);
 
 	// FSA's
 	string handleAlpha();
@@ -42,5 +43,6 @@ private:
 	string handleComment();
 	string handleString();
 	string handleWord();
+	bool isReservedWord(string);
 };
 

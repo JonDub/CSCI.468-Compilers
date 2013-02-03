@@ -33,7 +33,6 @@ mp::mp()
 	reservedWords["var"]		= "MP_VAR";
 	reservedWords["while"]		= "MP_WHILE";
 	reservedWords["write"]		= "MP_WRITE";
-
 	// to retrieve values from hash map --> string s = reservedWords["read"];
 	// string will be empty if the value is not in there
 }
@@ -95,7 +94,7 @@ string mp::getToken()
 	else if (isdigit(next))
 		handleNumberic();
 	else if (isalpha(next) || next=='_' ) // check for identifier
-		handleAlpha();
+		handleWord();
 	else if (next == '{') // handle comments first becuase {} are considered punctation C std lib
 		handleComment();
 	
@@ -124,14 +123,6 @@ unsigned int mp::getColumnNumber()
 	return (cols - lexeme.length());
 };
 
-char mp::toLowerCase(char c)
-{
-	if (isalpha(c))
-		if ( c < 91) // convert uppercase to lowercase
-			c += 32;
-	return c;
-}
-
 string mp::handleWord()
 {
 	// handle input for reserved words as well as identiers. 
@@ -156,19 +147,19 @@ string mp::handleWord()
 				state = 2;
 				next = get();
 				lexeme.push_back(next);				
-			} else if (isalpha(next)){
+			} else if (isalpha(next) || isdigit(next)){
 				state = 1;
 				next = get();
 				lexeme.push_back(next);
 			} else {
-				done = true;
+				state = 3;
 			}
 			break;
 		case 1:
 			// Accept state. 
 			accept = true;
 			token = "MP_IDENTIFIER";
-			if (isalpha(next) | isdigit(next)){
+			if (isalpha(next) || isdigit(next)){
 				state = 1;
 				next = get();
 				lexeme.push_back(next);
@@ -177,28 +168,33 @@ string mp::handleWord()
 				next = get();
 				lexeme.push_back(next);
 			} else {
-				done = true;
+				state = 3;
 			}
 			break;
 		case 2:
 			// do not accept
 			accept = false;
-			if (isalpha(next) | isdigit(next)){
+			if (isalpha(next) || isdigit(next) ){
 				state = 1;
 				next = get();
 				lexeme.push_back(next);
 			} else {
-				done = true;
+				state = 3;
 			}
+			break;
+		case 3:
+			done = true;
 			break;
 		}
 	}
 
-	if (!accept){
-		seek(-1);
-		lexeme.pop_back();
-	}
-
+	// check to see if lexeme == '_'
+	if (!accept && lexeme.size() == 1){
+		token = "MP_ERROR";
+		return token;
+	}		
+	// must check to see if this lexeme is a reserved word or not
+	isReservedWord(lexeme);
 	return token;
 }
 
@@ -245,6 +241,7 @@ string mp::handleString()
 	token = "MP_STRING";
 	return token;
 }
+
 string mp::handleAlpha()
 {// Assuming on the beginning of the next possible token
 	
@@ -757,6 +754,24 @@ string mp::handleSymbol()
 	} 
 	return token;
 };
+
+bool mp::isReservedWord(string word)
+{
+	// first conver to all lowercase, then check the word against a 
+	// hash set of reserved words, set the token accordingly if its a reserved word
+	string w = word;
+	for (int i = 0; i < word.size(); i++)
+		w.at(i) = tolower(word.at(i));
+
+	unordered_map<string, string>::const_iterator got = reservedWords.find (w);
+	
+	if (got != reservedWords.end()) {
+		token = got->second;
+		return true;
+	}
+
+	return false;
+}
 
 char mp::peek()
 {

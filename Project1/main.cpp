@@ -1,6 +1,7 @@
 // Driver for the application
 #include <iostream>
 #include <iomanip>
+#include <string.h>
 #include <string>
 #include "mp.h"
 using namespace std;
