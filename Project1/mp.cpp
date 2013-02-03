@@ -2,7 +2,11 @@
 
 mp::mp()
 {
-	// constructor
+	/*
+		Constructor. Initialize the lines and columns counters. 
+		Setup and populate the TOKENS hash map with reserved words.
+	*/
+
 	lines = 0;
 	cols = 0;
 
@@ -39,13 +43,15 @@ mp::mp()
 
 mp::~mp(void)
 {
-	// destructor. release resources
+	// Destructor. Release resources (file pointer)
 	file.close();
 }
 
 bool mp::openFile(const char* fName)
 {
-	// Opens the file pointer for FSA's to use
+	/*
+		Open file and initialize the file pointer
+	*/
 	file.open(fName, fstream::in);
 
 	if (file.is_open())
@@ -59,9 +65,14 @@ bool mp::openFile(const char* fName)
 
 bool mp::hasToken()
 {
-	// consume white space & newlines until we see a character or reach EOF
+	/*
+		Scanns the input to see if there is a character left. 
+		Skips over white space, new lines, and tabs. 
+		Leaves file pointer at beginning of next available character. 
+	*/
+
 	char next = peek();
-	while ((next == ' ') | (next == '\n') | (next == '\t'))
+	while ((next == ' ') || (next == '\n') || (next == '\t'))
 	{
 		if (next == '\n')
 		{
@@ -75,13 +86,16 @@ bool mp::hasToken()
 	if (next != EOF)
 		return true;
 
-	token = "MP_EOF";
+	lexeme = get();
 	return false;
 }
 
 string mp::getToken()
 {
-	error = false;
+	/*
+		Reads the next available character and dispatches to the
+		appropriate FSA for them to parse. 
+	*/
 	char next = peek();
 
 	// reset the TOKEN and LEXEME variables, FSA will set new values
@@ -99,35 +113,44 @@ string mp::getToken()
 		handleComment();
 	else if (ispunct(next))
 		handleSymbol();
-	
-	if (error==true){
-		lexeme=get();
-		token="MP_ERROR"; 
+	else if (next == EOF) {
+		token = "MP_EOF";
+		lexeme = get();
 	}
+	
 	return token; 
 };
 
 string mp::getLexeme()
 {
+	/*
+		Returns the last lexeme that was filled in
+	*/
 	return lexeme;
 };
 
 unsigned int mp::getLineNumber()
 {
+	/*
+		Returns the current line number
+	*/
 	return lines;
 };
 
 unsigned int mp::getColumnNumber()
 {
-	// gets the column 
+	/*
+		Returns the current column counter from the start of the lexeme. 
+	*/
 	return (cols - lexeme.length());
 };
 
 string mp::handleWord()
 {
-	// handle input for reserved words as well as identiers. 
-	// Read in a word, when done check if its a reserved word or an identifier
-	// Then set the token and lexeme accordingly
+	/*
+		Parses input file to try to read an identifier or reserved word.
+		Assumes that file pointer is on first available character.
+	*/
 	bool done = false;
 	bool accept = false;
 	char next;
@@ -200,25 +223,28 @@ string mp::handleWord()
 
 string mp::handleComment()
 {
-	// handle input for a comment. try to detect a run-on comment when
-	// EOF is reached before the closing brace is reached
-	// Comments must stay on the same line
+	/*
+		Parse input file to read in comments. 
+		Comments start with { and end with }
+		If EOF is reached before closing comment brace, then MP_RUN_COMMENT
+		is returned. 
+		Comments must stay on the same line also. 
+	*/
 	char next = peek();
 
 	while (next != '}')
 	{
 		if (next == EOF){
-			get();
+			get(); // consume EOF
 			token = "MP_RUN_COMMENT";
 			return token;
 		} else if (next == '\n'){ // consume newlines but keep going
-			get();	
-			next = peek();
+			get();
 		} else {
 			lexeme.push_back(next);
-			next = get();
-			next = peek();
+			get();
 		}
+		next = peek();
 	}
 	// consume the closing }
 	lexeme.push_back(next);
@@ -229,14 +255,19 @@ string mp::handleComment()
 
 string mp::handleString()
 {
-	// handle input for a strings. try to detect a run-on string when
-	// EOF is reached before the closing brace is reached
+	/*
+		Parse input file to try to read strings. 
+		Strings start and end with ' (single quote)
+		If EOF is reached before closing string quote, then MP_RUN_STRING
+		is returned. 
+		Strings must stay on the same line. 
+	*/
 	char next = get();
 	next = peek(); // consume first "
 
-	while (next != 39)
+	while (next != '\'') // consume
 	{
-		if (next == EOF || next == '\n'){
+		if (next == EOF || next == '\n'){ // comments stay on single line
 			token = "MP_RUN_STRING";
 			return token;
 		} 
@@ -251,7 +282,10 @@ string mp::handleString()
 
 string mp::handleNumberic()
 {
-	// Assuming on the beginning of the next possible token
+	/*
+		Parse input file and try to read in a number identifier. 
+		Numbers can be either integer, fixed, or floating point numbers.
+	*/
 	int state = 0;
 	bool done = false;
 	bool accept = false;
@@ -369,7 +403,10 @@ string mp::handleNumberic()
 
 string mp::handleSymbol()
 {
-	// Assuming on the beginning of the next possible token
+	/*
+		Parse input file and try to read they symbols.
+		Assumes file pointer is on the first available character.
+	*/
 	int state = 0;
 	bool done = false;
 	bool accept = false;
@@ -457,8 +494,9 @@ string mp::handleSymbol()
 			}
 			else
 			{
-				int silly=9;
-				error=true;
+				//error=true;
+				lexeme.push_back(get());
+				token = "MP_ERROR";
 				done=true;
 				accept=true;
 			}
@@ -585,8 +623,11 @@ string mp::handleSymbol()
 
 bool mp::isReservedWord(string word)
 {
-	// first conver to all lowercase, then check the word against a 
-	// hash set of reserved words, set the token accordingly if its a reserved word
+	/*
+		Checks the string to see if it is a reserved word. 
+		First converts the string to lowercase, then checks to see
+		if it is in the hash map of reserved words. 
+	*/
 	string w = word;
 	for (int i = 0; i < word.size(); i++)
 		w.at(i) = tolower(word.at(i));
@@ -603,13 +644,17 @@ bool mp::isReservedWord(string word)
 
 char mp::peek()
 {
-	// Peek ahead at the next character in the file
+	/*
+		Returns the character that would be consumed next.
+	*/
 	return file.peek();
 }
 
 char mp::get()
 {
-	// Get the next character in the file stream. Increment the columns.
+	/*
+		Returns the next available character in the file pointer. 
+	*/
 	char n = file.get();
 	cols++;
 	return n;
@@ -617,7 +662,11 @@ char mp::get()
 
 void mp::seek(int n)
 {
-	// Move forward/backward in the file by n spaces 
+	/*
+		Moves forward or backward in the file pointer. 
+		Positive values will move forwards.
+		Negative values will move backwards.
+	*/
 	file.seekg(n, ios::cur);
 	cols += n;
 }

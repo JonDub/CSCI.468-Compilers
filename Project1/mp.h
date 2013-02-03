@@ -27,8 +27,7 @@ private:
 	unsigned int cols;
 	string token;
 	string lexeme;
-	bool error;
-	unordered_map < string, string> tokens;
+	unordered_map <string, string> tokens;
 
 	// File Operations and Utilities
 	char peek();
@@ -41,6 +40,7 @@ private:
 	string handleComment();
 	string handleString();
 	string handleWord();
+	
 	bool isReservedWord(string);
 };
 

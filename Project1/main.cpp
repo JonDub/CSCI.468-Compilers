@@ -29,6 +29,8 @@ int main ( int argc, char* argv[] )
 
 		cout << setw(8) << dispatcher->getLineNumber() << setw(8) << dispatcher->getColumnNumber() << endl;
 	}
+	cout << setw(15) << left << dispatcher->getToken() << setw(45) << dispatcher->getLexeme() 
+		<< setw(8) << dispatcher->getLineNumber() << setw(8) << dispatcher->getColumnNumber() << endl << endl;
 
 	// press enter to exit
 	printf("Done. Press Enter to exit.\n");
