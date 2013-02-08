@@ -39,6 +39,9 @@ parser::Program()
 	{
 		ProgramHeading();
 		Match(MP_SCOLON);
+		Block();
+		Match(MP_PERIOD);
+		break;
 	}
 	default: //everything else
 		{
@@ -54,8 +57,12 @@ parser::ProgramHeading()
 {
 	switch(lookahead)
 	{
-	case: _
+	case: //ProgramHeading  --> "program" ProgramIdentifier, rule #3 
 	{
+		ProgramHeading();
+		Match(MP_PROGRAM);
+		ProgramIdentifier();
+		break;
 	}
 	default: //everything else
 		{
@@ -73,10 +80,10 @@ parser::block()
 {
 	switch (lookahead)
 	{
-		case MP_VAR: // when MP_VAR Block -> "var" VariableDeclaration ";" VariableDeclarationTail, rule #4
+		case MP_VAR: // when MP_VAR Block -> "var" VariableDeclarationPart ";" VariableDeclarationTail, rule #4
 		{
 			Match(MP_VAR);
-			variableDeclaration();
+			VariableDeclarationPart();
 			Match(MP_SCOLON);
 			VariableDeclarationTail();
 			break();
@@ -88,14 +95,19 @@ parser::block()
 		}
 }
 
-	// precondition: (not sure what this should be, but is necessary)
+// precondition: (not sure what this should be, but is necessary)
 // postcondition: (not sure what this should be, but is necessary)
 parser::VariableDeclarationPart()
 {
 	switch(lookahead)
 	{
-	case: _
+	case: MP_VAR //VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail, rule #5
 	{
+		Match(MP_VAR);
+			variableDeclaration();
+			Match(MP_SCOLON);
+			VariableDeclarationTail();
+			break();
 	}
 	default: //everything else
 		{
@@ -111,9 +123,19 @@ parser::VariableDeclarationTail()
 {
 	switch(lookahead)
 	{
-	case: _
-	{
-	}
+	case: MP_IDENTIFIER // VariableDeclarationTail  --> VariableDeclaration ";" VariableDeclarationTail, rule #6
+		{
+			variableDeclaration();
+			Match(MP_SCOLON);
+			VariableDeclarationTail();
+			break();
+		}
+// VVV This will be filled in after some more careful analysis of the grammar VVV
+	case: ?? // VariableDeclarationTail -> e, rule #7
+		{
+			break;
+		}
+// ^^^ This will be filled in after some more careful analysis of the grammar ^^^
 	default: //everything else
 		{
 			Error();
@@ -128,9 +150,13 @@ parser::VariableDeclaration()
 {
 	switch(lookahead)
 	{
-	case: _
-	{
-	}
+	case: MP_IDENTIFIER // VariableDeclaration -> Identifierlist ":" Type , rule #8
+		{
+			Identifierlist();
+			Match(MP_COLON);
+			Type();
+			break();
+		}
 	default: //everything else
 		{
 			Error();
@@ -145,9 +171,22 @@ parser::Type()
 {
 	switch(lookahead)
 	{
-	case: _
-	{
-	}
+		case: MP_INTEGER_LIT //Type -> "Integer", rule #9
+		{
+			Match(MP_INTEGER_LIT);
+			break;
+		}
+		case: MP_FLOAT_LIT //Type -> "Float", rule #10
+		{
+			Match(MP_FLOAT_LIT);
+			break;
+		}
+	    // I can't find Boolean in the list of tokens even though it's indicated as a token in the grammar
+		case: boolean //Type -> "Boolean", rule #11
+		{
+			Match(boolean);
+			break;
+		}
 	default: //everything else
 		{
 			Error();
@@ -162,8 +201,21 @@ parser::ProcedureAndFunctionDeclarationPart()
 {
 	switch(lookahead)
 	{
-	case: _
+	case: MP_PROCEDURE //ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart, rule #12 
 	{
+		ProcedureDeclaration();
+		ProcedureAndFunctionDeclarationPart();
+		break;
+	}
+	case: MP_FUNCTION //ProcedureAndFunctionDeclarationPart -> FunctionDeclaration ProcedureAndFunctionDeclarationPart, rule #13
+	{
+		FunctionDeclaration();
+		ProcedureAndFunctionDeclarationPart();
+		break;
+	}
+	case: ?? //ProcedureAndFunctionDeclarationPart -> e, rule #14
+	{
+		break;
 	}
 	default: //everything else
 		{
@@ -179,8 +231,13 @@ parser::ProcedureDeclaration()
 {
 	switch(lookahead)
 	{
-	case: _
+	case: MP_PROCEDURE //ProcedureHeading ";" Block ";", rule #15
 	{
+		ProcedureHeading();
+		Match(MP_SCOLON);
+		Block();
+		Match(MP_SCOLON);
+		break;
 	}
 	default: //everything else
 		{
@@ -196,8 +253,13 @@ parser::FunctionDeclaration()
 {
 	switch(lookahead)
 	{
-	case: _
+	case: MP_PROCEDURE //FunctionDeclaration -> FunctionHeading ";" Block ";", rule #16
 	{
+		Functionheading();
+		Match(MP_SCOLON);
+		Block();
+		Match(MP_SCOLON);
+		break;
 	}
 	default: //everything else
 		{
@@ -213,8 +275,12 @@ parser::ProcedureHeading()
 {
 	switch(lookahead)
 	{
-	case: _
+	case: MP_PROCEDURE //ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList, rule #17
 	{
+		Match(MP_PROCEDURE);
+		procedureIdentifier();
+		OptionalFormalParameterList();
+		break;
 	}
 	default: //everything else
 		{
@@ -230,8 +296,14 @@ parser::FunctionHeading()
 {
 	switch(lookahead)
 	{
-	case: _
+	case: MP_FUNCTION //FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type, rule #18
 	{
+		Match(MP_FUNCTION);
+		functionIdentifier();
+		OptionalFormalParameterList();
+		Match(MP_COLON);
+		Type();
+		break;
 	}
 	default: //everything else
 		{
@@ -264,8 +336,17 @@ parser::FormalParameterSectionTail()
 {
 	switch(lookahead)
 	{
-	case: _
+	case: MP_LPAREN //OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")", rule #19
 	{
+		Match(MP_LPAREN);
+		FormalParameterSection();
+		FormalParameterSectionTail();
+		Match(MP_RPAREN);
+		break;
+	}
+	case: ?? //OptionalFormalParameterList -> e, rule #20
+	{
+		break;
 	}
 	default: //everything else
 		{
@@ -410,6 +491,8 @@ parser::Statement()
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////
 
  
 
