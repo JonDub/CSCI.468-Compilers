@@ -27,6 +27,7 @@ private:
 	unsigned int cols;
 	string token;
 	string lexeme;
+	string lookahead;
 	unordered_map <string, string> tokens;
 
 	// File Operations and Utilities
