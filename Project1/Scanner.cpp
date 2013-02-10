@@ -108,7 +108,7 @@ string mp::getToken()
 		handleNumberic();
 	else if (isalpha(next) || next=='_' ) // check for identifier
 		handleWord();
-	else if (next == '{' || next == '}') // handle comments first becuase {} are considered punctation C std lib
+	else if (next == '{' || next == '}') // handle comments first becuase {} are considered punctation
 		handleComment();
 	else if (ispunct(next))
 		handleSymbol();
@@ -294,21 +294,58 @@ string mp::handleString()
 		is returned. 
 		Strings must stay on the same line. 
 	*/
-	char next = get();
-	next = peek(); // consume first "
+	char next;
+	bool done = false;
+	int state = 0;
 
-	while (next != '\'') // consume
+	while (!done)
 	{
-		if (next == EOF || next == '\n'){
-			token = "MP_RUN_STRING";
-			return token;
-		} 
-		lexeme.push_back(next);
-		next = get();
 		next = peek();
+
+		switch (state)
+		{
+		case 0:
+			if (next == '\'') // comment start
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_STRING";
+				state = 1;
+			} 
+			else 
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_ERROR";
+				state = 2;			
+			}
+			break;
+		case 1:
+			if (next == '\'') // closing ' for string
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_STRING";
+				state = 2;
+			} 
+			else if (next == '\n')
+			{
+				//get(); // consume EOF
+				token = "MP_RUN_STRING";
+				state = 2;
+			}
+			else 
+			{
+				next = get();
+				lexeme.push_back(next);
+			}
+			break;
+		case 2:
+			done = true;
+			break;
+		}
 	}
-	next = get(); // consume closing "
-	token = "MP_STRING";
+
 	return token;
 }
 
