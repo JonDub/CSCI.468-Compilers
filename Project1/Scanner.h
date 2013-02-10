@@ -13,7 +13,7 @@ public:
 	virtual ~Scanner(void);
 
 	bool openFile(const char*);
-	string getToken();
+	Token getToken();
 	string getLexeme();
 	unsigned int getLineNumber();
 	unsigned int getColumnNumber();
@@ -25,10 +25,10 @@ private:
 	ifstream file;
 	unsigned int lines;
 	unsigned int cols;
-	string token;
+	Token token;
 	string lexeme;
-	string lookahead;
-	unordered_map <string, string> tokens;
+	Token lookahead;
+	unordered_map <string, Token> tokens;
 
 	// File Operations and Utilities
 	char peek();
@@ -36,11 +36,11 @@ private:
 	void seek(int);
 
 	// FSA's
-	string handleNumberic();
-	string handleSymbol();	
-	string handleComment();
-	string handleString();
-	string handleWord();
+	Token handleNumberic();
+	Token handleSymbol();	
+	Token handleComment();
+	Token handleString();
+	Token handleWord();
 	
 	bool isReservedWord(string);
 };

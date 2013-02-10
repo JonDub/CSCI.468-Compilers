@@ -19,7 +19,7 @@ void Parser::SystemGoal()
 	case MP_PROGRAM: //SystemGoal --> Program eof, rule #1     
 		  {
 			  Program();
-			  Match(Tokens::MP_EOF);
+			  Match(MP_EOF);
 			  break;
 		  }
 	default: //everything else
@@ -39,9 +39,9 @@ void Parser::Program()
 	case MP_PROGRAM: //Program --> ProgramHeading ";" Block ".", rule #2 
 		  {
 			  ProgramHeading();
-			  Match(Tokens::MP_SCOLON);
+			  Match(MP_SCOLON);
 			  Block();
-			  Match(Tokens::MP_PERIOD);
+			  Match(MP_PERIOD);
 			  break;
 		  }
 	default: //everything else
@@ -58,10 +58,10 @@ void Parser::ProgramHeading()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_PROGRAM: //ProgramHeading  --> "program" ProgramIdentifier, rule #3 
+	case MP_PROGRAM: //ProgramHeading  --> "program" ProgramIdentifier, rule #3 
 		{
 			ProgramHeading();
-			Match(Tokens::MP_PROGRAM);
+			Match(MP_PROGRAM);
 			ProgramIdentifier();
 			break;
 		}
@@ -81,11 +81,11 @@ void Parser::Block()
 {
 	switch (lookahead)
 	{
-	case Tokens::MP_VAR: // when MP_VAR Block -> "var" VariableDeclarationPart ";" VariableDeclarationTail, rule #4
+	case MP_VAR: // when MP_VAR Block -> "var" VariableDeclarationPart ";" VariableDeclarationTail, rule #4
 		{
-			Match(Tokens::MP_VAR);
+			Match(MP_VAR);
 			VariableDeclarationPart();
-			Match(Tokens::MP_SCOLON);
+			Match(MP_SCOLON);
 			VariableDeclarationTail();
 			break;
 		}
@@ -103,11 +103,11 @@ void Parser::VariableDeclarationPart()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_VAR: //VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail, rule #5
+	case MP_VAR: //VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail, rule #5
 		  {
-			  Match(Tokens::MP_VAR);
+			  Match(MP_VAR);
 			  VariableDeclaration();
-			  Match(Tokens::MP_SCOLON);
+			  Match(MP_SCOLON);
 			  VariableDeclarationTail();
 			  break;
 		  }
@@ -125,10 +125,10 @@ void Parser::VariableDeclarationTail()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_IDENTIFIER: // VariableDeclarationTail  --> VariableDeclaration ";" VariableDeclarationTail, rule #6
+	case MP_IDENTIFIER: // VariableDeclarationTail  --> VariableDeclaration ";" VariableDeclarationTail, rule #6
 		  {
 			  VariableDeclaration();
-			  Match(Tokens::MP_SCOLON);
+			  Match(MP_SCOLON);
 			  VariableDeclarationTail();
 			  break;
 		  }
@@ -153,10 +153,10 @@ void Parser::VariableDeclaration()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_IDENTIFIER: // VariableDeclaration -> Identifierlist ":" Type , rule #8
+	case MP_IDENTIFIER: // VariableDeclaration -> Identifierlist ":" Type , rule #8
 		  {
 			  IdentifierList();
-			  Match(Tokens::MP_COLON);
+			  Match(MP_COLON);
 			  Type();
 			  break;
 		  }
@@ -175,14 +175,14 @@ void Parser::Type()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_INTEGER_LIT: //Type -> "Integer", rule #9
+	case MP_INTEGER_LIT: //Type -> "Integer", rule #9
 		  {
-			  Match(Tokens::MP_INTEGER_LIT);
+			  Match(MP_INTEGER_LIT);
 			  break;
 		  }
-	case Tokens::MP_FLOAT_LIT: //Type -> "Float", rule #10
+	case MP_FLOAT_LIT: //Type -> "Float", rule #10
 		  {
-			  Match(Tokens::MP_FLOAT_LIT);
+			  Match(MP_FLOAT_LIT);
 			  break;
 		  }
 		  // I can't find Boolean in the list of tokens even though it's indicated as a token in the grammar
@@ -206,13 +206,13 @@ void Parser::ProcedureAndFunctionDeclarationPart()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_PROCEDURE: //ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart, rule #12 
+	case MP_PROCEDURE: //ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart, rule #12 
 		  {
 			  ProcedureDeclaration();
 			  ProcedureAndFunctionDeclarationPart();
 			  break;
 		  }
-	case Tokens::MP_FUNCTION: //ProcedureAndFunctionDeclarationPart -> FunctionDeclaration ProcedureAndFunctionDeclarationPart, rule #13
+	case MP_FUNCTION: //ProcedureAndFunctionDeclarationPart -> FunctionDeclaration ProcedureAndFunctionDeclarationPart, rule #13
 		  {
 			  FunctionDeclaration();
 			  ProcedureAndFunctionDeclarationPart();
@@ -237,12 +237,12 @@ void Parser::ProcedureDeclaration()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_PROCEDURE: //ProcedureHeading ";" Block ";", rule #15
+	case MP_PROCEDURE: //ProcedureHeading ";" Block ";", rule #15
 			{
 				ProcedureHeading();
-				Match(Tokens::MP_SCOLON);
+				Match(MP_SCOLON);
 				Block();
-				Match(Tokens::MP_SCOLON);
+				Match(MP_SCOLON);
 				break;
 			}
 	default: //everything else
@@ -260,12 +260,12 @@ void Parser::FunctionDeclaration()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_PROCEDURE: //FunctionDeclaration -> FunctionHeading ";" Block ";", rule #16
+	case MP_PROCEDURE: //FunctionDeclaration -> FunctionHeading ";" Block ";", rule #16
 		  {
 			  FunctionHeading();
-			  Match(Tokens::MP_SCOLON);
+			  Match(MP_SCOLON);
 			  Block();
-			  Match(Tokens::MP_SCOLON);
+			  Match(MP_SCOLON);
 			  break;
 		  }
 	default: //everything else
@@ -283,9 +283,9 @@ void Parser::ProcedureHeading()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_PROCEDURE: //ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList, rule #17
+	case MP_PROCEDURE: //ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList, rule #17
 		  {
-			  Match(Tokens::MP_PROCEDURE);
+			  Match(MP_PROCEDURE);
 			  ProcedureIdentifier();
 			  OptionalFormalParameterList();
 			  break;
@@ -305,12 +305,12 @@ void Parser::FunctionHeading()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_FUNCTION: //FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type, rule #18
+	case MP_FUNCTION: //FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type, rule #18
 		  {
-			  Match(Tokens::MP_FUNCTION);
+			  Match(MP_FUNCTION);
 			  FunctionIdentifier();
 			  OptionalFormalParameterList();
-			  Match(Tokens::MP_COLON);
+			  Match(MP_COLON);
 			  Type();
 			  break;
 		  }
@@ -329,12 +329,12 @@ void Parser::OptionalFormalParameterList()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_LPAREN: //OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")", rule #19
+	case MP_LPAREN: //OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")", rule #19
 			{
-				Match(Tokens::MP_LPAREN);
+				Match(MP_LPAREN);
 				FormalParameterSection();
 				FormalParameterSectionTail();
-				Match(Tokens::MP_RPAREN);
+				Match(MP_RPAREN);
 				break;
 			}
 			// TODO: Need to define what this is
@@ -356,9 +356,9 @@ void Parser::FormalParameterSectionTail()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_SCOLON: //FormalParameterSectionTail -> ";" FormalParameterSection FormalParameterSectionTail , rule #21
+	case MP_SCOLON: //FormalParameterSectionTail -> ";" FormalParameterSection FormalParameterSectionTail , rule #21
 			{
-				Match(Tokens::MP_SCOLON);
+				Match(MP_SCOLON);
 				FormalParameterSection();
 				FormalParameterSectionTail();
 				break;
@@ -383,12 +383,12 @@ void Parser::FormalParameterSection()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_VAR: // FormalParameterSection -> VariableParameterSection, rule #24
+	case MP_VAR: // FormalParameterSection -> VariableParameterSection, rule #24
 		  {
 			  VariableParameterSection();
 			  break;
 		  }
-	case Tokens::MP_IDENTIFIER:// FormalParameterSection -> ValueParameterSection, rule #23 
+	case MP_IDENTIFIER:// FormalParameterSection -> ValueParameterSection, rule #23 
 		  {
 			  ValueParameterSection();
 			  break;
@@ -408,10 +408,10 @@ void Parser::ValueParameterSection()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_IDENTIFIER:// ValueParameterSection -> IdentifierList ":" Type, rule #25
+	case MP_IDENTIFIER:// ValueParameterSection -> IdentifierList ":" Type, rule #25
 		  {
 			  IdentifierList();
-			  Match(Tokens::MP_COLON);
+			  Match(MP_COLON);
 			  Type();
 			  break;
 		  }
@@ -430,11 +430,11 @@ void Parser::VariableParameterSection()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_VAR:// VariableParameterSection -> "var" IdentifierList ":" Type, rule #26
+	case MP_VAR:// VariableParameterSection -> "var" IdentifierList ":" Type, rule #26
 		  {
-			  Match(Tokens::MP_VAR);
+			  Match(MP_VAR);
 			  IdentifierList();
-			  Match(Tokens::MP_COLON);
+			  Match(MP_COLON);
 			  Type();
 			  break;
 		  }
@@ -452,7 +452,7 @@ void Parser::StatementPart()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_BEGIN: //StatementPart -> CompoundStatement, rule #27
+	case MP_BEGIN: //StatementPart -> CompoundStatement, rule #27
 		  {
 			  CompoundStatement();
 			  break;
@@ -472,11 +472,11 @@ void Parser::CompoundStatement()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_BEGIN: //CompoundStatement -> "begin" StatementSequence "end", rule #28
+	case MP_BEGIN: //CompoundStatement -> "begin" StatementSequence "end", rule #28
 		  {
-			  Match(Tokens::MP_BEGIN);
+			  Match(MP_BEGIN);
 			  StatementSequence();
-			  Match(Tokens::MP_END);
+			  Match(MP_END);
 			  break;
 		  }
 	default: //everything else
@@ -494,49 +494,49 @@ void Parser::StatementSequence()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_BEGIN: //StatementSequence -> Statement StatementTail, rule #29
+	case MP_BEGIN: //StatementSequence -> Statement StatementTail, rule #29
 		  {
 			  Statement();
 			  StatementTail();
 			  break;
 		  }
-	case Tokens::MP_READ: //StatementSequence -> Statement StatementTail, rule #29
+	case MP_READ: //StatementSequence -> Statement StatementTail, rule #29
 		  {
 			  Statement();
 			  StatementTail();
 			  break;
 		  }
-	case Tokens::MP_WRITE: //StatementSequence -> Statement StatementTail, rule #29
+	case MP_WRITE: //StatementSequence -> Statement StatementTail, rule #29
 		  {
 			  Statement();
 			  StatementTail();
 			  break;
 		  }
-	case Tokens::MP_IF: //StatementSequence -> Statement StatementTail, rule #29
+	case MP_IF: //StatementSequence -> Statement StatementTail, rule #29
 		  {
 			  Statement();
 			  StatementTail();
 			  break;
 		  }
-	case Tokens::MP_REPEAT: //StatementSequence -> Statement StatementTail, rule #29
+	case MP_REPEAT: //StatementSequence -> Statement StatementTail, rule #29
 		  {
 			  Statement();
 			  StatementTail();
 			  break;
 		  }
-	case Tokens::MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #29
+	case MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #29
 		  {
 			  Statement();
 			  StatementTail();
 			  break;
 		  }
-	case Tokens::MP_FOR: //StatementSequence -> Statement StatementTail, rule #29
+	case MP_FOR: //StatementSequence -> Statement StatementTail, rule #29
 		  {
 			  Statement();
 			  StatementTail();
 			  break;
 		  }
-	case Tokens::MP_WHILE: //StatementSequence -> Statement StatementTail, rule #29
+	case MP_WHILE: //StatementSequence -> Statement StatementTail, rule #29
 		  {
 			  Statement();
 			  StatementTail();
@@ -561,9 +561,9 @@ void Parser::StatementTail()
 {
 	switch(lookahead)
 	{
-	case Tokens::MP_SCOLON://StatementTail -> ";" Statement StatementTail , rule #30
+	case MP_SCOLON://StatementTail -> ";" Statement StatementTail , rule #30
 		  {
-			  Match(Tokens::MP_SCOLON);
+			  Match(MP_SCOLON);
 			  Statement();
 			  StatementTail();
 			  break;
@@ -594,47 +594,47 @@ void Parser::Statement()
 	//		  EmptyStatement();
 	//		  break;
 	//	  }
-	case Tokens::MP_BEGIN: //Statement -> CompoundStatement, rule #33
+	case MP_BEGIN: //Statement -> CompoundStatement, rule #33
 		  {
 			  CompoundStatement();
 			  break;
 		  }
-	case Tokens::MP_READ: //Statement -> ReadStatement, rule #34
+	case MP_READ: //Statement -> ReadStatement, rule #34
 		  {
 			  ReadStatement();
 			  break;
 		  }
-	case Tokens::MP_WRITE: //Statement -> WriteStatement, rule #35
+	case MP_WRITE: //Statement -> WriteStatement, rule #35
 		  {
 			  WriteStatement();
 			  break;
 		  }
-	case Tokens::MP_ASSIGN: //Statement -> AssignmentStatement, rule #36
+	case MP_ASSIGN: //Statement -> AssignmentStatement, rule #36
 		  {
 			  AssignmentStatement();
 			  break;
 		  }
-	case Tokens::MP_IF: //Statement -> IfStatement, rule #37
+	case MP_IF: //Statement -> IfStatement, rule #37
 		  {
 			  IfStatement();
 			  break;
 		  }
-	case Tokens::MP_WHILE: //Statement -> WhileStatement, rule #38
+	case MP_WHILE: //Statement -> WhileStatement, rule #38
 		  {
 			  WhileStatement();
 			  break;
 		  }
-	case Tokens::MP_REPEAT: //Statement -> RepeatStatement, rule #39
+	case MP_REPEAT: //Statement -> RepeatStatement, rule #39
 		  {
 			  RepeatStatement();
 			  break;
 		  }
-	case Tokens::MP_FOR: //Statement -> ForStatement, rule #40
+	case MP_FOR: //Statement -> ForStatement, rule #40
 		  {
 			  ForStatement();
 			  break;
 		  }
-	case Tokens::MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #41
+	case MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #41
 		  {
 			  ProcedureStatement();
 			  break;
@@ -733,7 +733,7 @@ void Parser::WhileStatement()
 }
 
 
-void Parser::Match(Tokens token)//probably not correct syntax
+void Parser::Match(Token token)//probably not correct syntax
 {
 	//puts a token on the tree
 	//gets the next lookahead

@@ -10,32 +10,32 @@ Scanner::Scanner()
 	cols = 0;
 
 	// initialize the hash map of all our tokens
-	tokens["and"]		= "MP_AND";
-	tokens["begin"]		= "MP_BEGIN";
-	tokens["div"]		= "MP_DIV";
-	tokens["do"]		= "MP_DO";
-	tokens["downto"]	= "MP_DOWNTO";
-	tokens["else"]		= "MP_ELSE";
-	tokens["end"]		= "MP_END";
-	tokens["fixed"]		= "MP_FIXED";
-	tokens["float"]		= "MP_FLOAT";
-	tokens["for"]		= "MP_FOR";
-	tokens["function"]	= "MP_FUNCTION";
-	tokens["if"]		= "MP_IF";
-	tokens["integer"]	= "MP_INTEGER";
-	tokens["mod"]		= "MP_MOD";
-	tokens["not"]		= "MP_NOT";
-	tokens["or"]		= "MP_OR";
-	tokens["procedure"]	= "MP_PROCEDURE";
-	tokens["program"]	= "MP_PROGRAM";
-	tokens["read"]		= "MP_READ";
-	tokens["repeat"]	= "MP_REPEAT";
-	tokens["then"]		= "MP_THEN";
-	tokens["to"]		= "MP_TO";
-	tokens["until"]		= "MP_UNTIL";
-	tokens["var"]		= "MP_VAR";
-	tokens["while"]		= "MP_WHILE";
-	tokens["write"]		= "MP_WRITE";
+	tokens["and"]		= MP_AND;
+	tokens["begin"]		= MP_BEGIN;
+	tokens["div"]		= MP_DIV;
+	tokens["do"]		= MP_DO;
+	tokens["downto"]	= MP_DOWNTO;
+	tokens["else"]		= MP_ELSE;
+	tokens["end"]		= MP_END;
+	tokens["fixed"]		= MP_FIXED;
+	tokens["float"]		= MP_FLOAT;
+	tokens["for"]		= MP_FOR;
+	tokens["function"]	= MP_FUNCTION;
+	tokens["if"]		= MP_IF;
+	tokens["integer"]	= MP_INTEGER;
+	tokens["mod"]		= MP_MOD;
+	tokens["not"]		= MP_NOT;
+	tokens["or"]		= MP_OR;
+	tokens["procedure"]	= MP_PROCEDURE;
+	tokens["program"]	= MP_PROGRAM;
+	tokens["read"]		= MP_READ;
+	tokens["repeat"]	= MP_REPEAT;
+	tokens["then"]		= MP_THEN;
+	tokens["to"]		= MP_TO;
+	tokens["until"]		= MP_UNTIL;
+	tokens["var"]		= MP_VAR;
+	tokens["while"]		= MP_WHILE;
+	tokens["write"]		= MP_WRITE;
 	// to retrieve values from hash map --> string s = tokens["read"];
 	// string will be empty if the value is not in there
 }
@@ -89,7 +89,7 @@ bool Scanner::hasToken()
 	return false;
 }
 
-string Scanner::getToken()
+Token Scanner::getToken()
 {
 	/*
 		Reads the next available character and dispatches to the
@@ -98,7 +98,7 @@ string Scanner::getToken()
 	char next = peek();
 
 	// reset the TOKEN and LEXEME variables, FSA will set new values
-	token = "";
+	token = MP_NULL;
 	lexeme = "";
 
 	// which FSA to call 
@@ -113,7 +113,7 @@ string Scanner::getToken()
 	else if (ispunct(next))
 		handleSymbol();
 	else if (next == EOF) {
-		token = "MP_EOF";
+		token = MP_EOF;
 		lexeme = get();
 	}
 	
@@ -144,7 +144,7 @@ unsigned int Scanner::getColumnNumber()
 	return (cols - lexeme.length());
 };
 
-string Scanner::handleWord()
+Token Scanner::handleWord()
 {
 	/*
 		Parses input file to try to read an identifier or reserved word.
@@ -179,7 +179,7 @@ string Scanner::handleWord()
 		case 1:
 			// Accept state. 
 			accept = true;
-			token = "MP_IDENTIFIER";
+			token = MP_IDENTIFIER;
 			if (isalpha(next) || isdigit(next)){
 				state = 1;
 				next = get();
@@ -211,7 +211,7 @@ string Scanner::handleWord()
 
 	// check to see if lexeme == '_'
 	if (!accept && lexeme.size() == 1){
-		token = "MP_ERROR";
+		token = MP_ERROR;
 		return token;
 	}		
 	// must check to see if this lexeme is a reserved word or not
@@ -219,7 +219,7 @@ string Scanner::handleWord()
 	return token;
 }
 
-string Scanner::handleComment()
+Token Scanner::handleComment()
 {
 	/*
 		Parse input file to read in comments. 
@@ -242,14 +242,14 @@ string Scanner::handleComment()
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_COMMENT";
+				token = MP_COMMENT;
 				state = 1;
 			} 
 			else
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_ERROR";
+				token = MP_ERROR;
 				state = 2;
 			}
 			break;
@@ -258,14 +258,13 @@ string Scanner::handleComment()
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_COMMENT";
+				token = MP_COMMENT;
 				state = 2;
 			}
 			else if (next == '\n') // run on comment
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = "MP_RUN_COMMENT";
+				token = MP_RUN_COMMENT;
 				state = 2;
 			} 
 			else
@@ -283,7 +282,7 @@ string Scanner::handleComment()
 	return token;
 }
 
-string Scanner::handleString()
+Token Scanner::handleString()
 {
 	/*
 		Parse input file to try to read strings. 
@@ -306,14 +305,14 @@ string Scanner::handleString()
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_STRING";
+				token = MP_STRING;
 				state = 1;
 			} 
 			else 
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_ERROR";
+				token = MP_ERROR;
 				state = 2;			
 			}
 			break;
@@ -322,13 +321,13 @@ string Scanner::handleString()
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_STRING";
+				token = MP_STRING;
 				state = 2;
 			} 
 			else if (next == '\n')
 			{
 				//get(); // consume EOF
-				token = "MP_RUN_STRING";
+				token = MP_RUN_STRING;
 				state = 2;
 			}
 			else 
@@ -346,7 +345,7 @@ string Scanner::handleString()
 	return token;
 }
 
-string Scanner::handleNumberic()
+Token Scanner::handleNumberic()
 {
 	/*
 		Parse input file and try to read in a number identifier. 
@@ -370,7 +369,7 @@ string Scanner::handleNumberic()
 				next = get();
 				lexeme.push_back(next);
 				state = 1;
-				token = "MP_INTEGER_LIT";
+				token = MP_INTEGER_LIT;
 			} 
 			else 
 			{
@@ -384,7 +383,7 @@ string Scanner::handleNumberic()
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_INTEGER_LIT";
+				token = MP_INTEGER_LIT;
 			} 
 			else if (next == '.') 
 			{
@@ -404,7 +403,7 @@ string Scanner::handleNumberic()
 				next = get();
 				lexeme.push_back(next);
 				state = 3;
-				token = "MP_FIXED_LIT";
+				token = MP_FIXED_LIT;
 			}  
 			else 
 			{
@@ -448,7 +447,7 @@ string Scanner::handleNumberic()
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_FLOAT_LIT";
+				token = MP_FLOAT_LIT;
 			}
 			else
 			{
@@ -467,7 +466,7 @@ string Scanner::handleNumberic()
 	return token;
 };
 
-string Scanner::handleSymbol()
+Token Scanner::handleSymbol()
 {
 	/*
 		Parse input file and try to read they symbols.
@@ -562,7 +561,7 @@ string Scanner::handleSymbol()
 			{
 				//error=true;
 				lexeme.push_back(get());
-				token = "MP_ERROR";
+				token = MP_ERROR;
 				done=true;
 				accept=true;
 			}
@@ -570,55 +569,55 @@ string Scanner::handleSymbol()
 		//Trivial cases
 		case 1: //symbol is period
 			accept = true;
-			token = "MP_PERIOD";
+			token = MP_PERIOD;
 			done = true;
 			break;
 
 		case 2: //symbol is comma
 			accept = true;
-			token = "MP_COMMA";
+			token = MP_COMMA;
 			done = true;
 			break;
 
 		case 3: //symbol is semicolon
 			accept = true;
-			token = "MP_SCOLON";
+			token = MP_SCOLON;
 			done = true;
 			break;
 
 		case 4: //symbol is left paren
 			accept = true;
-			token = "MP_LPAREN";
+			token = MP_LPAREN;
 			done = true;
 			break;
 
 		case 5: //symbol is right paren
 			accept = true;
-			token = "MP_RPAREN";
+			token = MP_RPAREN;
 			done = true;
 			break;
 
 		case 6: //symbol is equal
 			accept = true;
-			token = "MP_PERIOD";
+			token = MP_PERIOD;
 			done = true;
 			break;
 
 		case 7: //symbol is plus
 			accept = true;
-			token = "MP_PLUS";
+			token = MP_PLUS;
 			done = true;
 			break;
 
 		case 8: //symbol is minus
 			accept = true;
-			token = "MP_MINUS";
+			token = MP_MINUS;
 			done = true;
 			break;
 
 		case 9: //symbol is times
 			accept = true;
-			token = "MP_TIMES";
+			token = MP_TIMES;
 			done = true;
 			break;
 
@@ -629,12 +628,12 @@ string Scanner::handleSymbol()
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_GEQUAL";
+				token = MP_GEQUAL;
 				done = true;
 			} 
 			else 
 			{
-				token = "MP_GTHAN";
+				token = MP_GTHAN;
 				done = true;
 			}
 			break;
@@ -644,19 +643,19 @@ string Scanner::handleSymbol()
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_LEQUAL";
+				token = MP_LEQUAL;
 				done = true;
 			} 
 			else if (next == '>') 
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_NEQUAL";
+				token = MP_NEQUAL;
 				done = true;
 			} 
 			else 
 			{
-				token = "MP_LTHAN";
+				token = MP_LTHAN;
 				done = true;
 			}
 			break;
@@ -666,12 +665,12 @@ string Scanner::handleSymbol()
 			{
 				next = get();
 				lexeme.push_back(next);
-				token = "MP_ASSIGN";
+				token = MP_ASSIGN;
 				done = true;
 			} 
 			else 
 			{
-				token="MP_COLON";
+				token = MP_COLON;
 				done = true;
 			}
 			break;
@@ -698,7 +697,7 @@ bool Scanner::isReservedWord(string word)
 	for (int i = 0; i < word.size(); i++)
 		w.at(i) = tolower(word.at(i));
 
-	unordered_map<string, string>::const_iterator got = tokens.find (w);
+	unordered_map<string, Token>::const_iterator got = tokens.find (w);
 	
 	if (got != tokens.end()) {
 		token = got->second;

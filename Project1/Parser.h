@@ -14,7 +14,7 @@ public:
 	~Parser(void);
 
 private:
-	Tokens lookahead;
+	Token lookahead;
 
 
 	void SystemGoal();
@@ -53,7 +53,7 @@ private:
 	void ForStatement();
 	void ProcedureStatement();
 	
-	void Match(Tokens);
+	void Match(Token);
 	void Error();
 };
 

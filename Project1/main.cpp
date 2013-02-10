@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include "Scanner.h"
+#include "Tokens.h"
 using namespace std;
 
 
@@ -17,7 +18,7 @@ int main ( int argc, char* argv[] )
 	while (dispatcher->hasToken())
 	{
 		// Keep on separate couts so that getToken() executes first
-		cout << setw(15) << left << dispatcher->getToken();
+		cout << setw(15) << left << EnumToString(dispatcher->getToken());
 		cout << setw(45);
 		
 		if (dispatcher->getLexeme().size() > 45){
@@ -29,7 +30,7 @@ int main ( int argc, char* argv[] )
 
 		cout << setw(8) << dispatcher->getLineNumber() << setw(8) << dispatcher->getColumnNumber() << endl;
 	}
-	cout << setw(15) << left << dispatcher->getToken() << setw(45) << dispatcher->getLexeme() 
+	cout << setw(15) << left << EnumToString(dispatcher->getToken()) << setw(45) << dispatcher->getLexeme() 
 		<< setw(8) << dispatcher->getLineNumber() << setw(8) << dispatcher->getColumnNumber() << endl << endl;
 
 	// press enter to exit
