@@ -1,4 +1,4 @@
-#include "mp.h"
+#include "Scanner.h"
 
 mp::mp()
 {
@@ -109,7 +109,7 @@ string mp::getToken()
 		handleNumberic();
 	else if (isalpha(next) || next=='_' ) // check for identifier
 		handleWord();
-	else if (next == '{') // handle comments first becuase {} are considered punctation C std lib
+	else if (next == '{' || next == '}') // handle comments first becuase {} are considered punctation C std lib
 		handleComment();
 	else if (ispunct(next))
 		handleSymbol();
@@ -237,6 +237,11 @@ string mp::handleComment()
 		if (next == EOF || next == '\n'){
 			get(); // consume EOF
 			token = "MP_RUN_COMMENT";
+			return token;
+		} else if (next == '}') {
+			// error detected. no starting comment brace. return error
+			lexeme.push_back(next);
+			token = "MP_ERROR";
 			return token;
 		} else {
 			lexeme.push_back(next);

@@ -1,46 +1,25 @@
-// Driver for the parser
-#include <iostream>
-#include <iomanip>
-#include "mp.h"
-using namespace std;
+#include "Parser.h"
 
-// note, use tokens as defined in http://www.cs.montana.edu/ross/classes/spring2008/cs450/pages/resources/tokens.html
 
-//deliberately left empty for now
-parser::parser(){}
-
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
-parser::SystemGoal()
+Parser::Parser(void)
 {
-	switch(lookahead)
-	{
-	case: MP_PROGRAM //SystemGoal --> Program eof, rule #1     
-		  {
-			  Program();
-			  Match("MP_EOF");
-			  break();
-		  }
-	default: //everything else
-		{
-			Error();
-			break;
-		}
-	}
+}
+
+
+Parser::~Parser(void)
+{
 }
 
 // precondition: (not sure what this should be, but is necessary)
 // postcondition: (not sure what this should be, but is necessary)
-parser::Program()
+void Parser::SystemGoal()
 {
 	switch(lookahead)
 	{
-	case: MP_PROGRAM //Program --> ProgramHeading ";" Block ".", rule #2 
+	case MP_PROGRAM: //SystemGoal --> Program eof, rule #1     
 		  {
-			  ProgramHeading();
-			  Match(MP_SCOLON);
-			  Block();
-			  Match(MP_PERIOD);
+			  Program();
+			  Match(Tokens::MP_EOF);
 			  break;
 		  }
 	default: //everything else
@@ -53,14 +32,36 @@ parser::Program()
 
 // precondition: (not sure what this should be, but is necessary)
 // postcondition: (not sure what this should be, but is necessary)
-parser::ProgramHeading()
+void Parser::Program()
 {
 	switch(lookahead)
 	{
-	case: //ProgramHeading  --> "program" ProgramIdentifier, rule #3 
+	case MP_PROGRAM: //Program --> ProgramHeading ";" Block ".", rule #2 
+		  {
+			  ProgramHeading();
+			  Match(Tokens::MP_SCOLON);
+			  Block();
+			  Match(Tokens::MP_PERIOD);
+			  break;
+		  }
+	default: //everything else
+		{
+			Error();
+			break;
+		}
+	}
+}
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ProgramHeading()
+{
+	switch(lookahead)
+	{
+	case Tokens::MP_PROGRAM: //ProgramHeading  --> "program" ProgramIdentifier, rule #3 
 		{
 			ProgramHeading();
-			Match(MP_PROGRAM);
+			Match(Tokens::MP_PROGRAM);
 			ProgramIdentifier();
 			break;
 		}
@@ -76,17 +77,17 @@ parser::ProgramHeading()
 // here "lookahead" is the lookahead token. We should enumerate the tokens so that they can be used in switch statements
 // precondition: (not sure what this should be, but is necessary)
 // postcondition: (not sure what this should be, but is necessary)
-parser::block()
+void Parser::Block()
 {
 	switch (lookahead)
 	{
-	case MP_VAR: // when MP_VAR Block -> "var" VariableDeclarationPart ";" VariableDeclarationTail, rule #4
+	case Tokens::MP_VAR: // when MP_VAR Block -> "var" VariableDeclarationPart ";" VariableDeclarationTail, rule #4
 		{
-			Match(MP_VAR);
+			Match(Tokens::MP_VAR);
 			VariableDeclarationPart();
-			Match(MP_SCOLON);
+			Match(Tokens::MP_SCOLON);
 			VariableDeclarationTail();
-			break();
+			break;
 		}
 	default: //everything else
 		{
@@ -94,545 +95,651 @@ parser::block()
 			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::VariableDeclarationPart()
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::VariableDeclarationPart()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_VAR: //VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail, rule #5
+		  {
+			  Match(Tokens::MP_VAR);
+			  VariableDeclaration();
+			  Match(Tokens::MP_SCOLON);
+			  VariableDeclarationTail();
+			  break;
+		  }
+	default: //everything else
 		{
-		case: MP_VAR //VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail, rule #5
-			  {
-				  Match(MP_VAR);
-				  variableDeclaration();
-				  Match(MP_SCOLON);
-				  VariableDeclarationTail();
-				  break();
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::VariableDeclarationTail()
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::VariableDeclarationTail()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_IDENTIFIER: // VariableDeclarationTail  --> VariableDeclaration ";" VariableDeclarationTail, rule #6
+		  {
+			  VariableDeclaration();
+			  Match(Tokens::MP_SCOLON);
+			  VariableDeclarationTail();
+			  break;
+		  }
+		  // VVV This will be filled in after some more careful analysis of the grammar VVV
+		  // TODO: Fill this in
+	//case: ?? // VariableDeclarationTail -> e, rule #7
+	//	  {
+	//		  break;
+	//	  }
+		  // ^^^ This will be filled in after some more careful analysis of the grammar ^^^
+	default: //everything else
 		{
-		case: MP_IDENTIFIER // VariableDeclarationTail  --> VariableDeclaration ";" VariableDeclarationTail, rule #6
-			  {
-				  variableDeclaration();
-				  Match(MP_SCOLON);
-				  VariableDeclarationTail();
-				  break();
-			  }
-			  // VVV This will be filled in after some more careful analysis of the grammar VVV
-		case: ?? // VariableDeclarationTail -> e, rule #7
-			  {
-				  break;
-			  }
-			  // ^^^ This will be filled in after some more careful analysis of the grammar ^^^
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::VariableDeclaration()
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::VariableDeclaration()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_IDENTIFIER: // VariableDeclaration -> Identifierlist ":" Type , rule #8
+		  {
+			  IdentifierList();
+			  Match(Tokens::MP_COLON);
+			  Type();
+			  break;
+		  }
+	default: //everything else
 		{
-		case: MP_IDENTIFIER // VariableDeclaration -> Identifierlist ":" Type , rule #8
-			  {
-				  Identifierlist();
-				  Match(MP_COLON);
-				  Type();
-				  break();
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::Type()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::Type()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_INTEGER_LIT: //Type -> "Integer", rule #9
+		  {
+			  Match(Tokens::MP_INTEGER_LIT);
+			  break;
+		  }
+	case Tokens::MP_FLOAT_LIT: //Type -> "Float", rule #10
+		  {
+			  Match(Tokens::MP_FLOAT_LIT);
+			  break;
+		  }
+		  // I can't find Boolean in the list of tokens even though it's indicated as a token in the grammar
+		  // TODO: Define boolean if in the grammar or not
+	//case: BOOLEAN //Type -> "Boolean", rule #11
+	//	  {
+	//		  Match(boolean);
+	//		  break;
+	//	  }
+	default: //everything else
 		{
-		case: MP_INTEGER_LIT //Type -> "Integer", rule #9
-			  {
-				  Match(MP_INTEGER_LIT);
-				  break;
-			  }
-		case: MP_FLOAT_LIT //Type -> "Float", rule #10
-			  {
-				  Match(MP_FLOAT_LIT);
-				  break;
-			  }
-			  // I can't find Boolean in the list of tokens even though it's indicated as a token in the grammar
-		case: boolean //Type -> "Boolean", rule #11
-			  {
-				  Match(boolean);
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::ProcedureAndFunctionDeclarationPart()
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ProcedureAndFunctionDeclarationPart()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_PROCEDURE: //ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart, rule #12 
+		  {
+			  ProcedureDeclaration();
+			  ProcedureAndFunctionDeclarationPart();
+			  break;
+		  }
+	case Tokens::MP_FUNCTION: //ProcedureAndFunctionDeclarationPart -> FunctionDeclaration ProcedureAndFunctionDeclarationPart, rule #13
+		  {
+			  FunctionDeclaration();
+			  ProcedureAndFunctionDeclarationPart();
+			  break;
+		  }
+	//case: ?? //ProcedureAndFunctionDeclarationPart -> e, rule #14
+	//	  {
+	//		  break;
+	//	  }
+	default: //everything else
 		{
-		case: MP_PROCEDURE //ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart, rule #12 
-			  {
-				  ProcedureDeclaration();
-				  ProcedureAndFunctionDeclarationPart();
-				  break;
-			  }
-		case: MP_FUNCTION //ProcedureAndFunctionDeclarationPart -> FunctionDeclaration ProcedureAndFunctionDeclarationPart, rule #13
-			  {
-				  FunctionDeclaration();
-				  ProcedureAndFunctionDeclarationPart();
-				  break;
-			  }
-		case: ?? //ProcedureAndFunctionDeclarationPart -> e, rule #14
-			  {
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::ProcedureDeclaration()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ProcedureDeclaration()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
-		{
-		case: MP_PROCEDURE //ProcedureHeading ";" Block ";", rule #15
-			  {
-				  ProcedureHeading();
-				  Match(MP_SCOLON);
-				  Block();
-				  Match(MP_SCOLON);
-				  break;
-			  }
-		default: //everything else
+	case Tokens::MP_PROCEDURE: //ProcedureHeading ";" Block ";", rule #15
 			{
-				Error();
+				ProcedureHeading();
+				Match(Tokens::MP_SCOLON);
+				Block();
+				Match(Tokens::MP_SCOLON);
 				break;
 			}
+	default: //everything else
+		{
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::FunctionDeclaration()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::FunctionDeclaration()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_PROCEDURE: //FunctionDeclaration -> FunctionHeading ";" Block ";", rule #16
+		  {
+			  FunctionHeading();
+			  Match(Tokens::MP_SCOLON);
+			  Block();
+			  Match(Tokens::MP_SCOLON);
+			  break;
+		  }
+	default: //everything else
 		{
-		case: MP_PROCEDURE //FunctionDeclaration -> FunctionHeading ";" Block ";", rule #16
-			  {
-				  Functionheading();
-				  Match(MP_SCOLON);
-				  Block();
-				  Match(MP_SCOLON);
-				  break;
-			  }
-		default: //everything else
+			Error();
+			break;
+		}
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ProcedureHeading()
+{
+	switch(lookahead)
+	{
+	case Tokens::MP_PROCEDURE: //ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList, rule #17
+		  {
+			  Match(Tokens::MP_PROCEDURE);
+			  ProcedureIdentifier();
+			  OptionalFormalParameterList();
+			  break;
+		  }
+	default: //everything else
+		{
+			Error();
+			break;
+		}
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::FunctionHeading()
+{
+	switch(lookahead)
+	{
+	case Tokens::MP_FUNCTION: //FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type, rule #18
+		  {
+			  Match(Tokens::MP_FUNCTION);
+			  FunctionIdentifier();
+			  OptionalFormalParameterList();
+			  Match(Tokens::MP_COLON);
+			  Type();
+			  break;
+		  }
+	default: //everything else
+		{
+			Error();
+			break;
+		}
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::OptionalFormalParameterList()
+{
+	switch(lookahead)
+	{
+	case Tokens::MP_LPAREN: //OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")", rule #19
 			{
-				Error();
+				Match(Tokens::MP_LPAREN);
+				FormalParameterSection();
+				FormalParameterSectionTail();
+				Match(Tokens::MP_RPAREN);
 				break;
 			}
+			// TODO: Need to define what this is
+	//case: ?? //OptionalFormalParameterList -> e, rule #20
+	//		{
+	//			break;
+	//		}
+	default: //everything else
+		{
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::ProcedureHeading()
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::FormalParameterSectionTail()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
-		{
-		case: MP_PROCEDURE //ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList, rule #17
-			  {
-				  Match(MP_PROCEDURE);
-				  procedureIdentifier();
-				  OptionalFormalParameterList();
-				  break;
-			  }
-		default: //everything else
+	case Tokens::MP_SCOLON: //FormalParameterSectionTail -> ";" FormalParameterSection FormalParameterSectionTail , rule #21
 			{
-				Error();
+				Match(Tokens::MP_SCOLON);
+				FormalParameterSection();
+				FormalParameterSectionTail();
 				break;
 			}
-		}
-	}
-
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::FunctionHeading()
-	{
-		switch(lookahead)
+			// TODO: Need to define what this is
+	//case: ?? //FormalParameterSectionTail -> e, rule #22
+	//		{
+	//			break;
+	//		}
+	default: //everything else
 		{
-		case: MP_FUNCTION //FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type, rule #18
-			  {
-				  Match(MP_FUNCTION);
-				  functionIdentifier();
-				  OptionalFormalParameterList();
-				  Match(MP_COLON);
-				  Type();
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::OptionalFormalParameterList()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::FormalParameterSection()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_VAR: // FormalParameterSection -> VariableParameterSection, rule #24
+		  {
+			  VariableParameterSection();
+			  break;
+		  }
+	case Tokens::MP_IDENTIFIER:// FormalParameterSection -> ValueParameterSection, rule #23 
+		  {
+			  ValueParameterSection();
+			  break;
+		  }
+	default: //everything else
 		{
-		case: MP_LPAREN //OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")", rule #19
-			  {
-				  Match(MP_LPAREN);
-				  FormalParameterSection();
-				  FormalParameterSectionTail();
-				  Match(MP_RPAREN);
-				  break;
-			  }
-		case: ?? //OptionalFormalParameterList -> e, rule #20
-			  {
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::FormalParameterSectionTail()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ValueParameterSection()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_IDENTIFIER:// ValueParameterSection -> IdentifierList ":" Type, rule #25
+		  {
+			  IdentifierList();
+			  Match(Tokens::MP_COLON);
+			  Type();
+			  break;
+		  }
+	default: //everything else
 		{
-		case: MP_SCOLON //FormalParameterSectionTail -> ";" FormalParameterSection FormalParameterSectionTail , rule #21
-			  {
-				  Match(MP_SCOLON);
-				  FormalParameterSection();
-				  FormalParameterSectionTail();
-				  break;
-			  }
-		case: ?? //FormalParameterSectionTail -> e, rule #22
-			  {
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::FormalParameterSection()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::VariableParameterSection()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_VAR:// VariableParameterSection -> "var" IdentifierList ":" Type, rule #26
+		  {
+			  Match(Tokens::MP_VAR);
+			  IdentifierList();
+			  Match(Tokens::MP_COLON);
+			  Type();
+			  break;
+		  }
+	default: //everything else
 		{
-		case: MP_VAR// FormalParameterSection -> VariableParameterSection, rule #24
-			  {
-				  VariableParameterSection();
-				  break;
-			  }
-		case: MP_IDENTIFIER// FormalParameterSection -> ValueParameterSection, rule #23 
-			  {
-				  ValueParameterSection();
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::ValueParameterSection()
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::StatementPart()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_BEGIN: //StatementPart -> CompoundStatement, rule #27
+		  {
+			  CompoundStatement();
+			  break;
+		  }
+	default: //everything else
 		{
-		case: MP_IDENTIFIER// ValueParameterSection -> IdentifierList ":" Type, rule #25
-			  {
-				  IdentifierList();
-				  Match(MP_COLON);
-				  Type();
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::VariableParameterSection()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::CompoundStatement()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_BEGIN: //CompoundStatement -> "begin" StatementSequence "end", rule #28
+		  {
+			  Match(Tokens::MP_BEGIN);
+			  StatementSequence();
+			  Match(Tokens::MP_END);
+			  break;
+		  }
+	default: //everything else
 		{
-		case: MP_VAR// VariableParameterSection -> "var" IdentifierList ":" Type, rule #26
-			  {
-				  Match(MP_VAR);
-				  IdentifierList();
-				  Match(MP_COLON);
-				  Type();
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::StatementPart()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::StatementSequence()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_BEGIN: //StatementSequence -> Statement StatementTail, rule #29
+		  {
+			  Statement();
+			  StatementTail();
+			  break;
+		  }
+	case Tokens::MP_READ: //StatementSequence -> Statement StatementTail, rule #29
+		  {
+			  Statement();
+			  StatementTail();
+			  break;
+		  }
+	case Tokens::MP_WRITE: //StatementSequence -> Statement StatementTail, rule #29
+		  {
+			  Statement();
+			  StatementTail();
+			  break;
+		  }
+	case Tokens::MP_IF: //StatementSequence -> Statement StatementTail, rule #29
+		  {
+			  Statement();
+			  StatementTail();
+			  break;
+		  }
+	case Tokens::MP_REPEAT: //StatementSequence -> Statement StatementTail, rule #29
+		  {
+			  Statement();
+			  StatementTail();
+			  break;
+		  }
+	case Tokens::MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #29
+		  {
+			  Statement();
+			  StatementTail();
+			  break;
+		  }
+	case Tokens::MP_FOR: //StatementSequence -> Statement StatementTail, rule #29
+		  {
+			  Statement();
+			  StatementTail();
+			  break;
+		  }
+	case Tokens::MP_WHILE: //StatementSequence -> Statement StatementTail, rule #29
+		  {
+			  Statement();
+			  StatementTail();
+			  break;
+		  }
+		  // TODO: Need to define what this is
+	/*case: ??
+		  {
+		  }*/
+	default: //everything else
 		{
-		case: MP_BEGIN //StatementPart -> CompoundStatement, rule #27
-			  {
-				  CompoundStatement();
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::CompoundStatement()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::StatementTail()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+	case Tokens::MP_SCOLON://StatementTail -> ";" Statement StatementTail , rule #30
+		  {
+			  Match(Tokens::MP_SCOLON);
+			  Statement();
+			  StatementTail();
+			  break;
+		  }
+		  // TODO: Need to define what this is
+	//case: ??// StatementTail -> e, rule #31
+	//	  {
+	//		  break;
+	//	  }
+	default: //everything else
 		{
-		case: MP_BEGIN //CompoundStatement -> "begin" StatementSequence "end", rule #28
-			  {
-				  Match(MP_BEGIN);
-				  StatementSequence();
-				  Match(MP_END);
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::StatementSequence()
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::Statement()
+{
+	switch(lookahead)
 	{
-		switch(lookahead)
+		// TODO: Need to define what this is
+	//case: ?? //Statement -> EmptyStatement, rule #32
+	//	  {
+	//		  EmptyStatement();
+	//		  break;
+	//	  }
+	case Tokens::MP_BEGIN: //Statement -> CompoundStatement, rule #33
+		  {
+			  CompoundStatement();
+			  break;
+		  }
+	case Tokens::MP_READ: //Statement -> ReadStatement, rule #34
+		  {
+			  ReadStatement();
+			  break;
+		  }
+	case Tokens::MP_WRITE: //Statement -> WriteStatement, rule #35
+		  {
+			  WriteStatement();
+			  break;
+		  }
+	case Tokens::MP_ASSIGN: //Statement -> AssignmentStatement, rule #36
+		  {
+			  AssignmentStatement();
+			  break;
+		  }
+	case Tokens::MP_IF: //Statement -> IfStatement, rule #37
+		  {
+			  IfStatement();
+			  break;
+		  }
+	case Tokens::MP_WHILE: //Statement -> WhileStatement, rule #38
+		  {
+			  WhileStatement();
+			  break;
+		  }
+	case Tokens::MP_REPEAT: //Statement -> RepeatStatement, rule #39
+		  {
+			  RepeatStatement();
+			  break;
+		  }
+	case Tokens::MP_FOR: //Statement -> ForStatement, rule #40
+		  {
+			  ForStatement();
+			  break;
+		  }
+	case Tokens::MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #41
+		  {
+			  ProcedureStatement();
+			  break;
+		  }
+
+	default: //everything else
 		{
-		case: MP_BEGIN //StatementSequence -> Statement StatementTail, rule #29
-			  {
-				  Statement();
-				  StatementTail();
-				  break;
-			  }
-		case: MP_READ //StatementSequence -> Statement StatementTail, rule #29
-			  {
-				  Statement();
-				  StatementTail();
-				  break;
-			  }
-		case: MP_WRITE //StatementSequence -> Statement StatementTail, rule #29
-			  {
-				  Statement();
-				  StatementTail();
-				  break;
-			  }
-		case: MP_IF //StatementSequence -> Statement StatementTail, rule #29
-			  {
-				  Statement();
-				  StatementTail();
-				  break;
-			  }
-		case: MP_REPEAT //StatementSequence -> Statement StatementTail, rule #29
-			  {
-				  Statement();
-				  StatementTail();
-				  break;
-			  }
-		case: MP_IDENTIFIER //StatementSequence -> Statement StatementTail, rule #29
-			  {
-				  Statement();
-				  StatementTail();
-				  break;
-			  }
-		case: MP_FOR //StatementSequence -> Statement StatementTail, rule #29
-			  {
-				  Statement();
-				  StatementTail();
-				  break;
-			  }
-		case: MP_WHILE //StatementSequence -> Statement StatementTail, rule #29
-			  {
-				  Statement();
-				  StatementTail();
-				  break;
-			  }
-		case: ??
-			  {
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
+			Error();
+			break;
 		}
 	}
+}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::StatementTail()
-	{
-		switch(lookahead)
-		{
-		case: MP_SCOLON//StatementTail -> ";" Statement StatementTail , rule #30
-			  {
-				  Match(MP_SCOLON);
-				  Statement();
-				  StatementTail();
-				  break;
-			  }
-		case: ??// StatementTail -> e, rule #31
-			  {
-				  break;
-			  }
-		default: //everything else
-			{
-				Error();
-				break;
-			}
-		}
-	}
 
-	// precondition: (not sure what this should be, but is necessary)
-	// postcondition: (not sure what this should be, but is necessary)
-	parser::Statement()
-	{
-		switch(lookahead)
-		{
-		case: ?? //Statement -> EmptyStatement, rule #32
-			  {
-				  EmptyStatement();
-				  break;
-			  }
-		case: MP_BEGIN //Statement -> CompoundStatement, rule #33
-			  {
-				  CompoundStatement();
-				  break;
-			  }
-		case: MP_READ //Statement -> ReadStatement, rule #34
-			  {
-				  ReadStatement();
-				  break;
-			  }
-		case: MP_WRITE //Statement -> WriteStatement, rule #35
-			  {
-				  WriteStatement();
-				  break;
-			  }
-		case: MP_ASSIGN //Statement -> AssignmentStatement, rule #36
-			  {
-				  AssignmentStatement();
-				  break;
-			  }
-		case: MP_IF //Statement -> IfStatement, rule #37
-			  {
-				  IfStatement();
-				  break;
-			  }
-		case: MP_WHILE //Statement -> WhileStatement, rule #38
-			  {
-				  WhileStatement();
-				  break;
-			  }
-		case: MP_REPEAT //Statement -> RepeatStatement, rule #39
-			  {
-				  RepeatStatement();
-				  break;
-			  }
-		case: MP_FOR //Statement -> ForStatement, rule #40
-			  {
-				  ForStatement();
-				  break;
-			  }
-		case: MP_IDENTIFIER //Statement -> ProcedureStatement, rule #41
-			  {
-				  ProcedureStatement();
-				  break;
-			  }
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::AssignmentStatement()
+{
+}
 
-		default: //everything else
-			{
-				Error();
-				break;
-			}
-		}
-	}
 
-	parser::match(enum token)//probably not correct syntax
-	{
-		//puts a token on the tree
-		//gets the next lookahead
-	}
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ForStatement()
+{
+}
 
-	parser::Error()
-	{
-		//stops everything and gives a meaningful error message 
-	}
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::FunctionIdentifier()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::IdentifierList()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::IfStatement()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ProcedureIdentifier()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ProcedureStatement()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ProgramIdentifier()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ReadStatement()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::WriteStatement()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::RepeatStatement()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::WhileStatement()
+{
+}
+
+
+void Parser::Match(Tokens token)//probably not correct syntax
+{
+	//puts a token on the tree
+	//gets the next lookahead
+}
+
+void Parser::Error()
+{
+	//stops everything and gives a meaningful error message 
+}
