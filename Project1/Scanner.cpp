@@ -1,6 +1,6 @@
 #include "Scanner.h"
 
-mp::mp()
+Scanner::Scanner()
 {
 	/*
 		Constructor. Initialize the lines and columns counters. 
@@ -40,13 +40,13 @@ mp::mp()
 	// string will be empty if the value is not in there
 }
 
-mp::~mp(void)
+Scanner::~Scanner(void)
 {
 	// Destructor. Release resources (file pointer)
 	file.close();
 }
 
-bool mp::openFile(const char* fName)
+bool Scanner::openFile(const char* fName)
 {
 	/*
 		Open file and initialize the file pointer
@@ -62,7 +62,7 @@ bool mp::openFile(const char* fName)
 	return false;
 }
 
-bool mp::hasToken()
+bool Scanner::hasToken()
 {
 	/*
 		Scanns the input to see if there is a character left. 
@@ -89,12 +89,12 @@ bool mp::hasToken()
 	return false;
 }
 
-string mp::getToken()
+string Scanner::getToken()
 {
 	/*
 		Reads the next available character and dispatches to the
 		appropriate FSA for them to parse. 
-	*/
+	*/		
 	char next = peek();
 
 	// reset the TOKEN and LEXEME variables, FSA will set new values
@@ -120,7 +120,7 @@ string mp::getToken()
 	return token; 
 };
 
-string mp::getLexeme()
+string Scanner::getLexeme()
 {
 	/*
 		Returns the last lexeme that was filled in
@@ -128,7 +128,7 @@ string mp::getLexeme()
 	return lexeme;
 };
 
-unsigned int mp::getLineNumber()
+unsigned int Scanner::getLineNumber()
 {
 	/*
 		Returns the current line number
@@ -136,7 +136,7 @@ unsigned int mp::getLineNumber()
 	return lines;
 };
 
-unsigned int mp::getColumnNumber()
+unsigned int Scanner::getColumnNumber()
 {
 	/*
 		Returns the current column counter from the start of the lexeme. 
@@ -144,7 +144,7 @@ unsigned int mp::getColumnNumber()
 	return (cols - lexeme.length());
 };
 
-string mp::handleWord()
+string Scanner::handleWord()
 {
 	/*
 		Parses input file to try to read an identifier or reserved word.
@@ -219,7 +219,7 @@ string mp::handleWord()
 	return token;
 }
 
-string mp::handleComment()
+string Scanner::handleComment()
 {
 	/*
 		Parse input file to read in comments. 
@@ -283,7 +283,7 @@ string mp::handleComment()
 	return token;
 }
 
-string mp::handleString()
+string Scanner::handleString()
 {
 	/*
 		Parse input file to try to read strings. 
@@ -346,7 +346,7 @@ string mp::handleString()
 	return token;
 }
 
-string mp::handleNumberic()
+string Scanner::handleNumberic()
 {
 	/*
 		Parse input file and try to read in a number identifier. 
@@ -467,7 +467,7 @@ string mp::handleNumberic()
 	return token;
 };
 
-string mp::handleSymbol()
+string Scanner::handleSymbol()
 {
 	/*
 		Parse input file and try to read they symbols.
@@ -687,7 +687,7 @@ string mp::handleSymbol()
 	return token;
 };
 
-bool mp::isReservedWord(string word)
+bool Scanner::isReservedWord(string word)
 {
 	/*
 		Checks the string to see if it is a reserved word. 
@@ -708,7 +708,7 @@ bool mp::isReservedWord(string word)
 	return false;
 }
 
-char mp::peek()
+char Scanner::peek()
 {
 	/*
 		Returns the character that would be consumed next.
@@ -716,7 +716,7 @@ char mp::peek()
 	return file.peek();
 }
 
-char mp::get()
+char Scanner::get()
 {
 	/*
 		Returns the next available character in the file pointer. 
@@ -726,7 +726,7 @@ char mp::get()
 	return n;
 }
 
-void mp::seek(int n)
+void Scanner::seek(int n)
 {
 	/*
 		Moves forward or backward in the file pointer. 

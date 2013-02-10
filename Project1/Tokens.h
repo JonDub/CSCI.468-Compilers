@@ -1,5 +1,7 @@
 #pragma once
 
+#define stringify( name ) # name
+
 enum Tokens
 {
 	MP_AND = 0,

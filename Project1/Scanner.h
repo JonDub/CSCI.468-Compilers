@@ -3,13 +3,14 @@
 #include <unordered_map>
 #include <string>
 #include <fstream>
+#include "Tokens.h"
 using namespace std;
 
-class mp
+class Scanner
 {
 public:
-	mp(void);
-	virtual ~mp(void);
+	Scanner(void);
+	virtual ~Scanner(void);
 
 	bool openFile(const char*);
 	string getToken();

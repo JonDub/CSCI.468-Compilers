@@ -10,7 +10,7 @@ int main ( int argc, char* argv[] )
 	// name of the file to parse through
 	const char* fName = argv[1];
 
-	mp* dispatcher = new mp();
+	Scanner* dispatcher = new Scanner();
 	dispatcher->openFile(fName);
 
 	cout << setw(15) << left << "Token" << setw(45) << "Lexeme" << setw(8) << "Line #" << setw(8) << "Column #" << endl;
