@@ -229,29 +229,59 @@ string mp::handleComment()
 		is returned. 
 		Comments must stay on the same line also. 
 	*/
-	char next = peek();
+	char next;
+	bool done = false;
+	int state = 0;
 
-	while (next != '}')
+	while (!done)
 	{
-		if (next == EOF || next == '\n'){
-			get(); // consume EOF
-			token = "MP_RUN_COMMENT";
-			return token;
-		} else if (next == '}') {
-			// error detected. no starting comment brace. return error
-			lexeme.push_back(next);
-			token = "MP_ERROR";
-			return token;
-		} else {
-			lexeme.push_back(next);
-			get();
-		}
 		next = peek();
+
+		switch (state)
+		{
+		case 0:
+			if (next == '{')
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_COMMENT";
+				state = 1;
+			} 
+			else
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_ERROR";
+				state = 2;
+			}
+			break;
+		case 1:
+			if (next == '}') // end comment
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_COMMENT";
+				state = 2;
+			}
+			else if (next == '\n') // run on comment
+			{
+				next = get();
+				lexeme.push_back(next);
+				token = "MP_RUN_COMMENT";
+				state = 2;
+			} 
+			else
+			{
+				next = get();
+				lexeme.push_back(next);
+			}
+			break;
+		case 2:
+			done = true;
+			break;
+		}
 	}
-	// consume the closing }
-	lexeme.push_back(next);
-	next = get();
-	token = "MP_COMMENT";
+
 	return token;
 }
 

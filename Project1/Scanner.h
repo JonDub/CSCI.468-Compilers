@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <string>
 #include <fstream>
-#include <ctype.h>
 using namespace std;
 
 class mp

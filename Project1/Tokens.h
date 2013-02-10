@@ -1,7 +1,4 @@
-
-#ifndef TOKENS_H
-#define TOKENS_H
-
+#pragma once
 
 enum Tokens
 {
@@ -42,6 +39,3 @@ enum Tokens
 	MP_WHILE,
 	MP_WRITE
 };
-
-
-#endif
