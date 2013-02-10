@@ -152,13 +152,12 @@ string mp::handleWord()
 	*/
 	bool done = false;
 	bool accept = false;
-	char next;
 	int state = 0;
 
 	while (!done)
 	{
 		// see whats next, dont consume
-		next = peek();
+		char next = peek();
 
 		switch (state)
 		{
@@ -229,13 +228,12 @@ string mp::handleComment()
 		is returned. 
 		Comments must stay on the same line also. 
 	*/
-	char next;
 	bool done = false;
 	int state = 0;
 
 	while (!done)
 	{
-		next = peek();
+		char next = peek();
 
 		switch (state)
 		{
@@ -294,13 +292,12 @@ string mp::handleString()
 		is returned. 
 		Strings must stay on the same line. 
 	*/
-	char next;
 	bool done = false;
 	int state = 0;
 
 	while (!done)
 	{
-		next = peek();
+		char next = peek();
 
 		switch (state)
 		{
