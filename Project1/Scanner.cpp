@@ -6,7 +6,6 @@ mp::mp()
 		Constructor. Initialize the lines and columns counters. 
 		Setup and populate the TOKENS hash map with reserved words.
 	*/
-
 	lines = 0;
 	cols = 0;
 
@@ -14,25 +13,25 @@ mp::mp()
 	tokens["and"]		= "MP_AND";
 	tokens["begin"]		= "MP_BEGIN";
 	tokens["div"]		= "MP_DIV";
-	tokens["do"]			= "MP_DO";
-	tokens["downto"]		= "MP_DOWNTO";
+	tokens["do"]		= "MP_DO";
+	tokens["downto"]	= "MP_DOWNTO";
 	tokens["else"]		= "MP_ELSE";
 	tokens["end"]		= "MP_END";
 	tokens["fixed"]		= "MP_FIXED";
 	tokens["float"]		= "MP_FLOAT";
 	tokens["for"]		= "MP_FOR";
 	tokens["function"]	= "MP_FUNCTION";
-	tokens["if"]			= "MP_IF";
+	tokens["if"]		= "MP_IF";
 	tokens["integer"]	= "MP_INTEGER";
 	tokens["mod"]		= "MP_MOD";
 	tokens["not"]		= "MP_NOT";
-	tokens["or"]			= "MP_OR";
+	tokens["or"]		= "MP_OR";
 	tokens["procedure"]	= "MP_PROCEDURE";
 	tokens["program"]	= "MP_PROGRAM";
 	tokens["read"]		= "MP_READ";
-	tokens["repeat"]		= "MP_REPEAT";
+	tokens["repeat"]	= "MP_REPEAT";
 	tokens["then"]		= "MP_THEN";
-	tokens["to"]			= "MP_TO";
+	tokens["to"]		= "MP_TO";
 	tokens["until"]		= "MP_UNTIL";
 	tokens["var"]		= "MP_VAR";
 	tokens["while"]		= "MP_WHILE";
