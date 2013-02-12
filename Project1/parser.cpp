@@ -495,47 +495,12 @@ void Parser::StatementSequence()
 	switch(lookahead)
 	{
 	case MP_BEGIN: //StatementSequence -> Statement StatementTail, rule #29
-		  {
-			  Statement();
-			  StatementTail();
-			  break;
-		  }
 	case MP_READ: //StatementSequence -> Statement StatementTail, rule #29
-		  {
-			  Statement();
-			  StatementTail();
-			  break;
-		  }
 	case MP_WRITE: //StatementSequence -> Statement StatementTail, rule #29
-		  {
-			  Statement();
-			  StatementTail();
-			  break;
-		  }
 	case MP_IF: //StatementSequence -> Statement StatementTail, rule #29
-		  {
-			  Statement();
-			  StatementTail();
-			  break;
-		  }
 	case MP_REPEAT: //StatementSequence -> Statement StatementTail, rule #29
-		  {
-			  Statement();
-			  StatementTail();
-			  break;
-		  }
 	case MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #29
-		  {
-			  Statement();
-			  StatementTail();
-			  break;
-		  }
 	case MP_FOR: //StatementSequence -> Statement StatementTail, rule #29
-		  {
-			  Statement();
-			  StatementTail();
-			  break;
-		  }
 	case MP_WHILE: //StatementSequence -> Statement StatementTail, rule #29
 		  {
 			  Statement();
@@ -639,7 +604,6 @@ void Parser::Statement()
 			  ProcedureStatement();
 			  break;
 		  }
-
 	default: //everything else
 		{
 			Error();

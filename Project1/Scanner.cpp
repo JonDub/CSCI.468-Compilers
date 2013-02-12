@@ -10,6 +10,7 @@ Scanner::Scanner()
 	cols = 0;
 
 	// initialize the hash map of all our tokens
+	// to retrieve values from hash map --> Token t = tokens["read"];
 	tokens["and"]		= MP_AND;
 	tokens["begin"]		= MP_BEGIN;
 	tokens["div"]		= MP_DIV;
@@ -36,8 +37,6 @@ Scanner::Scanner()
 	tokens["var"]		= MP_VAR;
 	tokens["while"]		= MP_WHILE;
 	tokens["write"]		= MP_WRITE;
-	// to retrieve values from hash map --> string s = tokens["read"];
-	// string will be empty if the value is not in there
 }
 
 Scanner::~Scanner(void)
