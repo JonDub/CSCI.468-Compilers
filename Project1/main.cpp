@@ -2,11 +2,32 @@
 #include <iostream>
 #include <iomanip>
 #include "Scanner.h"
+#include "Parser.h"
 #include "Tokens.h"
 using namespace std;
 
 
 int main ( int argc, char* argv[] )
+{
+	// name of the file to parse through
+	const char* fName = argv[1];
+
+	// create our parser and start getting shit done
+	Parser* parser = new Parser(fName);
+
+	if (parser->Parse())
+	{
+		cout << "The program parses ok." << endl;
+	} 
+	
+	// press enter to exit
+	cout << endl << "Done. Press Enter to exit." << endl;
+	std::cin.get();
+	return 0;
+}
+
+// was used to test the scanner
+int testScanner(  int argc, char* argv[] )
 {
 	// name of the file to parse through
 	const char* fName = argv[1];

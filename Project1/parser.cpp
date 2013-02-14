@@ -5,14 +5,40 @@ Parser::Parser(void)
 {
 }
 
+Parser::Parser(const char* fName)
+{
+	scanner = new Scanner();
+	scanner->openFile(fName);
+}
 
 Parser::~Parser(void)
 {
+	delete scanner;
 }
+
+bool Parser::Parse()
+{
+	try
+	{
+		// start the parser. set the first lookahead
+	lookahead = scanner->getToken();
+	
+	if (SystemGoal())
+		return true;
+	else 
+		ParseError:
+		return false;
+	} 
+	catch (int ex)
+	{
+		return false;
+	}
+}
+
 
 // precondition: (not sure what this should be, but is necessary)
 // postcondition: (not sure what this should be, but is necessary)
-void Parser::SystemGoal()
+bool Parser::SystemGoal()
 {
 	switch(lookahead)
 	{
@@ -20,12 +46,12 @@ void Parser::SystemGoal()
 		  {
 			  Program();
 			  Match(MP_EOF);
-			  break;
+			  return true;
 		  }
 	default: //everything else
 		{
-			Error();
-			break;
+			Syntax_Error();
+			return false;
 		}
 	}
 }
@@ -46,7 +72,7 @@ void Parser::Program()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -60,14 +86,13 @@ void Parser::ProgramHeading()
 	{
 	case MP_PROGRAM: //ProgramHeading  --> "program" ProgramIdentifier, rule #3 
 		{
-			ProgramHeading();
 			Match(MP_PROGRAM);
 			ProgramIdentifier();
 			break;
 		}
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -91,7 +116,7 @@ void Parser::Block()
 		}
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -113,7 +138,7 @@ void Parser::VariableDeclarationPart()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -141,7 +166,7 @@ void Parser::VariableDeclarationTail()
 		  // ^^^ This will be filled in after some more careful analysis of the grammar ^^^
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -162,7 +187,7 @@ void Parser::VariableDeclaration()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -194,7 +219,7 @@ void Parser::Type()
 	//	  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -224,7 +249,7 @@ void Parser::ProcedureAndFunctionDeclarationPart()
 	//	  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -247,7 +272,7 @@ void Parser::ProcedureDeclaration()
 			}
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -270,7 +295,7 @@ void Parser::FunctionDeclaration()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -292,7 +317,7 @@ void Parser::ProcedureHeading()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -316,7 +341,7 @@ void Parser::FunctionHeading()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -344,7 +369,7 @@ void Parser::OptionalFormalParameterList()
 	//		}
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -370,7 +395,7 @@ void Parser::FormalParameterSectionTail()
 	//		}
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -395,7 +420,7 @@ void Parser::FormalParameterSection()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -417,7 +442,7 @@ void Parser::ValueParameterSection()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -440,7 +465,7 @@ void Parser::VariableParameterSection()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -459,7 +484,7 @@ void Parser::StatementPart()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -481,7 +506,7 @@ void Parser::CompoundStatement()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -513,7 +538,7 @@ void Parser::StatementSequence()
 		  }*/
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -540,7 +565,7 @@ void Parser::StatementTail()
 	//	  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -606,7 +631,7 @@ void Parser::Statement()
 		  }
 	default: //everything else
 		{
-			Error();
+			Syntax_Error();
 			break;
 		}
 	}
@@ -696,14 +721,21 @@ void Parser::WhileStatement()
 {
 }
 
-
-void Parser::Match(Token token)//probably not correct syntax
+void Parser::Match(Token token)
 {
-	//puts a token on the tree
-	//gets the next lookahead
+	// puts a token on the tree
+	// gets the next lookahead
+	if (token == lookahead)
+		lookahead = scanner->getToken();
+	else
+		Syntax_Error();
 }
 
-void Parser::Error()
+
+void Parser::Syntax_Error()
 {
 	//stops everything and gives a meaningful error message 
+	cout << "Syntax error found on line " << scanner->getLineNumber() << ", column "
+		<< scanner->getColumnNumber() << endl;
+	throw -1;
 }

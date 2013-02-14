@@ -84,6 +84,7 @@ bool Scanner::hasToken()
 	if (next != EOF)
 		return true;
 
+	// set lexeme to EOF ascii value
 	lexeme = get();
 	return false;
 }
@@ -94,7 +95,14 @@ Token Scanner::getToken()
 		Reads the next available character and dispatches to the
 		appropriate FSA for them to parse. 
 	*/		
+
+	// detect EOF and skip whitespace
+	if (!hasToken()){
+		token = MP_EOF;
+	}
+
 	char next = peek();
+		
 
 	// reset the TOKEN and LEXEME variables, FSA will set new values
 	token = MP_NULL;

@@ -11,13 +11,17 @@ class Parser
 {
 public:
 	Parser(void);
+	Parser(const char*);
 	~Parser(void);
+
+	bool Parse();
 
 private:
 	Token lookahead;
+	Scanner* scanner;
 
 
-	void SystemGoal();
+	bool SystemGoal();
 	void Program();
 	void ProgramHeading();
 	void ProgramIdentifier();
@@ -54,6 +58,6 @@ private:
 	void ProcedureStatement();
 	
 	void Match(Token);
-	void Error();
+	void Syntax_Error();
 };
 
