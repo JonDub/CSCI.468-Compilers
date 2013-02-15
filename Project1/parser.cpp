@@ -1079,7 +1079,7 @@ void Parser::Expression()
 	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\	Rule# 70
 		  {
 			  SimpleExpression();
-			  OptionalRelationPart();
+			  OptionalRelationalPart();
 			  break;
 		  }
 	default: //everything else
@@ -1088,6 +1088,13 @@ void Parser::Expression()
 			break;
 		}
 	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::SimpleExpression()
+{
 }
 
 
@@ -1150,6 +1157,15 @@ void Parser::RelationalOperator()
 }
 
 
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::BooleanExpression()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
 void Parser::Match(Token token)
 {
 	// puts a token on the tree

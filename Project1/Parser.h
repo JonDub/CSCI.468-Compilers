@@ -73,7 +73,6 @@ private:
 	void OrdinalExpression();
 	void Expression();
 	void SimpleExpression();
-	void OptionalRelationPart();
 	void ReadParameter();
 	void ReadParameterTail();
 	
