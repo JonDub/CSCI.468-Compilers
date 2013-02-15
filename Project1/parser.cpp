@@ -157,13 +157,10 @@ void Parser::VariableDeclarationTail()
 			  VariableDeclarationTail();
 			  break;
 		  }
-		  // VVV This will be filled in after some more careful analysis of the grammar VVV
-		  // TODO: Fill this in
-	//case: ?? // VariableDeclarationTail -> e, rule #7
-	//	  {
-	//		  break;
-	//	  }
-		  // ^^^ This will be filled in after some more careful analysis of the grammar ^^^
+	case: MP_FUNCTION // VariableDeclarationTail -> e, rule #7
+		  {
+			  break;
+		  }
 	default: //everything else
 		{
 			Syntax_Error();
@@ -243,10 +240,10 @@ void Parser::ProcedureAndFunctionDeclarationPart()
 			  ProcedureAndFunctionDeclarationPart();
 			  break;
 		  }
-	//case: ?? //ProcedureAndFunctionDeclarationPart -> e, rule #14
-	//	  {
-	//		  break;
-	//	  }
+	case: MP_BEGIN //ProcedureAndFunctionDeclarationPart -> e, rule #14
+		  {
+			  break;
+		  }
 	default: //everything else
 		{
 			Syntax_Error();
@@ -362,11 +359,11 @@ void Parser::OptionalFormalParameterList()
 				Match(MP_RPAREN);
 				break;
 			}
-			// TODO: Need to define what this is
-	//case: ?? //OptionalFormalParameterList -> e, rule #20
-	//		{
-	//			break;
-	//		}
+	case: MP_SCOLON //OptionalFormalParameterList -> e, rule #20
+	case: MP_COLON //OptionalFormalParameterList -> e, rule #20
+			{
+				break;
+			}
 	default: //everything else
 		{
 			Syntax_Error();
@@ -388,11 +385,10 @@ void Parser::FormalParameterSectionTail()
 				FormalParameterSectionTail();
 				break;
 			}
-			// TODO: Need to define what this is
-	//case: ?? //FormalParameterSectionTail -> e, rule #22
-	//		{
-	//			break;
-	//		}
+	case: MP_RPAREN //FormalParameterSectionTail -> e, rule #22
+			{
+				break;
+			}
 	default: //everything else
 		{
 			Syntax_Error();
@@ -519,6 +515,8 @@ void Parser::StatementSequence()
 {
 	switch(lookahead)
 	{
+	case MP_SCOLON: //StatementSequence -> Statement StatementTail, rule #29 {e}
+	case MP_END:  //StatementSequence -> Statement StatementTail, rule #29 {e}
 	case MP_BEGIN: //StatementSequence -> Statement StatementTail, rule #29
 	case MP_READ: //StatementSequence -> Statement StatementTail, rule #29
 	case MP_WRITE: //StatementSequence -> Statement StatementTail, rule #29
@@ -532,10 +530,6 @@ void Parser::StatementSequence()
 			  StatementTail();
 			  break;
 		  }
-		  // TODO: Need to define what this is
-	/*case: ??
-		  {
-		  }*/
 	default: //everything else
 		{
 			Syntax_Error();
@@ -551,6 +545,7 @@ void Parser::StatementTail()
 {
 	switch(lookahead)
 	{
+	
 	case MP_SCOLON://StatementTail -> ";" Statement StatementTail , rule #30
 		  {
 			  Match(MP_SCOLON);
@@ -558,11 +553,10 @@ void Parser::StatementTail()
 			  StatementTail();
 			  break;
 		  }
-		  // TODO: Need to define what this is
-	//case: ??// StatementTail -> e, rule #31
-	//	  {
-	//		  break;
-	//	  }
+	case MP_END://StatementTail -> e , rule #31 
+		{
+			break;
+		}
 	default: //everything else
 		{
 			Syntax_Error();
@@ -578,12 +572,12 @@ void Parser::Statement()
 {
 	switch(lookahead)
 	{
-		// TODO: Need to define what this is
-	//case: ?? //Statement -> EmptyStatement, rule #32
-	//	  {
-	//		  EmptyStatement();
-	//		  break;
-	//	  }
+	case: MP_END //Statement -> EmptyStatement, rule #32
+	case: MP_SCOLON //Statement -> EmptyStatement, rule #32
+		  {
+			  EmptyStatement();
+			  break;
+		  }
 	case MP_BEGIN: //Statement -> CompoundStatement, rule #33
 		  {
 			  CompoundStatement();
