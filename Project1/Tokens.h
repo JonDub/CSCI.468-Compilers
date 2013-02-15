@@ -20,6 +20,7 @@ enum Token
 	MP_ELSE,
 	MP_END,
 	MP_EOF,
+	MP_EQUAL,
 	MP_ERROR,
 	MP_FIXED,
 	MP_FIXED_LIT,
@@ -80,6 +81,7 @@ static std::string EnumToString(Token t)
 	case MP_ELSE: return "MP_ELSE";
 	case MP_END: return "MP_END";
 	case MP_EOF: return "MP_EOF";
+	case MP_EQUAL: return "MP_EQUAL";
 	case MP_ERROR: return "MP_ERROR";
 	case MP_FIXED: return "MP_FIXED";
 	case MP_FIXED_LIT: return "MP_FIXED_LIT";

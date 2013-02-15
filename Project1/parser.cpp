@@ -157,7 +157,7 @@ void Parser::VariableDeclarationTail()
 			  VariableDeclarationTail();
 			  break;
 		  }
-	case: MP_FUNCTION // VariableDeclarationTail -> e, rule #7
+	case MP_FUNCTION: // VariableDeclarationTail -> e, rule #7
 		  {
 			  break;
 		  }
@@ -240,7 +240,7 @@ void Parser::ProcedureAndFunctionDeclarationPart()
 			  ProcedureAndFunctionDeclarationPart();
 			  break;
 		  }
-	case: MP_BEGIN //ProcedureAndFunctionDeclarationPart -> e, rule #14
+	case MP_BEGIN: //ProcedureAndFunctionDeclarationPart -> e, rule #14
 		  {
 			  break;
 		  }
@@ -359,8 +359,8 @@ void Parser::OptionalFormalParameterList()
 				Match(MP_RPAREN);
 				break;
 			}
-	case: MP_SCOLON //OptionalFormalParameterList -> e, rule #20
-	case: MP_COLON //OptionalFormalParameterList -> e, rule #20
+	case MP_SCOLON: //OptionalFormalParameterList -> e, rule #20
+	case MP_COLON: //OptionalFormalParameterList -> e, rule #20
 			{
 				break;
 			}
@@ -371,6 +371,73 @@ void Parser::OptionalFormalParameterList()
 		}
 	}
 }
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::OptionalActualParameterList()
+{
+	switch(lookahead)
+	{
+	case MP_LPAREN: // Rule# 65 	OptionalActualParameterList -> "(" ActualParameter ActualParameterTail ")" 
+			{
+				Match(MP_LPAREN);
+				ActualParameter();
+				ActualParameterTail();
+				Match(MP_RPAREN);
+				break;
+			}
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ActualParameter()
+{
+	switch(lookahead)
+	{
+	case MP_PLUS:  // Rule# 69 	ActualParameter -> OrdinalExpression 	+,-
+	case MP_MINUS: // Rule# 69 	ActualParameter -> OrdinalExpression 	+,-
+			{
+				OrdinalExpression();
+				break;
+			}
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ActualParameterTail()
+{
+	switch(lookahead)
+	{
+	case MP_COMMA: // Rule# 67 	ActualParameterTail -> "," ActualParameter ActualParameterTail 
+			{
+				Match(MP_COMMA);
+				ActualParameter();
+				ActualParameterTail();
+				break;
+			}
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
 
 // precondition: (not sure what this should be, but is necessary)
 // postcondition: (not sure what this should be, but is necessary)
@@ -385,7 +452,7 @@ void Parser::FormalParameterSectionTail()
 				FormalParameterSectionTail();
 				break;
 			}
-	case: MP_RPAREN //FormalParameterSectionTail -> e, rule #22
+	case MP_RPAREN: //FormalParameterSectionTail -> e, rule #22
 			{
 				break;
 			}
@@ -572,8 +639,8 @@ void Parser::Statement()
 {
 	switch(lookahead)
 	{
-	case: MP_END //Statement -> EmptyStatement, rule #32
-	case: MP_SCOLON //Statement -> EmptyStatement, rule #32
+	case MP_END: //Statement -> EmptyStatement, rule #32
+	case MP_SCOLON: //Statement -> EmptyStatement, rule #32
 		  {
 			  EmptyStatement();
 			  break;
@@ -636,6 +703,16 @@ void Parser::Statement()
 // postcondition: (not sure what this should be, but is necessary)
 void Parser::AssignmentStatement()
 {
+	switch (lookahead)
+	{
+	case MP_IDENTIFIER: // Rule# 52 	AssignmentStatement -> FunctionIdentifier ":=" Expression 	Identifier
+		FunctionIdentifier();
+		Match(MP_ASSIGN);
+		Expression();
+		break;
+	default:
+		break;
+	}
 }
 
 
@@ -643,7 +720,76 @@ void Parser::AssignmentStatement()
 // postcondition: (not sure what this should be, but is necessary)
 void Parser::ForStatement()
 {
+	switch(lookahead)
+	{
+	case MP_REPEAT: // Rule# 58 	ForStatement -> "for" ControlVariable ":=" InitialValue StepValue FinalValue "do" Statement
+		Match(MP_FOR);
+		ControlVariable();
+		Match(MP_ASSIGN);
+		InitialValue();
+		StepValue();
+		FinalValue();
+		Match(MP_DO);
+		Statement();
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
 }
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::StepValue()
+{
+	switch(lookahead)
+	{
+	case MP_DOWNTO: // Rule# 62 	StepValue -> "downto" 	  
+		Match(MP_DOWNTO);
+		break;
+	case MP_TO: // Rule# 61 	StepValue -> "to" 	
+		Match(MP_TO);
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::FinalValue()
+{
+	switch(lookahead)
+	{
+	case MP_PLUS: // Rule# 63 	FinalValue -> OrdinalExpression 	+, -
+	case MP_MINUS: // Rule# 63 	FinalValue -> OrdinalExpression 	+, -
+		OrdinalExpression();
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ControlVariable()
+{
+	switch(lookahead)
+	{
+	case MP_IDENTIFIER: // Rule# 59 	ControlVariable -> VariableIdentifier 	Identifier
+		Match(MP_IDENTIFIER);
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
+}
+
 
 
 // precondition: (not sure what this should be, but is necessary)
@@ -664,6 +810,35 @@ void Parser::IdentifierList()
 // postcondition: (not sure what this should be, but is necessary)
 void Parser::IfStatement()
 {
+	switch (lookahead)
+	{
+	case MP_IF: // Rule# 53 	IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart
+		Match(MP_IF);
+		BooleanExpression();
+		Match(MP_THEN);
+		Statement();
+		OptionalElsePart();
+		break;
+	default:
+		break;
+	}
+}
+
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::OptionalElsePart()
+{
+	switch (lookahead)
+	{
+	case MP_IF: // Rule# 54 	OptionalElsePart -> "else" Statement 	else
+		Match(MP_ELSE);
+		Statement();
+		break;
+	default:
+		break;
+	}
 }
 
 
@@ -678,6 +853,15 @@ void Parser::ProcedureIdentifier()
 // postcondition: (not sure what this should be, but is necessary)
 void Parser::ProcedureStatement()
 {
+	switch (lookahead)
+	{
+	case MP_IDENTIFIER: // Rule# 64 	ProcedureStatement -> ProcedureIdentifier OptionalActualParameterList
+		Match(MP_IDENTIFIER);
+		OptionalActualParameterList();
+		break;
+	default:
+		break;
+	}
 }
 
 
@@ -692,6 +876,52 @@ void Parser::ProgramIdentifier()
 // postcondition: (not sure what this should be, but is necessary)
 void Parser::ReadStatement()
 {
+	switch(lookahead)
+	{
+	case MP_READ:  // Rule# 43 	ReadStatement -> "read" "(" ReadParameter ReadParameterTail ")" 	read
+		ReadParameter();
+		ReadParameterTail();
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ReadParameterTail()
+{
+	switch(lookahead)
+	{
+	case MP_LPAREN:	// Rule# 45 	ReadParameterTail -> e 	
+		break;
+	case MP_COMMA:  // Rule# 44 	ReadParameterTail -> "," ReadParameter ReadParameterTail 	,
+		Match(MP_COMMA);
+		ReadParameter();
+		ReadParameterTail();
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::ReadParameter()
+{
+	switch(lookahead)
+	{
+	case MP_IDENTIFIER: // Rule# 46 	ReadParameter -> VariableIdentifier 	Identifier
+		Match(MP_IDENTIFIER);
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
 }
 
 
@@ -699,6 +929,55 @@ void Parser::ReadStatement()
 // postcondition: (not sure what this should be, but is necessary)
 void Parser::WriteStatement()
 {
+	switch(lookahead)
+	{
+	case MP_WRITE: // Rule# 47 	WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")" 	write
+		Match(MP_WRITE);
+		Match(MP_LPAREN);
+		WriteParameter();
+		WriteParameterTail();
+		Match(MP_RPAREN);
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::WriteParameterTail()
+{
+	switch(lookahead)
+	{
+	case MP_RPAREN: // Rule# 49 	WriteParameterTail -> e
+		break;
+	case MP_COMMA:  // Rule# 48 	WriteParameterTail -> "," WriteParameter 	,
+		Match(MP_COMMA);
+		WriteParameter();
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::WriteParameter()
+{
+	switch(lookahead)
+	{
+	case MP_PLUS: // Rule# 50 	WriteParameter -> OrdinalExpression 	+, -
+	case MP_MINUS:  // Rule# 50 	WriteParameter -> OrdinalExpression 	+, -
+		OrdinalExpression();
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
 }
 
 
@@ -706,14 +985,170 @@ void Parser::WriteStatement()
 // postcondition: (not sure what this should be, but is necessary)
 void Parser::RepeatStatement()
 {
+	switch(lookahead)
+	{
+	case MP_REPEAT: // Rule# // 56 	RepeatStatement -> "repeat" StatementSequence "until" BooleanExpression
+		Match(MP_REPEAT);
+		StatementSequence();
+		Match(MP_UNTIL);
+		BooleanExpression();
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
 }
+
 
 
 // precondition: (not sure what this should be, but is necessary)
 // postcondition: (not sure what this should be, but is necessary)
 void Parser::WhileStatement()
 {
+	switch(lookahead)
+	{
+	case MP_REPEAT: // Rule# 57 	WhileStatement -> "while" BooleanExpression "do" Statement
+		Match(MP_WHILE);
+		BooleanExpression();
+		Match(MP_DO);
+		Statement();
+		break;
+	default:
+		Syntax_Error();
+		break;
+	}
 }
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::EmptyStatement()
+{
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::InitialValue()
+{
+	switch(lookahead)
+	{
+	case MP_MINUS:
+	case MP_PLUS: // Rule# 60	InitialValue -> OrdinalExpression 	+, -
+		  {
+			  OrdinalExpression();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::OrdinalExpression()
+{
+	switch(lookahead)
+	{
+	case MP_MINUS:
+	case MP_PLUS: // OrdinalExpression -> Expression 	\+\, \-\	Rule# 105
+		  {
+			  Expression();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::Expression()
+{
+	switch(lookahead)
+	{
+	case MP_MINUS:
+	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\	Rule# 70
+		  {
+			  SimpleExpression();
+			  OptionalRelationPart();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::OptionalRelationalPart()
+{
+	switch(lookahead)
+	{
+	case MP_EQUAL:
+	case MP_LTHAN:
+	case MP_GTHAN:
+	case MP_LEQUAL:
+	case MP_GEQUAL:
+	case MP_NEQUAL: // Rule# 71 	OptionalRelationalPart -> RelationalOperator SimpleExpression  =, <, >, <=, >=, <>
+		  {
+			  RelationalOperator();
+			  SimpleExpression();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
+
+// precondition: (not sure what this should be, but is necessary)
+// postcondition: (not sure what this should be, but is necessary)
+void Parser::RelationalOperator()
+{
+	switch(lookahead)
+	{
+	case MP_EQUAL:	// Rule# 73 	RelationalOperator -> "="
+		Match(MP_EQUAL);
+		break;
+	case MP_LTHAN: // Rule# 74 	RelationalOperator -> "<"
+		Match(MP_LTHAN);
+		break;
+	case MP_GTHAN: // Rule# 75 	RelationalOperator -> ">"
+		Match(MP_GTHAN);
+		break;
+	case MP_LEQUAL: // Rule# 76 	RelationalOperator -> "<=" 
+		Match(MP_LEQUAL);
+		break;
+	case MP_GEQUAL: // Rule# 77 	RelationalOperator -> ">=" 
+		Match(MP_GEQUAL);
+		break;
+	case MP_NEQUAL: // Rule# 78 	RelationalOperator -> "<>" 
+		Match(MP_NEQUAL);
+		break;
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
 
 void Parser::Match(Token token)
 {

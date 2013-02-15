@@ -606,7 +606,7 @@ Token Scanner::handleSymbol()
 
 		case 6: //symbol is equal
 			accept = true;
-			token = MP_PERIOD;
+			token = MP_EQUAL;
 			done = true;
 			break;
 
