@@ -36,8 +36,8 @@ bool Parser::Parse()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 bool Parser::SystemGoal()
 {
 	switch(lookahead)
@@ -57,8 +57,8 @@ bool Parser::SystemGoal()
 	}
 }
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::Program()
 {
 	switch(lookahead)
@@ -79,8 +79,8 @@ void Parser::Program()
 	}
 }
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ProgramHeading()
 {
 	switch(lookahead)
@@ -99,10 +99,8 @@ void Parser::ProgramHeading()
 	}
 }
 
-// example for Block. 
-// here "lookahead" is the lookahead token. We should enumerate the tokens so that they can be used in switch statements
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::Block()
 {
 	switch (lookahead)
@@ -123,8 +121,8 @@ void Parser::Block()
 	}
 }
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::VariableDeclarationPart()
 {
 	switch(lookahead)
@@ -145,8 +143,8 @@ void Parser::VariableDeclarationPart()
 	}
 }
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::VariableDeclarationTail()
 {
 	switch(lookahead)
@@ -170,8 +168,8 @@ void Parser::VariableDeclarationTail()
 	}
 }
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::VariableDeclaration()
 {
 	switch(lookahead)
@@ -192,8 +190,8 @@ void Parser::VariableDeclaration()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::Type()
 {
 	switch(lookahead)
@@ -223,8 +221,8 @@ void Parser::Type()
 	}
 }
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ProcedureAndFunctionDeclarationPart()
 {
 	switch(lookahead)
@@ -254,8 +252,8 @@ void Parser::ProcedureAndFunctionDeclarationPart()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ProcedureDeclaration()
 {
 	switch(lookahead)
@@ -277,8 +275,8 @@ void Parser::ProcedureDeclaration()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::FunctionDeclaration()
 {
 	switch(lookahead)
@@ -300,8 +298,8 @@ void Parser::FunctionDeclaration()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ProcedureHeading()
 {
 	switch(lookahead)
@@ -322,8 +320,8 @@ void Parser::ProcedureHeading()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::FunctionHeading()
 {
 	switch(lookahead)
@@ -346,8 +344,8 @@ void Parser::FunctionHeading()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::OptionalFormalParameterList()
 {
 	switch(lookahead)
@@ -373,8 +371,8 @@ void Parser::OptionalFormalParameterList()
 	}
 }
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::OptionalActualParameterList()
 {
 	switch(lookahead)
@@ -397,8 +395,8 @@ void Parser::OptionalActualParameterList()
 
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ActualParameter()
 {
 	switch(lookahead)
@@ -418,8 +416,8 @@ void Parser::ActualParameter()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ActualParameterTail()
 {
 	switch(lookahead)
@@ -440,8 +438,8 @@ void Parser::ActualParameterTail()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::FormalParameterSectionTail()
 {
 	switch(lookahead)
@@ -466,8 +464,8 @@ void Parser::FormalParameterSectionTail()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::FormalParameterSection()
 {
 	switch(lookahead)
@@ -491,8 +489,8 @@ void Parser::FormalParameterSection()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ValueParameterSection()
 {
 	switch(lookahead)
@@ -513,8 +511,8 @@ void Parser::ValueParameterSection()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::VariableParameterSection()
 {
 	switch(lookahead)
@@ -535,8 +533,8 @@ void Parser::VariableParameterSection()
 	}
 }
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::StatementPart()
 {
 	switch(lookahead)
@@ -555,8 +553,8 @@ void Parser::StatementPart()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::CompoundStatement()
 {
 	switch(lookahead)
@@ -577,8 +575,8 @@ void Parser::CompoundStatement()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::StatementSequence()
 {
 	switch(lookahead)
@@ -607,8 +605,8 @@ void Parser::StatementSequence()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::StatementTail()
 {
 	switch(lookahead)
@@ -634,8 +632,8 @@ void Parser::StatementTail()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::Statement()
 {
 	switch(lookahead)
@@ -700,8 +698,8 @@ void Parser::Statement()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::AssignmentStatement()
 {
 	switch (lookahead)
@@ -717,8 +715,8 @@ void Parser::AssignmentStatement()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ForStatement()
 {
 	switch(lookahead)
@@ -740,8 +738,8 @@ void Parser::ForStatement()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::StepValue()
 {
 	switch(lookahead)
@@ -759,8 +757,8 @@ void Parser::StepValue()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::FinalValue()
 {
 	switch(lookahead)
@@ -776,8 +774,8 @@ void Parser::FinalValue()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ControlVariable()
 {
 	switch(lookahead)
@@ -793,22 +791,22 @@ void Parser::ControlVariable()
 
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::FunctionIdentifier()
 {
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::IdentifierList()
 {
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::IfStatement()
 {
 	switch (lookahead)
@@ -827,8 +825,8 @@ void Parser::IfStatement()
 
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::OptionalElsePart()
 {
 	switch (lookahead)
@@ -843,15 +841,15 @@ void Parser::OptionalElsePart()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ProcedureIdentifier()
 {
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ProcedureStatement()
 {
 	switch (lookahead)
@@ -866,15 +864,15 @@ void Parser::ProcedureStatement()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ProgramIdentifier()
 {
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ReadStatement()
 {
 	switch(lookahead)
@@ -890,8 +888,8 @@ void Parser::ReadStatement()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ReadParameterTail()
 {
 	switch(lookahead)
@@ -910,8 +908,8 @@ void Parser::ReadParameterTail()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::ReadParameter()
 {
 	switch(lookahead)
@@ -926,8 +924,8 @@ void Parser::ReadParameter()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::WriteStatement()
 {
 	switch(lookahead)
@@ -946,8 +944,8 @@ void Parser::WriteStatement()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::WriteParameterTail()
 {
 	switch(lookahead)
@@ -965,8 +963,8 @@ void Parser::WriteParameterTail()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::WriteParameter()
 {
 	switch(lookahead)
@@ -982,8 +980,8 @@ void Parser::WriteParameter()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::RepeatStatement()
 {
 	switch(lookahead)
@@ -1002,8 +1000,8 @@ void Parser::RepeatStatement()
 
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::WhileStatement()
 {
 	switch(lookahead)
@@ -1021,15 +1019,15 @@ void Parser::WhileStatement()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::EmptyStatement()
 {
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::InitialValue()
 {
 	switch(lookahead)
@@ -1049,8 +1047,8 @@ void Parser::InitialValue()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::OrdinalExpression()
 {
 	switch(lookahead)
@@ -1070,8 +1068,8 @@ void Parser::OrdinalExpression()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::Expression()
 {
 	switch(lookahead)
@@ -1092,15 +1090,15 @@ void Parser::Expression()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::SimpleExpression()
 {
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::OptionalRelationalPart()
 {
 	switch(lookahead)
@@ -1125,8 +1123,8 @@ void Parser::OptionalRelationalPart()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::RelationalOperator()
 {
 	switch(lookahead)
@@ -1158,15 +1156,15 @@ void Parser::RelationalOperator()
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::BooleanExpression()
 {
 }
 
 
-// precondition: (not sure what this should be, but is necessary)
-// postcondition: (not sure what this should be, but is necessary)
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::Match(Token token)
 {
 	// puts a token on the tree
