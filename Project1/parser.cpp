@@ -46,6 +46,7 @@ bool Parser::SystemGoal()
 		  {
 			  Program();
 			  Match(MP_EOF);
+			  cout << "The input program parses!";
 			  return true;
 		  }
 	default: //everything else
