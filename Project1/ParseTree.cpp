@@ -19,6 +19,8 @@ void ParseTree::LogExpansion(int rule)
 	rule--;
 	if (rule >= 0 && rule < rules.size())
 		outFile << rules.at(rule) << '\n';
+	else
+		outFile << "Unknown rule number: " << rule << '\n';
 }
 
 
