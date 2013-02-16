@@ -1074,66 +1074,339 @@ void Parser::RelationalOperator()
 // postcondition: (method applies rules correctly)
 void Parser::SimpleExpression()
 {
+	switch(lookahead)
+	{
+	case MP_MINUS:
+	case MP_PLUS: // Term -> Factor FactorTail  	Rule# 79
+		  {
+			  Factor();
+			  FactorTail();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::TermTail()
 {
+	switch(lookahead)
+	{
+	case MP_OR:
+	case MP_PLUS:
+	case MP_MINUS:// TermTail -> AddingOperator Term TermTail  	Rule# 80
+		{
+			AddingOperator();
+			Term();
+			TermTail();
+		}
+	case MP_SCOLON: // TermTail -> {e} 	Rule# 81
+		  {
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::OptionalSign()
 {
+	switch(lookahead)
+	{
+	case MP_MINUS: // OptionalSign -> "-" Rule #83
+		{
+			Match(MP_MINUS);
+			break;
+		}
+	case MP_PLUS: // OptionalSign -> "+" Rule #82
+		{
+			Match(MP_PLUS);
+			break;
+		}
+	case MP_RPAREN:
+	case MP_LPAREN: // OptionalSign -> {e} Rule #84
+		  {
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::AddingOperator()
 {
+	switch(lookahead)
+	{
+	case MP_PLUS: // AddingOperator -> "+"  	Rule# 85
+		  {
+			  Match(MP_PLUS);
+			  break;
+		  }
+	case MP_MINUS: // AddingOperator -> "-"  	Rule# 86
+		  {
+			  Match(MP_MINUS);
+			  break;
+		  }
+	case MP_OR: // AddingOperator -> "or" 	Rule# 87
+		  {
+			  Match(MP_OR);
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
+
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
+void Parser::Term()
+{
+	switch(lookahead)
+	{
+	case MP_UNSIGNEDINTEGER:
+	case MP_NOT:
+	case MP_IDENTIFIER: // Term -> Factor FactorTail  	Rule# 88
+		  {
+			  Factor();
+			  FactorTail();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
+void Parser::FactorTail()
+{
+	switch(lookahead)
+	{
+	case MP_DIV:
+	case MP_TIMES:
+	case MP_MOD:
+	case MP_AND: // FactorTail -> MultiplyingOperator Factor FactorTail  	Rule# 89
+		  {
+			  MultiplyingOperator();
+			  Factor();
+			  FactorTail();
+			  break;
+		  }
+	case MP_OR:
+	case MP_MINUS:
+	case MP_PLUS:
+	case MP_EQUAL:
+	case MP_GEQUAL:
+	case MP_LEQUAL:
+	case MP_GTHAN:
+	case MP_LTHAN:
+	case MP_RPAREN:
+	case MP_LPAREN:
+	case MP_END:
+	case MP_NEQUAL: // FactorTail -> {e}	Rule# 90
+		  {
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
+
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::MultiplyingOperator()
 {
+	switch(lookahead)
+	{
+	case MP_AND: // MultiplyingOperator -> "and"  	Rule# 94
+		  {
+			  Match(MP_AND);
+			  break;
+		  }
+	case MP_MOD: // MultiplyingOperator -> "mod"  	Rule# 93
+		  {
+			  Match(MP_MOD);
+			  break;
+		  }
+	case MP_DIV: // MultiplyingOperator -> "div"  	Rule# 92
+		  {
+			  Match(MP_DIV);
+			  break;
+		  }
+	case MP_TIMES: // MultiplyingOperator -> "*"  	Rule# 91
+		  {
+			  Match(MP_TIMES);
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::Factor()
 {
+	switch(lookahead)
+	{
+	case MP_UNSIGNEDINTEGER: // Factor -> UnsignedInteger  	Rule# 95
+		  {
+			  UnsignedInteger();
+			  break;
+		  }
+
+	//////////////////////// Conflict 96, 99
+	case MP_NOT: // "not" Factor  	Rule# 97
+		  {
+			  Match(MP_NOT);
+			  Factor();
+			  break;
+		  }
+	case MP_LPAREN: // Factor -> "(" Expression ")"  	Rule# 98
+		  {
+			  Match(MP_LPAREN);
+			  Expression();
+			  Match(MP_RPAREN);
+			  break;
+		  }
+
+	//////////////////////// Conflict 96, 99
+
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::ProgramIdentifier()
 {
+	switch(lookahead)
+	{
+	case IDENTIFIER: // ProgramIdentifier -> Identifier  	Rule# 100
+		  {
+			  Identifier();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::VariableIdentifier()
 {
+	switch(lookahead)
+	{
+	case IDENTIFIER: // VariableIdentifier -> Identifier  	Rule# 101
+		  {
+			  Identifier();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::ProcedureIdentifier()
 {
+	switch(lookahead)
+	{
+	case IDENTIFIER: // ProcedureIdentifier -> Identifier 	Rule# 102
+		  {
+			  Identifier();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::FunctionIdentifier()
 {
+	switch(lookahead)
+	{
+	case IDENTIFIER: // FunctionIdentifier -> Identifier 	Rule# 103
+		  {
+			  Identifier();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::BooleanExpression()
 {
+	switch(lookahead)
+	{
+	case MP_LPAREN:
+	case MP_RPAREN:
+	case MP_PLUS:
+	case MP_MINUS:
+	case MP_UNSIGNEDINTEGER:
+	case MP_NOT:
+	case IDENTIFIER: // BooleanExpression -> Expression 	\+\, \-\, {e}	Rule# 104
+		  {
+			  Expression();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
 // precondition: (lookahead is a valid token)
@@ -1143,7 +1416,12 @@ void Parser::OrdinalExpression()
 	switch(lookahead)
 	{
 	case MP_MINUS:
-	case MP_PLUS: // OrdinalExpression -> Expression 	\+\, \-\	Rule# 105
+	case MP_IDENTIFIER:
+	case MP_NOT:
+	case MP_UNSIGNEDINTEGER:
+	case MP_RPAREN:
+	case MP_LPAREN:
+	case MP_PLUS: // OrdinalExpression -> Expression	Rule# 105
 		  {
 			  Expression();
 			  break;
@@ -1160,8 +1438,46 @@ void Parser::OrdinalExpression()
 // postcondition: (method applies rules correctly)
 void Parser::IdentifierList()
 {
+	switch(lookahead)
+	{
+	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail  		Rule# 106
+		  {
+			  Identifier();
+			  IdentifierTail();
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
 }
 
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
+void Parser::IdentifierTail()
+{
+	switch(lookahead)
+	{
+	case MP_COMMA: // IdentifierTail -> "," Identifier IdentifierTail  		Rule# 107
+		  {
+			  Match(MP_COMMA);
+			  Identifier();
+			  IdentifierTail();
+			  break;
+		  }
+	case MP_COLON: // IdentifierTail -> e  		Rule# 108
+		  {
+			  break;
+		  }
+	default: //everything else
+		{
+			Syntax_Error();
+			break;
+		}
+	}
+}
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
