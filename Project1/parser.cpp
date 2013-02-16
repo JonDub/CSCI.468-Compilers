@@ -24,8 +24,7 @@ bool Parser::Parse()
 
 		if (SystemGoal())
 			return true;
-		else 
-ParseError:
+
 		return false;
 	} 
 	catch (int ex)
