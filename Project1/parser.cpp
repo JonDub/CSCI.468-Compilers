@@ -171,7 +171,7 @@ void Parser::Type()
 	case MP_FLOAT_LIT: //Type -> "Float", rule #10
 		Match(MP_FLOAT_LIT);
 		break;
-	case: MP_BOOLEAN //Type -> "Boolean", rule #11
+	case MP_BOOLEAN: //Type -> "Boolean", rule #11
 			  Match(MP_BOOLEAN);
 		break;
 	default: //everything else
@@ -1121,7 +1121,7 @@ void Parser::ProgramIdentifier()
 {
 	switch(lookahead)
 	{
-	case IDENTIFIER: // ProgramIdentifier -> Identifier  	Rule# 100
+	case MP_IDENTIFIER: // ProgramIdentifier -> Identifier  	Rule# 100M
 		Identifier();
 		break;
 	default: //everything else
@@ -1136,7 +1136,7 @@ void Parser::VariableIdentifier()
 {
 	switch(lookahead)
 	{
-	case IDENTIFIER: // VariableIdentifier -> Identifier  	Rule# 101
+	case MP_IDENTIFIER: // VariableIdentifier -> Identifier  	Rule# 101
 		Identifier();
 		break;
 	default: //everything else
@@ -1151,7 +1151,7 @@ void Parser::ProcedureIdentifier()
 {
 	switch(lookahead)
 	{
-	case IDENTIFIER: // ProcedureIdentifier -> Identifier 	Rule# 102
+	case MP_IDENTIFIER: // ProcedureIdentifier -> Identifier 	Rule# 102
 		Identifier();
 		break;
 	default: //everything else
@@ -1166,7 +1166,7 @@ void Parser::FunctionIdentifier()
 {
 	switch(lookahead)
 	{
-	case IDENTIFIER: // FunctionIdentifier -> Identifier 	Rule# 103
+	case MP_IDENTIFIER: // FunctionIdentifier -> Identifier 	Rule# 103
 		Identifier();
 		break;
 	default: //everything else
@@ -1187,7 +1187,7 @@ void Parser::BooleanExpression()
 	case MP_MINUS:
 	case MP_UNSIGNEDINTEGER:
 	case MP_NOT:
-	case IDENTIFIER: // BooleanExpression -> Expression 	Rule# 104
+	case MP_IDENTIFIER: // BooleanExpression -> Expression 	Rule# 104
 		Expression();
 		break;
 	default: //everything else
@@ -1216,6 +1216,15 @@ void Parser::OrdinalExpression()
 		break;
 	}
 }
+
+
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
+void Parser::Identifier()
+{
+
+}
+
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
@@ -1250,6 +1259,13 @@ void Parser::IdentifierTail()
 		Syntax_Error();
 		break;
 	}
+}
+
+
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
+void Parser::UnsignedInteger()
+{
 }
 
 // precondition: (lookahead is a valid token)

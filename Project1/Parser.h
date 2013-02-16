@@ -57,6 +57,8 @@ private:
 	void Statement();
 	void EmptyStatement();
 	void IdentifierList();
+	void Identifier();
+	void IdentifierTail();
 	void ReadStatement();
 	void WriteStatement();
 	void WriteParameter();
@@ -73,6 +75,15 @@ private:
 	void OrdinalExpression();
 	void Expression();
 	void SimpleExpression();
+	void Term();
+	void Factor();
+	void FactorTail();
+	void MultiplyingOperator();
+	void TermTail();
+	void OptionalSign();
+	void AddingOperator();
+	void UnsignedInteger();
+	void VariableIdentifier();
 	void ReadParameter();
 	void ReadParameterTail();
 	
