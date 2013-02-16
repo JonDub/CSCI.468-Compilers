@@ -1262,13 +1262,17 @@ void Parser::Match(Token token)
 	if (token == lookahead)
 		lookahead = scanner->getToken();
 	else
-		Syntax_Error();
+		Syntax_Error(token);
 }
 
-void Parser::Syntax_Error()
+void Parser::Syntax_Error(Token expected)
 {
 	//stops everything and gives a meaningful error message 
 	cout << "Syntax error found on line " << scanner->getLineNumber() << ", column "
-		<< scanner->getColumnNumber() << endl;
+		<< scanner->getColumnNumber();
+
+	if (expected != MP_NULL)
+		cout << " Expected " << EnumToString(expected) << " but found " << EnumToString(lookahead);
+	cout << endl;
 	throw -1;
 }

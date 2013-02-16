@@ -86,6 +86,6 @@ private:
 	void ReadParameterTail();
 	
 	void Match(Token);
-	void Syntax_Error();
+	void Syntax_Error(Token = MP_NULL);
 };
 
