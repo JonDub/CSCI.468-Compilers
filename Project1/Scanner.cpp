@@ -96,34 +96,35 @@ Token Scanner::getToken()
 		appropriate FSA for them to parse. 
 	*/		
 
-	// detect EOF and skip whitespace
-	if (!hasToken()){
-		token = MP_EOF;
-	}
 
-	char next = peek();
-		
+	// do not return MP_COMMENT to the parser
+	do 
+	{	
+		// detect EOF and skip whitespace
+		hasToken();	
+		char next = peek();	
 
-	// reset the TOKEN and LEXEME variables, FSA will set new values
-	token = MP_NULL;
-	lexeme = "";
+		// reset the TOKEN and LEXEME variables, FSA will set new values
+		token = MP_NULL;
+		lexeme = "";
 
-	// which FSA to call 
-	if (next == '\'') // handle strings, start with ' (single quote)
-		handleString();
-	else if (isdigit(next))
-		handleNumberic();
-	else if (isalpha(next) || next=='_' ) // check for identifier
-		handleWord();
-	else if (next == '{' || next == '}') // handle comments first becuase {} are considered punctation
-		handleComment();
-	else if (ispunct(next))
-		handleSymbol();
-	else if (next == EOF) {
-		token = MP_EOF;
-		lexeme = get();
-	}
-	
+		// which FSA to call 
+		if (next == '\'') // handle strings, start with ' (single quote)
+			handleString();
+		else if (isdigit(next))
+			handleNumberic();
+		else if (isalpha(next) || next=='_' ) // check for identifier
+			handleWord();
+		else if (next == '{' || next == '}') // handle comments first becuase {} are considered punctation
+			handleComment();
+		else if (ispunct(next))
+			handleSymbol();
+		else if (next == EOF) {
+			token = MP_EOF;
+			lexeme = get();
+		}
+	} while (token == MP_COMMENT);
+
 	return token; 
 };
 
