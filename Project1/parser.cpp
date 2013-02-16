@@ -21,11 +21,7 @@ bool Parser::Parse()
 	{
 		// start the parser. set the first lookahead
 		lookahead = scanner->getToken();
-
-		if (SystemGoal())
-			return true;
-
-		return false;
+		return SystemGoal();
 	} 
 	catch (int ex)
 	{
