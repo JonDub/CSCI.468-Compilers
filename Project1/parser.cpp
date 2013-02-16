@@ -85,10 +85,10 @@ void Parser::Block()
 {
 	switch (lookahead)
 	{
-	case MP_VAR: // when MP_VAR Block -> VariableDeclarationPart ";" VariableDeclarationTail, rule #4
+	case MP_VAR: // Rule# 4		Block -> VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart 
 		VariableDeclarationPart();
-		Match(MP_SCOLON);
-		VariableDeclarationTail();
+		ProcedureAndFunctionDeclarationPart();
+		StatementPart();
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -319,7 +319,6 @@ void Parser::FormalParameterSection()
 	case MP_VAR: // FormalParameterSection -> VariableParameterSection, rule #24
 		VariableParameterSection();
 		break;
-
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -605,6 +604,7 @@ void Parser::WriteParameter()
 // postcondition: (method applies rules correctly)
 void Parser::AssignmentStatement()
 {
+	// TODO: Look at rule # 51, 52
 	switch (lookahead)
 	{
 	case MP_IDENTIFIER: // Rule# 52 	AssignmentStatement -> FunctionIdentifier ":=" Expression
@@ -931,9 +931,10 @@ void Parser::SimpleExpression()
 	switch(lookahead)
 	{
 	case MP_MINUS:
-	case MP_PLUS: // Term -> Factor FactorTail  	Rule# 79
-		Factor();
-		FactorTail();
+	case MP_PLUS: // Rule# 79 	SimpleExpression -> OptionalSign Term TermTail  +,-
+		OptionalSign();
+		Term();
+		TermTail();
 		break;
 	default: //everything else
 		Syntax_Error();
