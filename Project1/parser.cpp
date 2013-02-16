@@ -1096,7 +1096,7 @@ void Parser::Factor()
 	switch(lookahead)
 	{
 	case MP_UNSIGNEDINTEGER: // Factor -> UnsignedInteger  	Rule# 95
-		UnsignedInteger();
+		Match(MP_UNSIGNEDINTEGER);
 		break;
 		//////////////////////// Conflict 96, 99
 	case MP_NOT: // "not" Factor  	Rule# 97
@@ -1122,7 +1122,7 @@ void Parser::ProgramIdentifier()
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // ProgramIdentifier -> Identifier  	Rule# 100M
-		Identifier();
+		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1137,7 +1137,7 @@ void Parser::VariableIdentifier()
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // VariableIdentifier -> Identifier  	Rule# 101
-		Identifier();
+		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1152,7 +1152,7 @@ void Parser::ProcedureIdentifier()
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // ProcedureIdentifier -> Identifier 	Rule# 102
-		Identifier();
+		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1167,7 +1167,7 @@ void Parser::FunctionIdentifier()
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // FunctionIdentifier -> Identifier 	Rule# 103
-		Identifier();
+		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1217,15 +1217,6 @@ void Parser::OrdinalExpression()
 	}
 }
 
-
-// precondition: (lookahead is a valid token)
-// postcondition: (method applies rules correctly)
-void Parser::Identifier()
-{
-
-}
-
-
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::IdentifierList()
@@ -1233,7 +1224,7 @@ void Parser::IdentifierList()
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 106
-		Identifier();
+		Match(MP_IDENTIFIER);
 		IdentifierTail();
 		break;
 	default: //everything else
@@ -1250,7 +1241,7 @@ void Parser::IdentifierTail()
 	{
 	case MP_COMMA: // IdentifierTail -> "," Identifier IdentifierTail  		Rule# 107
 		Match(MP_COMMA);
-		Identifier();
+		Match(MP_IDENTIFIER);
 		IdentifierTail();
 		break;
 	case MP_COLON: // IdentifierTail -> e  		Rule# 108
@@ -1261,12 +1252,6 @@ void Parser::IdentifierTail()
 	}
 }
 
-
-// precondition: (lookahead is a valid token)
-// postcondition: (method applies rules correctly)
-void Parser::UnsignedInteger()
-{
-}
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)

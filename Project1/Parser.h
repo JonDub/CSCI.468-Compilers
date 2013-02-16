@@ -57,7 +57,6 @@ private:
 	void Statement();
 	void EmptyStatement();
 	void IdentifierList();
-	void Identifier();
 	void IdentifierTail();
 	void ReadStatement();
 	void WriteStatement();
@@ -82,7 +81,6 @@ private:
 	void TermTail();
 	void OptionalSign();
 	void AddingOperator();
-	void UnsignedInteger();
 	void VariableIdentifier();
 	void ReadParameter();
 	void ReadParameterTail();
