@@ -1,0 +1,19 @@
+1 	SystemGoal -> Program eof 	\program\
+2 	Program -> ProgramHeading ";" Block "." 	\program\
+3 	ProgramHeading -> "program" ProgramIdentifier 	\program\
+100 	ProgramIdentifier -> Identifier 	Identifier
+4 	Block -> VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart 	\var\
+5 	VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail 	\var\
+8 	VariableDeclaration -> Identifierlist ":" Type 	Identifierlist
+106 	IdentifierList -> Identifier IdentifierTail 	Identifier
+107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
+108 	IdentifierTail -> e 	e
+9 	Type -> "Integer" 	\Integer\
+7 	VariableDeclarationTail -> e
+14 	ProcedureAndFunctionDeclarationPart -> e 	e
+27 	StatementPart -> CompoundStatement 	\begin\
+28 	CompoundStatement -> "begin" StatementSequence "end" 	\begin\
+29 	StatementSequence -> Statement StatementTail 	e, \read\, \begin\, \write\, \if\, \repeat\, Identifier, \for\, \while\
+41 	Statement -> ProcedureStatement 	Identifier
+64 	ProcedureStatement -> ProcedureIdentifier OptionalActualParameterList 	Identifier
+65 	OptionalActualParameterList -> "(" ActualParameter ActualParameterTail ")" 	\(\

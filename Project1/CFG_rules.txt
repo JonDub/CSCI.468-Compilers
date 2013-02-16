@@ -1,0 +1,108 @@
+1 	SystemGoal -> Program eof 	\program\
+2 	Program -> ProgramHeading ";" Block "." 	\program\
+3 	ProgramHeading -> "program" ProgramIdentifier 	\program\
+4 	Block -> VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart 	\var\
+5 	VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail 	\var\
+6 	VariableDeclarationTail -> VariableDeclaration ";" VariableDeclarationTail 	Identifierlist
+7 	VariableDeclarationTail -> e
+8 	VariableDeclaration -> Identifierlist ":" Type 	Identifierlist
+9 	Type -> "Integer" 	\Integer\
+10 	Type -> "Float" 	\Float\
+11 	Type -> "Boolean" 	\Boolean\
+12 	ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart 	\procedure\
+13 	ProcedureAndFunctionDeclarationPart -> FunctionDeclaration ProcedureAndFunctionDeclarationPart 	\function\
+14 	ProcedureAndFunctionDeclarationPart -> e 	e
+15 	ProcedureDeclaration -> ProcedureHeading ";" Block ";" 	\procedure\
+16 	FunctionDeclaration -> FunctionHeading ";" Block ";" 	\function\
+17 	ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList 	\procedure\
+18 	FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type 	\function\
+19 	OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")" 	\(\
+20 	OptionalFormalParameterList -> e 	e
+21 	FormalParameterSectionTail -> ";" FormalParameterSection FormalParameterSectionTail 	\;\
+22 	FormalParameterSectionTail -> e 	e
+23 	FormalParameterSection -> ValueParameterSection 	Identifier
+24 	FormalParameterSection -> VariableParameterSection 	\var\
+25 	ValueParameterSection -> IdentifierList ":" Type 	Identifier
+26 	VariableParameterSection -> "var" IdentifierList ":" Type 	\var\
+27 	StatementPart -> CompoundStatement 	\begin\
+28 	CompoundStatement -> "begin" StatementSequence "end" 	\begin\
+29 	StatementSequence -> Statement StatementTail 	e, \read\, \begin\, \write\, \if\, \repeat\, Identifier, \for\, \while\
+30 	StatementTail -> ";" Statement StatementTail 	\;\
+31 	StatementTail -> e 	e
+32 	Statement -> EmptyStatement 	e
+33 	Statement -> CompoundStatement 	\begin\
+34 	Statement -> ReadStatement 	\read\
+35 	Statement -> WriteStatement 	\write\
+36 	Statement -> AssignmentStatement 	Identifier
+37 	Statement -> IfStatement 	\if\
+38 	Statement -> WhileStatement 	\while\
+39 	Statement -> RepeatStatement 	\repeat\
+40 	Statement -> ForStatement 	\for\
+41 	Statement -> ProcedureStatement 	Identifier
+42 	EmptyStatement -> e 	e
+43 	ReadStatement -> "read" "(" ReadParameter ReadParameterTail ")" 	\read\
+44 	ReadParameterTail -> "," ReadParameter ReadParameterTail 	\,\
+45 	ReadParameterTail -> e 	e
+46 	ReadParameter -> VariableIdentifier 	Identifier
+47 	WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")" 	\write\
+48 	WriteParameterTail -> "," WriteParameter 	\,\
+49 	WriteParameterTail -> e 	e
+50 	WriteParameter -> OrdinalExpression 	\+\, \-\, e
+51 	AssignmentStatement -> VariableIdentifier ":=" Expression 	Identifier
+52 	AssignmentStatement -> FunctionIdentifier ":=" Expression 	Identifier
+53 	IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart 	\if\
+54 	OptionalElsePart -> "else" Statement 	\else\
+55 	OptionalElsePart -> e 	e
+56 	RepeatStatement -> "repeat" StatementSequence "until" BooleanExpression 	\repeat\
+57 	WhileStatement -> "while" BooleanExpression "do" Statement 	\while\
+58 	ForStatement -> "for" ControlVariable ":=" InitialValue StepValue FinalValue "do" Statement 	\for\
+59 	ControlVariable -> VariableIdentifier 	Identifier
+60 	InitialValue -> OrdinalExpression 	\+\, \-\, e
+61 	StepValue -> "to" 	\to\
+62 	StepValue -> "downto" 	\downto\
+63 	FinalValue -> OrdinalExpression 	\+\, \-\, e
+64 	ProcedureStatement -> ProcedureIdentifier OptionalActualParameterList 	Identifier
+65 	OptionalActualParameterList -> "(" ActualParameter ActualParameterTail ")" 	\(\
+66 	OptionalActualParameterList -> e 	e
+67 	ActualParameterTail -> "," ActualParameter ActualParameterTail 	\,\
+68 	ActualParameterTail -> e 	e
+69 	ActualParameter -> OrdinalExpression 	\+\, \-\, e
+70 	Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\, e
+71 	OptionalRelationalPart -> RelationalOperator SimpleExpression 	\=\, \<\, \>\, \<=\, \>=\, \<>\
+72 	OptionalRelationalPart -> e 	e
+73 	RelationalOperator -> "=" 	\=\
+74 	RelationalOperator -> "<" 	\<\
+75 	RelationalOperator -> ">" 	\>\
+76 	RelationalOperator -> "<=" 	\<=\
+77 	RelationalOperator -> ">=" 	\>=\
+78 	RelationalOperator -> "<>" 	\<>\
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+80 	TermTail -> AddingOperator Term TermTail 	\+\, \-\, \or\
+81 	TermTail -> e 	e
+82 	OptionalSign -> "+" 	\+\
+83 	OptionalSign -> "-" 	\-\
+84 	OptionalSign -> e 	e
+85 	AddingOperator -> "+" 	\+\
+86 	AddingOperator -> "-" 	\-\
+87 	AddingOperator -> "or" 	\or\
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+89 	FactorTail -> MultiplyingOperator Factor FactorTail 	\*\, \div\, \mod\, \and\
+90 	FactorTail -> e 	e
+91 	MultiplyingOperator -> "*" 	\*\
+92 	MultiplyingOperator -> "div" 	\div\
+93 	MultiplyingOperator -> "mod" 	\mod\
+94 	MultiplyingOperator -> "and" 	\and\
+95 	Factor -> UnsignedInteger 	UnsignedInteger
+96 	Factor -> VariableIdentifier 	Identifier
+97 	Factor -> "not" Factor 	\not\
+98 	Factor -> "(" Expression ")" 	\(\
+99 	Factor -> FunctionIdentifier OptionalActualParameterList 	Identifier
+100 	ProgramIdentifier -> Identifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+102 	ProcedureIdentifier -> Identifier 	Identifier
+103 	FunctionIdentifier -> Identifier 	Identifier
+104 	BooleanExpression -> Expression 	\+\, \-\, e
+105 	OrdinalExpression -> Expression 	\+\, \-\, e
+106 	IdentifierList -> Identifier IdentifierTail 	Identifier
+107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
+108 	IdentifierTail -> e 	e

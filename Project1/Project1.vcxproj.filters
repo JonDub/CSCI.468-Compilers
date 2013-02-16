@@ -24,6 +24,9 @@
     <ClCompile Include="Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParseTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scanner.h">
@@ -35,5 +38,11 @@
     <ClInclude Include="Tokens.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParseTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CFG_rules.txt" />
   </ItemGroup>
 </Project>

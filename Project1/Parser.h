@@ -4,8 +4,7 @@
 #include <iomanip>
 #include "Scanner.h"
 #include "Tokens.h"
-using namespace std;
-
+#include "ParseTree.h"
 
 class Parser
 {
@@ -19,7 +18,7 @@ public:
 private:
 	Token lookahead;
 	Scanner* scanner;
-
+	ParseTree* parseTree;
 
 	bool SystemGoal();
 	void Program();
