@@ -85,8 +85,7 @@ void Parser::Block()
 {
 	switch (lookahead)
 	{
-	case MP_VAR: // when MP_VAR Block -> "var" VariableDeclarationPart ";" VariableDeclarationTail, rule #4
-		Match(MP_VAR);
+	case MP_VAR: // when MP_VAR Block -> VariableDeclarationPart ";" VariableDeclarationTail, rule #4
 		VariableDeclarationPart();
 		Match(MP_SCOLON);
 		VariableDeclarationTail();

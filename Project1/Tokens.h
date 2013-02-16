@@ -23,9 +23,7 @@ enum Token
 	MP_EOF,
 	MP_EQUAL,
 	MP_ERROR,
-	MP_FIXED,
 	MP_FIXED_LIT,
-	MP_FLOAT,
 	MP_FLOAT_LIT,
 	MP_FOR,
 	MP_FUNCTION,
@@ -33,7 +31,6 @@ enum Token
 	MP_GTHAN,
 	MP_IDENTIFIER,
 	MP_IF,
-	MP_INTEGER,
 	MP_INTEGER_LIT,
 	MP_LEQUAL,
 	MP_LTHAN,
@@ -85,9 +82,7 @@ static std::string EnumToString(Token t)
 	case MP_EOF: return "MP_EOF";
 	case MP_EQUAL: return "MP_EQUAL";
 	case MP_ERROR: return "MP_ERROR";
-	case MP_FIXED: return "MP_FIXED";
 	case MP_FIXED_LIT: return "MP_FIXED_LIT";
-	case MP_FLOAT: return "MP_FLOAT";
 	case MP_FLOAT_LIT: return "MP_FLOAT_LIT";
 	case MP_FOR: return "MP_FOR";
 	case MP_FUNCTION: return "MP_FUNCTION";
@@ -95,7 +90,6 @@ static std::string EnumToString(Token t)
 	case MP_GTHAN: return "MP_GTHAN";
 	case MP_IDENTIFIER: return "MP_IDENTIFIER";
 	case MP_IF: return "MP_IF";
-	case MP_INTEGER: return "MP_INTEGER";
 	case MP_INTEGER_LIT: return "MP_INTEGER_LIT";
 	case MP_LEQUAL: return "MP_LEQUAL";
 	case MP_LTHAN: return "MP_LTHAN";

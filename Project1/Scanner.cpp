@@ -18,12 +18,12 @@ Scanner::Scanner()
 	tokens["downto"]	= MP_DOWNTO;
 	tokens["else"]		= MP_ELSE;
 	tokens["end"]		= MP_END;
-	tokens["fixed"]		= MP_FIXED;
-	tokens["float"]		= MP_FLOAT;
+	tokens["fixed"]		= MP_FIXED_LIT;
+	tokens["float"]		= MP_FLOAT_LIT;
 	tokens["for"]		= MP_FOR;
 	tokens["function"]	= MP_FUNCTION;
 	tokens["if"]		= MP_IF;
-	tokens["integer"]	= MP_INTEGER;
+	tokens["integer"]	= MP_INTEGER_LIT;
 	tokens["mod"]		= MP_MOD;
 	tokens["not"]		= MP_NOT;
 	tokens["or"]		= MP_OR;
