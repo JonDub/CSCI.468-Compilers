@@ -42,7 +42,6 @@ bool Parser::SystemGoal()
 	case MP_PROGRAM: //SystemGoal --> Program eof, rule #1     
 		Program();
 		Match(MP_EOF);
-		cout << "The input program parses!";
 		return true;
 	default: //everything else
 		Syntax_Error();
