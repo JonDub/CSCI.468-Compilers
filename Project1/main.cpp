@@ -17,7 +17,7 @@ int main ( int argc, char* argv[] )
 
 	if (parser->Parse())
 	{
-		cout << "The program parses ok." << endl;
+		cout << "The input program parses!" << endl;
 	} 
 	
 	// press enter to exit
