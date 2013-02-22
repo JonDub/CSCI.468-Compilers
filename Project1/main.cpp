@@ -38,6 +38,7 @@ int testScanner(  int argc, char* argv[] )
 	cout << setw(15) << left << "Token" << setw(45) << "Lexeme" << setw(8) << "Line #" << setw(8) << "Column #" << endl;
 	while (dispatcher->hasToken())
 	{
+		int silly2=9;
 		// Keep on separate couts so that getToken() executes first
 		cout << setw(15) << left << EnumToString(dispatcher->getToken());
 		cout << setw(45);

@@ -25,6 +25,7 @@ bool Parser::Parse()
 	{
 		// start the parser. set the first lookahead
 		lookahead = scanner->getToken();
+		
 		return SystemGoal();
 	} 
 	catch (int ex)
@@ -37,8 +38,10 @@ bool Parser::Parse()
 // postcondition: (method applies rules correctly)
 bool Parser::SystemGoal()
 {
+		int silly=9;
 	switch(lookahead)
 	{
+	
 	case MP_PROGRAM: //SystemGoal --> Program eof, rule #1     
 		parseTree->LogExpansion(1);
 		Program();
@@ -90,9 +93,10 @@ void Parser::ProgramHeading()
 // postcondition: (method applies rules correctly)
 void Parser::Block()
 {
+	/// This code block should be looked as possibly being incorrect
 	switch (lookahead)
 	{
-	case MP_VAR: // Rule# 4		Block -> VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart 
+	case MP_VAR: // Rule# 4		Block -> VariableDeclarationPart 
 		parseTree->LogExpansion(4);
 		VariableDeclarationPart();
 		ProcedureAndFunctionDeclarationPart();
@@ -144,6 +148,7 @@ void Parser::VariableDeclarationTail()
 		Syntax_Error();
 		break;
 	}
+	
 }
 
 // precondition: (lookahead is a valid token)
@@ -157,6 +162,8 @@ void Parser::VariableDeclaration()
 		IdentifierList();
 		Match(MP_COLON);
 		Type();
+		
+		
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -211,6 +218,7 @@ void Parser::ProcedureAndFunctionDeclarationPart()
 		Syntax_Error();
 		break;
 	}
+	
 }
 
 // precondition: (lookahead is a valid token)
@@ -428,6 +436,7 @@ void Parser::CompoundStatement()
 // postcondition: (method applies rules correctly)
 void Parser::StatementSequence()
 {
+
 	switch(lookahead)
 	{
 	case MP_SCOLON: //StatementSequence -> Statement StatementTail, rule #29 {e}
@@ -440,10 +449,12 @@ void Parser::StatementSequence()
 	case MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #29
 	case MP_FOR: //StatementSequence -> Statement StatementTail, rule #29
 	case MP_WHILE: //StatementSequence -> Statement StatementTail, rule #29
+	
 		parseTree->LogExpansion(29);
 		Statement();
 		StatementTail();
 		break;
+	case MP_VAR:
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -475,8 +486,10 @@ void Parser::StatementTail()
 // postcondition: (method applies rules correctly)
 void Parser::Statement()
 {
+	
 	switch(lookahead)
 	{
+	
 	case MP_END: //Statement -> EmptyStatement, rule #32
 	case MP_SCOLON: //Statement -> EmptyStatement, rule #32
 		parseTree->LogExpansion(32);
@@ -494,7 +507,7 @@ void Parser::Statement()
 		parseTree->LogExpansion(35);
 		WriteStatement();
 		break;
-	case MP_ASSIGN: //Statement -> AssignmentStatement, rule #36
+	case MP_IDENTIFIER: //Statement -> AssignmentStatement, rule #36 //Unless should be a procedure or function
 		parseTree->LogExpansion(36);
 		AssignmentStatement();
 		break;
@@ -514,10 +527,10 @@ void Parser::Statement()
 		parseTree->LogExpansion(40);
 		ForStatement();
 		break;
-	case MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #41
-		parseTree->LogExpansion(41);
-		ProcedureStatement();
-		break;
+	//case MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #41
+	//	parseTree->LogExpansion(41);
+	//	ProcedureStatement();
+	//	break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -661,9 +674,9 @@ void Parser::AssignmentStatement()
 	// TODO: Look at rule # 51, 52
 	switch (lookahead)
 	{
-	case MP_IDENTIFIER: // Rule# 52 	AssignmentStatement -> FunctionIdentifier ":=" Expression
+	case MP_IDENTIFIER: // Rule# 51 	AssignmentStatement -> FunctionIdentifier ":=" Expression
 		parseTree->LogExpansion(52);
-		FunctionIdentifier();
+		VariableIdentifier();
 		Match(MP_ASSIGN);
 		Expression();
 		break;
@@ -735,12 +748,14 @@ void Parser::RepeatStatement()
 // postcondition: (method applies rules correctly)
 void Parser::WhileStatement()
 {
+	
 	switch(lookahead)
 	{
 	case MP_WHILE: // Rule# 57 	WhileStatement -> "while" BooleanExpression "do" Statement
 		parseTree->LogExpansion(57);
 		Match(MP_WHILE);
 		BooleanExpression();
+
 		Match(MP_DO);
 		Statement();
 		break;
@@ -927,8 +942,12 @@ void Parser::ActualParameter()
 // postcondition: (method applies rules correctly)
 void Parser::Expression()
 {
+	
 	switch(lookahead)
 	{
+	case MP_IDENTIFIER:
+	case MP_INTEGER_LIT:
+	case MP_UNSIGNEDINTEGER:
 	case MP_MINUS:
 	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	Rule# 70
 		parseTree->LogExpansion(70);
@@ -1011,6 +1030,9 @@ void Parser::SimpleExpression()
 {
 	switch(lookahead)
 	{
+	case MP_IDENTIFIER:
+	case MP_UNSIGNEDINTEGER:
+	case MP_INTEGER_LIT:
 	case MP_MINUS:
 	case MP_PLUS: // Rule# 79 	SimpleExpression -> OptionalSign Term TermTail  +,-
 		parseTree->LogExpansion(79);
@@ -1018,6 +1040,8 @@ void Parser::SimpleExpression()
 		Term();
 		TermTail();
 		break;
+	
+		
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -1028,8 +1052,10 @@ void Parser::SimpleExpression()
 // postcondition: (method applies rules correctly)
 void Parser::TermTail()
 {
+	
 	switch(lookahead)
 	{
+	
 	case MP_OR:
 	case MP_PLUS:
 	case MP_MINUS:// TermTail -> AddingOperator Term TermTail  	Rule# 80
@@ -1039,6 +1065,13 @@ void Parser::TermTail()
 		TermTail();
 	case MP_END:
 	case MP_SCOLON: // TermTail -> {e} 	Rule# 81
+	case MP_EQUAL:
+	case MP_LTHAN:
+	case MP_GTHAN:
+	case MP_GEQUAL:
+	case MP_LEQUAL:
+	case MP_DO:
+	case MP_THEN:
 		parseTree->LogExpansion(81);
 		break;
 	default: //everything else
@@ -1051,6 +1084,7 @@ void Parser::TermTail()
 // postcondition: (method applies rules correctly)
 void Parser::OptionalSign()
 {
+	int silly=9;
 	switch(lookahead)
 	{
 	case MP_PLUS: // OptionalSign -> "+" Rule #82
@@ -1064,6 +1098,7 @@ void Parser::OptionalSign()
 	case MP_IDENTIFIER:
 	case MP_NOT:
 	case MP_UNSIGNEDINTEGER:
+	case MP_INTEGER_LIT:
 	case MP_RPAREN:
 	case MP_LPAREN: // OptionalSign -> {e} Rule #84
 		parseTree->LogExpansion(84);
@@ -1105,11 +1140,13 @@ void Parser::Term()
 	switch(lookahead)
 	{
 	case MP_UNSIGNEDINTEGER:
+	case MP_INTEGER_LIT:
 	case MP_NOT:
 	case MP_IDENTIFIER: // Term -> Factor FactorTail  	Rule# 88
 		parseTree->LogExpansion(88);
 		Factor();
 		FactorTail();
+		TermTail();
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1142,7 +1179,10 @@ void Parser::FactorTail()
 	case MP_LTHAN:
 	case MP_RPAREN:
 	case MP_LPAREN:
+	case MP_SCOLON:
 	case MP_END:
+	case MP_DO:
+	case MP_THEN:
 	case MP_NEQUAL: // FactorTail -> {e}	Rule# 90
 		parseTree->LogExpansion(90);
 		break;
@@ -1184,8 +1224,14 @@ void Parser::MultiplyingOperator()
 // postcondition: (method applies rules correctly)
 void Parser::Factor()
 {
+	
 	switch(lookahead)
 	{
+		// Scanner Issue Integer_Lits instead of UnsignedInteger
+	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95
+		parseTree->LogExpansion(95);
+		Match(MP_INTEGER_LIT);
+		break;
 	case MP_UNSIGNEDINTEGER: // Factor -> UnsignedInteger  	Rule# 95
 		parseTree->LogExpansion(95);
 		Match(MP_UNSIGNEDINTEGER);
@@ -1203,6 +1249,11 @@ void Parser::Factor()
 		Match(MP_RPAREN);
 		break;
 		//////////////////////// Conflict 96, 99
+	case MP_IDENTIFIER:
+		parseTree->LogExpansion(96);
+		VariableIdentifier();
+		
+		break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -1277,6 +1328,7 @@ void Parser::FunctionIdentifier()
 // postcondition: (method applies rules correctly)
 void Parser::BooleanExpression()
 {
+	
 	switch(lookahead)
 	{
 	case MP_LPAREN:
@@ -1284,6 +1336,7 @@ void Parser::BooleanExpression()
 	case MP_PLUS:
 	case MP_MINUS:
 	case MP_UNSIGNEDINTEGER:
+	case MP_INTEGER_LIT:
 	case MP_NOT:
 	case MP_IDENTIFIER: // BooleanExpression -> Expression 	Rule# 104
 		parseTree->LogExpansion(104);
@@ -1372,7 +1425,7 @@ void Parser::Syntax_Error(Token expected)
 {
 	//stops everything and gives a meaningful error message 
 	cout << "Syntax error found on line " << scanner->getLineNumber() << ", column " << scanner->getColumnNumber();
-
+	
 	if (expected != MP_NULL)
 		cout << ". Expected " << EnumToString(expected) << " but found " << EnumToString(lookahead);
 	cout << endl;
