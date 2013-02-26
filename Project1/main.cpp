@@ -6,8 +6,25 @@
 #include "Tokens.h"
 using namespace std;
 
+/*
+*	FUNCTION PROTOTYPES
+*/
+void Debug()
+{
 
+}
+
+int TestParser(int, char*);
+int TestScanner(int, char*);
+
+// Program Driver
 int main ( int argc, char* argv[] )
+{
+	Debug();
+}
+
+
+int TestParser(int argc, char* argv[])
 {
 	// name of the file to parse through
 	const char* fName = argv[1];
@@ -25,9 +42,8 @@ int main ( int argc, char* argv[] )
 	std::cin.get();
 	return 0;
 }
-
 // was used to test the scanner
-int testScanner(  int argc, char* argv[] )
+int TestScanner(  int argc, char* argv[] )
 {
 	// name of the file to parse through
 	const char* fName = argv[1];
