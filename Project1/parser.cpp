@@ -38,7 +38,6 @@ bool Parser::Parse()
 // postcondition: (method applies rules correctly)
 bool Parser::SystemGoal()
 {
-		int silly=9;
 	switch(lookahead)
 	{
 	
@@ -1084,7 +1083,6 @@ void Parser::TermTail()
 // postcondition: (method applies rules correctly)
 void Parser::OptionalSign()
 {
-	int silly=9;
 	switch(lookahead)
 	{
 	case MP_PLUS: // OptionalSign -> "+" Rule #82
