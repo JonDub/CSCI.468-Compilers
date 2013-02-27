@@ -4,6 +4,9 @@
 #include "Scanner.h"
 #include "Parser.h"
 #include "Tokens.h"
+#include "SymbolTable.h"
+#include "Record.h"
+
 using namespace std;
 
 /*
@@ -11,8 +14,26 @@ using namespace std;
 */
 void Debug()
 {
+	SymbolTable* table = new SymbolTable();
+	table->CreateTable();
+	table->CreateTable();
 
+	Record* rec = new Record();
+
+	table->InsertRecord(MP_ASSIGN, "test", 2, 16);
+	table->InsertRecord(MP_BEGIN, "test2", 22, 64);
+	table->InsertRecord(MP_COMMENT, "test3", 21, 654);
+	table->InsertRecord(MP_DO, "test4", 223, 698);
+	table->InsertRecord(MP_GTHAN, "test5", 25, 648);
+	table->InsertRecord(MP_ASSIGN, "test6", 26, 1586);
+	table->InsertRecord(MP_ASSIGN, "test7", 29, 156);
+	table->InsertRecord(MP_ASSIGN, "test8", 20, 625);
+
+
+	table->LookupRecord(MP_ASSIGN, "test2");
+	int j = 0;
 }
+
 
 int TestParser(int, char*);
 int TestScanner(int, char*);
@@ -39,7 +60,7 @@ int TestParser(int argc, char* argv[])
 	
 	// press enter to exit
 	cout << endl << "Done. Press Enter to exit." << endl;
-	std::cin.get();
+	cin.get();
 	return 0;
 }
 // was used to test the scanner
@@ -72,6 +93,6 @@ int TestScanner(  int argc, char* argv[] )
 
 	// press enter to exit
 	printf("Done. Press Enter to exit.\n");
-	std::cin.get();
+	cin.get();
 	return 0;
 }

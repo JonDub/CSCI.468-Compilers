@@ -1,9 +1,7 @@
 #pragma once
 
 #include <string>
-
-// Does not work for what we need
-//#define stringify( name ) # name
+using namespace std;
 
 enum Token
 {
@@ -63,7 +61,7 @@ enum Token
 
 // Sorry, I couldn't find any easier way to do this. 
 // Takes a token enum and returns the string equivalent for output
-static std::string EnumToString(Token t)
+static string EnumToString(Token t)
 {
 	switch (t)
 	{
