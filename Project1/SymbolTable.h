@@ -15,33 +15,25 @@ public:
 	~SymbolTable();
 
 	// Insert a record into the top most table in the vector
-	int InsertRecord(Token, string, int, int);
+	bool InsertRecord(Token, string, int, int);
 
 	// Search the top most table in the vector, then its parent, and so on
-	Record* LookupRecord(Token, string);	
+	// Search by name
+	// Returns a pointer to the record of information, returns a NULL pointer otherwise
+	Record* LookupRecord(string);	
 
 	// Always creates a table at the top of the vector 
+	// Returns true if inserted, false if already in table and not inserted
 	bool CreateTable();
 
 	// Always remove the top most table in the vecotr
+	// Returns true if table was removed
 	bool RemoveTable();
 
 private:
-
-	/*struct PairHash
-	{
-		size_t operator()(const pair<Token, string> &pair) const
-		{
-			return static_cast<size_t>(pair.first)
-				* static_cast<size_t>(Token::MP_WRITE)
-				+ static_cast<size_t>(pair.second)
-		}
-	};*/
-
-	// Our table structure that contains the records
+	// Table structure that contains the records for each scope
 	struct Table {
-		unordered_map < Token , Record* > records;
-		//unordered_map < pair< Token, string > , Record* > records;
+		unordered_map < string , Record* > records;
 	};	
 
 	// Vector of tables, each one in the scope of its parent

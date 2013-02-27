@@ -12,22 +12,33 @@ SymbolTable::~SymbolTable(void)
 
 
 // Insert a record into the top most table in the vector
-int SymbolTable::InsertRecord(Token token, string name, int row, int col)
+bool SymbolTable::InsertRecord(Token token, string name, int row, int col)
 {
-	Table* t = tables.at(tables.size() - 1);
-	//t->records[pair< Token, string >(token, name)] = new Record(token, name, row, col); 
-	t->records[ token] = new Record(token, name, row, col); 
-	return 1;
+	Record* r = LookupRecord(name);
+
+	if (r == NULL){
+		Table* t = tables.at(tables.size() - 1);
+		t->records[name] = new Record(token, name, row, col); 
+		return true;
+	} else {
+		return false;
+	}
 }
 
-// Search the top most table in the vector, then its parent, and so on
-Record* SymbolTable::LookupRecord(Token token, string name)
+// Search the top most table in the vector, then its parent, and so on to the root table
+Record* SymbolTable::LookupRecord(string name)
 {
-	Table* t = tables.at(tables.size() - 1);
-	unordered_map< Token, Record* >::const_iterator p = t->records.find(token);
+	unordered_map< string, Record* >::const_iterator p;
 
-	if (p != t->records.end()) {
-		return p->second;
+	for (int i = 0; i < tables.size(); i++)
+	{
+		Table* t = tables.at(tables.size() - 1 - i);
+		p = t->records.find(name);
+
+		if (p != t->records.end())
+			return p->second;
+		else
+			continue;
 	}
 	return NULL;
 }

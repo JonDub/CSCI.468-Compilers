@@ -14,24 +14,43 @@ using namespace std;
 */
 void Debug()
 {
+	bool in;
+
 	SymbolTable* table = new SymbolTable();
 	table->CreateTable();
+
+	in = table->InsertRecord(MP_ASSIGN, "test2", 2, 16);
+	in = table->InsertRecord(MP_ASSIGN, "test55", 2, 16);
+	in = table->InsertRecord(MP_DIV, "test234234", 2, 16);
+	in = table->InsertRecord(MP_DOWNTO, "test6345", 2, 16);
+	in = table->InsertRecord(MP_COMMENT, "test234", 2, 16);
+
 	table->CreateTable();
 
-	Record* rec = new Record();
+	in = table->InsertRecord(MP_ASSIGN, "test", 2, 16);
+	in = table->InsertRecord(MP_BEGIN, "test2", 22, 64);
+	in = table->InsertRecord(MP_COMMENT, "test3", 21, 654);
+	in = table->InsertRecord(MP_DO, "test4", 223, 698);
+	in = table->InsertRecord(MP_GTHAN, "test5", 25, 648);
+	in = table->InsertRecord(MP_ASSIGN, "test234", 26, 1586);
+	in = table->InsertRecord(MP_ASSIGN, "test7", 29, 156);
+	in = table->InsertRecord(MP_ASSIGN, "test8", 20, 625);
+	
+	in = table->InsertRecord(MP_ASSIGN, "test884", 20, 625);
+	in = table->InsertRecord(MP_ASSIGN, "test4", 20, 625);
+	
+	Record* r = table->LookupRecord("test7");
+	r = table->LookupRecord("test234234");
+	r = table->LookupRecord("test55");
+	r = table->LookupRecord("test12342");
+	r = table->LookupRecord("test8");
+	r = table->LookupRecord("test88234");
+	r = table->LookupRecord("test8");
+	r = table->LookupRecord("test7");
+	r = table->LookupRecord("test7sd2");
 
-	table->InsertRecord(MP_ASSIGN, "test", 2, 16);
-	table->InsertRecord(MP_BEGIN, "test2", 22, 64);
-	table->InsertRecord(MP_COMMENT, "test3", 21, 654);
-	table->InsertRecord(MP_DO, "test4", 223, 698);
-	table->InsertRecord(MP_GTHAN, "test5", 25, 648);
-	table->InsertRecord(MP_ASSIGN, "test6", 26, 1586);
-	table->InsertRecord(MP_ASSIGN, "test7", 29, 156);
-	table->InsertRecord(MP_ASSIGN, "test8", 20, 625);
-
-
-	table->LookupRecord(MP_ASSIGN, "test2");
-	int j = 0;
+	if (r == NULL)
+		int f = 0;
 }
 
 
