@@ -2,6 +2,8 @@
 
 Parser::Parser(void)
 {
+	scanner = NULL;
+	parseTree = NULL;
 }
 
 Parser::Parser(const char* fName)
@@ -16,7 +18,10 @@ Parser::Parser(const char* fName)
 
 Parser::~Parser(void)
 {
-	delete scanner;
+	if (scanner != NULL) 
+		delete scanner;
+	if (parseTree != NULL) 
+		delete parseTree;
 }
 
 bool Parser::Parse()

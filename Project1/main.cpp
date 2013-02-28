@@ -14,7 +14,7 @@ using namespace std;
 /*
 *	FUNCTION PROTOTYPES
 */
-void Debug()
+bool Debug(int argc, char* argv[])
 {
 	bool in;
 	Record* r;
@@ -26,13 +26,11 @@ void Debug()
 	assert(in == true);
 	in = table->InsertRecord(MP_ASSIGN, "test55", 2, 16);
 	assert(in == true);
-
 	in = table->InsertRecord(MP_DIV, "test234234", 2, 16);
 	in = table->InsertRecord(MP_DOWNTO, "test6345", 2, 16);
 	in = table->InsertRecord(MP_COMMENT, "test234", 2, 16);
 
 	table->CreateTable();
-
 	in = table->InsertRecord(MP_ASSIGN, "test", 2, 16);
 	assert(in == true);
 	in = table->InsertRecord(MP_BEGIN, "test2", 22, 64);
@@ -45,7 +43,6 @@ void Debug()
 	assert(in == false);
 	in = table->InsertRecord(MP_ASSIGN, "test7", 29, 156);
 	in = table->InsertRecord(MP_ASSIGN, "test8", 20, 625);
-	
 	in = table->InsertRecord(MP_ASSIGN, "test884", 20, 625);
 	in = table->InsertRecord(MP_ASSIGN, "test4", 23, 625);
 	
@@ -55,14 +52,11 @@ void Debug()
 	assert(r->Row() == 29);
 	assert(r->Col() == 156);
 	assert(r->token() == MP_ASSIGN);
-
 	r = table->LookupRecord("test234234");
 	assert(r != NULL);
-
 	r = table->LookupRecord("test55879455");
 	assert(r == NULL);
 	r = table->LookupRecord("test12342");
-	
 	r = table->LookupRecord("test8");
 	assert(r != NULL);
 	assert(strcmp(r->Name().c_str(), "test8") == 0);
@@ -74,6 +68,12 @@ void Debug()
 	assert(r == NULL);
 	r = table->LookupRecord("test7sd2");
 	assert(r == NULL);
+
+
+	// test parser
+	const char* fName = argv[1];
+	Parser * p = new Parser(fName);
+	return p->Parse();
 }
 
 
@@ -83,7 +83,7 @@ int TestScanner(int, char*[]);
 // Program Driver
 int main ( int argc, char* argv[] )
 {
-	Debug();
+	Debug(argc, &(*argv));
 	//TestParser(argc, &(*argv));
 	//TestScanner(argc, &(*argv));
 }
