@@ -759,7 +759,6 @@ void Parser::WhileStatement()
 		parseTree->LogExpansion(57);
 		Match(MP_WHILE);
 		BooleanExpression();
-
 		Match(MP_DO);
 		Statement();
 		break;
@@ -1043,9 +1042,7 @@ void Parser::SimpleExpression()
 		OptionalSign();
 		Term();
 		TermTail();
-		break;
-	
-		
+		break;		
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -1067,6 +1064,7 @@ void Parser::TermTail()
 		AddingOperator();
 		Term();
 		TermTail();
+		break;
 	case MP_END:
 	case MP_SCOLON: // TermTail -> {e} 	Rule# 81
 	case MP_EQUAL:
