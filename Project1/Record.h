@@ -14,7 +14,7 @@ public:
 
 	int Row(){ return _row; };
 	int Col(){ return _col; };
-	string Lexeme(){ return _name; };
+	string Name(){ return _name; };
 	Token token(){ return _token; };
 
 private:

@@ -37,8 +37,6 @@ Record* SymbolTable::LookupRecord(string name)
 
 		if (p != t->records.end())
 			return p->second;
-		else
-			continue;
 	}
 	return NULL;
 }

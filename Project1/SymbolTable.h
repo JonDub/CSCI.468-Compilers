@@ -1,10 +1,10 @@
 #pragma once
 
-#include <unordered_map>;
-#include "Tokens.h";
-#include "Record.h";
-#include <string>;
-#include <vector>;
+#include <unordered_map>
+#include "Tokens.h"
+#include "Record.h"
+#include <string>
+#include <vector>
 
 using namespace std;
 

@@ -1,6 +1,8 @@
 // Driver for the application
 #include <iostream>
 #include <iomanip>
+#include <assert.h>
+#include <string>
 #include "Scanner.h"
 #include "Parser.h"
 #include "Tokens.h"
@@ -15,12 +17,16 @@ using namespace std;
 void Debug()
 {
 	bool in;
-
+	Record* r;
 	SymbolTable* table = new SymbolTable();
+
 	table->CreateTable();
 
 	in = table->InsertRecord(MP_ASSIGN, "test2", 2, 16);
+	assert(in == true);
 	in = table->InsertRecord(MP_ASSIGN, "test55", 2, 16);
+	assert(in == true);
+
 	in = table->InsertRecord(MP_DIV, "test234234", 2, 16);
 	in = table->InsertRecord(MP_DOWNTO, "test6345", 2, 16);
 	in = table->InsertRecord(MP_COMMENT, "test234", 2, 16);
@@ -28,39 +34,58 @@ void Debug()
 	table->CreateTable();
 
 	in = table->InsertRecord(MP_ASSIGN, "test", 2, 16);
+	assert(in == true);
 	in = table->InsertRecord(MP_BEGIN, "test2", 22, 64);
+	assert(in == false);
 	in = table->InsertRecord(MP_COMMENT, "test3", 21, 654);
 	in = table->InsertRecord(MP_DO, "test4", 223, 698);
 	in = table->InsertRecord(MP_GTHAN, "test5", 25, 648);
+	assert(in == true);
 	in = table->InsertRecord(MP_ASSIGN, "test234", 26, 1586);
+	assert(in == false);
 	in = table->InsertRecord(MP_ASSIGN, "test7", 29, 156);
 	in = table->InsertRecord(MP_ASSIGN, "test8", 20, 625);
 	
 	in = table->InsertRecord(MP_ASSIGN, "test884", 20, 625);
-	in = table->InsertRecord(MP_ASSIGN, "test4", 20, 625);
+	in = table->InsertRecord(MP_ASSIGN, "test4", 23, 625);
 	
-	Record* r = table->LookupRecord("test7");
-	r = table->LookupRecord("test234234");
-	r = table->LookupRecord("test55");
-	r = table->LookupRecord("test12342");
-	r = table->LookupRecord("test8");
-	r = table->LookupRecord("test88234");
-	r = table->LookupRecord("test8");
 	r = table->LookupRecord("test7");
-	r = table->LookupRecord("test7sd2");
+	assert(r != NULL);
+	assert(strcmp(r->Name().c_str(), "test7") == 0);
+	assert(r->Row() == 29);
+	assert(r->Col() == 156);
+	assert(r->token() == MP_ASSIGN);
 
-	if (r == NULL)
-		int f = 0;
+	r = table->LookupRecord("test234234");
+	assert(r != NULL);
+
+	r = table->LookupRecord("test55879455");
+	assert(r == NULL);
+	r = table->LookupRecord("test12342");
+	
+	r = table->LookupRecord("test8");
+	assert(r != NULL);
+	assert(strcmp(r->Name().c_str(), "test8") == 0);
+	assert(r->Row() == 20);
+	assert(r->Col() == 625);
+	assert(r->token() == MP_ASSIGN);
+
+	r = table->LookupRecord("test88234");
+	assert(r == NULL);
+	r = table->LookupRecord("test7sd2");
+	assert(r == NULL);
 }
 
 
-int TestParser(int, char*);
-int TestScanner(int, char*);
+int TestParser(int, char*[]);
+int TestScanner(int, char*[]);
 
 // Program Driver
 int main ( int argc, char* argv[] )
 {
 	Debug();
+	//TestParser(argc, &(*argv));
+	//TestScanner(argc, &(*argv));
 }
 
 
