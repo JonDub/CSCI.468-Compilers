@@ -102,6 +102,13 @@ void Parser::Block()
 		ProcedureAndFunctionDeclarationPart();
 		StatementPart();
 		break;
+	case MP_PROCEDURE: /// this is not strictly with the grammer but a procedure should not have to declare local variables
+	case MP_FUNCTION:
+	case MP_BEGIN:
+		ProcedureAndFunctionDeclarationPart();
+		StatementPart();
+		break;
+		
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -121,6 +128,7 @@ void Parser::VariableDeclarationPart()
 		Match(MP_SCOLON);
 		VariableDeclarationTail();
 		break;
+	
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -232,6 +240,7 @@ void Parser::ProcedureDeclaration()
 		ProcedureHeading();
 		Match(MP_SCOLON);
 		Block();
+		
 		Match(MP_SCOLON);
 		break;
 	default: //everything else

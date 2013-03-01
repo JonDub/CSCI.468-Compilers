@@ -8,9 +8,126 @@
 106 	IdentifierList -> Identifier IdentifierTail 	Identifier
 107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
 107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
+107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
+107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
+107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
+107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
 108 	IdentifierTail -> e 	e
 9 	Type -> "Integer" 	\Integer\
 7 	VariableDeclarationTail -> e
+12 	ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart 	\procedure\
+15 	ProcedureDeclaration -> ProcedureHeading ";" Block ";" 	\procedure\
+17 	ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList 	\procedure\
+102 	ProcedureIdentifier -> Identifier 	Identifier
+19 	OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")" 	\(\
+23 	FormalParameterSection -> ValueParameterSection 	Identifier
+25 	ValueParameterSection -> IdentifierList ":" Type 	Identifier
+106 	IdentifierList -> Identifier IdentifierTail 	Identifier
+107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
+107 	IdentifierTail -> "," Identifier IdentifierTail 	\,\
+108 	IdentifierTail -> e 	e
+9 	Type -> "Integer" 	\Integer\
+21 	FormalParameterSectionTail -> ";" FormalParameterSection FormalParameterSectionTail 	\;\
+24 	FormalParameterSection -> VariableParameterSection 	\var\
+26 	VariableParameterSection -> "var" IdentifierList ":" Type 	\var\
+106 	IdentifierList -> Identifier IdentifierTail 	Identifier
+108 	IdentifierTail -> e 	e
+9 	Type -> "Integer" 	\Integer\
+22 	FormalParameterSectionTail -> e 	e
+14 	ProcedureAndFunctionDeclarationPart -> e 	e
+27 	StatementPart -> CompoundStatement 	\begin\
+28 	CompoundStatement -> "begin" StatementSequence "end" 	\begin\
+29 	StatementSequence -> Statement StatementTail 	e, \read\, \begin\, \write\, \if\, \repeat\, Identifier, \for\, \while\
+37 	Statement -> IfStatement 	\if\
+53 	IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart 	\if\
+104 	BooleanExpression -> Expression 	\+\, \-\, e
+70 	Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\, e
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+84 	OptionalSign -> e 	e
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+71 	OptionalRelationalPart -> RelationalOperator SimpleExpression 	\=\, \<\, \>\, \<=\, \>=\, \<>\
+74 	RelationalOperator -> "<" 	\<\
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+84 	OptionalSign -> e 	e
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+36 	Statement -> AssignmentStatement 	Identifier
+52 	AssignmentStatement -> FunctionIdentifier ":=" Expression 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+70 	Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\, e
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+84 	OptionalSign -> e 	e
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+72 	OptionalRelationalPart -> e 	e
+54 	OptionalElsePart -> "else" Statement 	\else\
+36 	Statement -> AssignmentStatement 	Identifier
+52 	AssignmentStatement -> FunctionIdentifier ":=" Expression 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+70 	Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\, e
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+84 	OptionalSign -> e 	e
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+72 	OptionalRelationalPart -> e 	e
+30 	StatementTail -> ";" Statement StatementTail 	\;\
+37 	Statement -> IfStatement 	\if\
+53 	IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart 	\if\
+104 	BooleanExpression -> Expression 	\+\, \-\, e
+70 	Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\, e
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+84 	OptionalSign -> e 	e
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+71 	OptionalRelationalPart -> RelationalOperator SimpleExpression 	\=\, \<\, \>\, \<=\, \>=\, \<>\
+74 	RelationalOperator -> "<" 	\<\
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+84 	OptionalSign -> e 	e
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+36 	Statement -> AssignmentStatement 	Identifier
+52 	AssignmentStatement -> FunctionIdentifier ":=" Expression 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+70 	Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\, e
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+84 	OptionalSign -> e 	e
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+72 	OptionalRelationalPart -> e 	e
+55 	OptionalElsePart -> e 	e
+30 	StatementTail -> ";" Statement StatementTail 	\;\
+32 	Statement -> EmptyStatement 	e
+42 	EmptyStatement -> e 	e
+31 	StatementTail -> e 	e
 14 	ProcedureAndFunctionDeclarationPart -> e 	e
 27 	StatementPart -> CompoundStatement 	\begin\
 28 	CompoundStatement -> "begin" StatementSequence "end" 	\begin\
