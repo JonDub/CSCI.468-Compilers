@@ -38,7 +38,7 @@ bool Parser::Parse()
 // postcondition: (method applies rules correctly)
 bool Parser::SystemGoal()
 {
-		int silly=9;
+		
 	switch(lookahead)
 	{
 	
@@ -93,7 +93,7 @@ void Parser::ProgramHeading()
 // postcondition: (method applies rules correctly)
 void Parser::Block()
 {
-	/// This code block should be looked as possibly being incorrect
+	
 	switch (lookahead)
 	{
 	case MP_VAR: // Rule# 4		Block -> VariableDeclarationPart 
@@ -474,6 +474,7 @@ void Parser::StatementTail()
 		StatementTail();
 		break;
 	case MP_END://StatementTail -> e , rule #31 
+	case MP_UNTIL:   // This may not be correct repeat until statements may should be bracketed in begin end?
 		parseTree->LogExpansion(31);
 		break;
 	default: //everything else
@@ -492,6 +493,8 @@ void Parser::Statement()
 	
 	case MP_END: //Statement -> EmptyStatement, rule #32
 	case MP_SCOLON: //Statement -> EmptyStatement, rule #32
+	case MP_UNTIL:
+	case MP_ELSE:
 		parseTree->LogExpansion(32);
 		EmptyStatement();
 		break;
@@ -545,6 +548,8 @@ void Parser::EmptyStatement()
 	{
 	case MP_SCOLON:
 	case MP_END:  // EmptyStatement -> e Rule #42 
+	case MP_UNTIL:
+	case MP_ELSE:
 		parseTree->LogExpansion(42);
 		break;
 	default:
@@ -585,7 +590,7 @@ void Parser::ReadParameterTail()
 		ReadParameter();
 		ReadParameterTail();
 		break;
-	case MP_LPAREN:	// Rule# 45 	ReadParameterTail -> e 	
+	case MP_RPAREN:	// Rule# 45 	ReadParameterTail -> e 	
 		parseTree->LogExpansion(45);
 		break;
 	default:
@@ -621,6 +626,7 @@ void Parser::WriteStatement()
 		Match(MP_WRITE);
 		Match(MP_LPAREN);
 		WriteParameter();
+		
 		WriteParameterTail();
 		Match(MP_RPAREN);
 		break;
@@ -658,6 +664,8 @@ void Parser::WriteParameter()
 	{
 	case MP_PLUS:
 	case MP_MINUS:  // Rule# 50 	WriteParameter -> OrdinalExpression
+	case MP_UNSIGNEDINTEGER:
+	case MP_INTEGER_LIT:
 		parseTree->LogExpansion(50);
 		OrdinalExpression();
 		break;
@@ -697,6 +705,7 @@ void Parser::IfStatement()
 		BooleanExpression();
 		Match(MP_THEN);
 		Statement();
+		
 		OptionalElsePart();
 		break;
 	default:
@@ -710,12 +719,14 @@ void Parser::OptionalElsePart()
 {
 	switch (lookahead)
 	{
-	case MP_IF: // Rule# 54 	OptionalElsePart -> "else" Statement
+	case MP_ELSE: // Rule# 54 	OptionalElsePart -> "else" Statement
 		parseTree->LogExpansion(54);
 		Match(MP_ELSE);
 		Statement();
 		break;
 		//case MP_ELSE CONFLICT POSSIBLE
+	
+
 	case MP_END:
 	case MP_SCOLON: // OptionalElsePart -> e Rule #55
 		parseTree->LogExpansion(55);
@@ -810,10 +821,11 @@ void Parser::InitialValue()
 {
 	switch(lookahead)
 	{
-	case MP_TO: //sure?
-	case MP_DOWNTO: //sure?
+	
 	case MP_MINUS:
 	case MP_PLUS: // Rule# 60	InitialValue -> OrdinalExpression
+	case MP_INTEGER_LIT:
+	case MP_UNSIGNEDINTEGER:
 		parseTree->LogExpansion(60);
 		OrdinalExpression();
 		break;
@@ -851,6 +863,8 @@ void Parser::FinalValue()
 	{
 	case MP_PLUS:
 	case MP_MINUS: // FinalValue -> OrdinalExpression Rule# 63
+	case MP_INTEGER_LIT:
+	case MP_UNSIGNEDINTEGER:
 		parseTree->LogExpansion(63);
 		OrdinalExpression();
 		break;
@@ -979,6 +993,10 @@ void Parser::OptionalRelationalPart()
 	case MP_SCOLON:
 	case MP_END:
 	case MP_THEN:
+	case MP_ELSE:
+	case MP_RPAREN:
+	case MP_TO:
+	case MP_DOWNTO:
 	case MP_DO: //OptionalRelationalPart -> e Rule #72
 		parseTree->LogExpansion(72);
 		break;
@@ -1072,6 +1090,10 @@ void Parser::TermTail()
 	case MP_LEQUAL:
 	case MP_DO:
 	case MP_THEN:
+	case MP_RPAREN:
+	case MP_TO:
+	case MP_DOWNTO:
+	case MP_ELSE:
 		parseTree->LogExpansion(81);
 		break;
 	default: //everything else
@@ -1084,7 +1106,7 @@ void Parser::TermTail()
 // postcondition: (method applies rules correctly)
 void Parser::OptionalSign()
 {
-	int silly=9;
+	
 	switch(lookahead)
 	{
 	case MP_PLUS: // OptionalSign -> "+" Rule #82
@@ -1183,6 +1205,9 @@ void Parser::FactorTail()
 	case MP_END:
 	case MP_DO:
 	case MP_THEN:
+	case MP_ELSE:
+	case MP_TO:
+	case MP_DOWNTO:
 	case MP_NEQUAL: // FactorTail -> {e}	Rule# 90
 		parseTree->LogExpansion(90);
 		break;
@@ -1358,7 +1383,8 @@ void Parser::OrdinalExpression()
 	case MP_IDENTIFIER:
 	case MP_NOT:
 	case MP_UNSIGNEDINTEGER:
-	case MP_RPAREN:
+	case MP_INTEGER_LIT:
+	//case MP_RPAREN:
 	case MP_LPAREN:
 	case MP_PLUS: // OrdinalExpression -> Expression	Rule# 105
 		parseTree->LogExpansion(105);
