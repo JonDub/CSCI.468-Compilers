@@ -11,6 +11,7 @@ class Parser
 public:
 	Parser(void);
 	Parser(const char*);
+	void SetInputFile(const char*);
 	~Parser(void);
 
 	bool Parse();
