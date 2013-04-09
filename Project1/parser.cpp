@@ -14,6 +14,12 @@ Parser::Parser(const char* fName)
 	parseTree->ReadCFGRules("CFG_rules.txt");
 }
 
+void Parser::SetInputFile(const char* fName)
+{
+	if (scanner != NULL)
+		scanner->openFile(fName);
+}
+
 Parser::~Parser(void)
 {
 	delete scanner;
