@@ -45,7 +45,7 @@ Scanner::~Scanner(void)
 	file.close();
 }
 
-bool Scanner::openFile(const char* fName)
+bool Scanner::openFile(std::string fName)
 {
 	/*
 		Open file and initialize the file pointer

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 #include <iomanip>
 #include "Scanner.h"
 #include "Tokens.h"
@@ -10,8 +11,8 @@ class Parser
 {
 public:
 	Parser(void);
-	Parser(const char*);
-	void SetInputFile(const char*);
+	Parser(std::string);
+	void SetInputFile(std::string);
 	~Parser(void);
 
 	bool Parse();

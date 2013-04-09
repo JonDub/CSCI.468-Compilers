@@ -335,4 +335,47 @@
 70 	Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\, e
 79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
 84 	OptionalSign -> e 	e
-88 	Term -> Factor FactorTail 	UnsignedInteger, \no
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+80 	TermTail -> AddingOperator Term TermTail 	\+\, \-\, \or\
+85 	AddingOperator -> "+" 	\+\
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+95 	Factor -> UnsignedInteger 	UnsignedInteger
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+72 	OptionalRelationalPart -> e 	e
+30 	StatementTail -> ";" Statement StatementTail 	\;\
+32 	Statement -> EmptyStatement 	e
+42 	EmptyStatement -> e 	e
+31 	StatementTail -> e 	e
+104 	BooleanExpression -> Expression 	\+\, \-\, e
+70 	Expression -> SimpleExpression OptionalRelationalPart 	\+\, \-\, e
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+84 	OptionalSign -> e 	e
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+71 	OptionalRelationalPart -> RelationalOperator SimpleExpression 	\=\, \<\, \>\, \<=\, \>=\, \<>\
+75 	RelationalOperator -> ">" 	\>\
+79 	SimpleExpression -> OptionalSign Term TermTail 	\+\, \-\, e
+84 	OptionalSign -> e 	e
+88 	Term -> Factor FactorTail 	UnsignedInteger, \not\, \(\, Identifier
+96 	Factor -> VariableIdentifier 	Identifier
+101 	VariableIdentifier -> Identifier 	Identifier
+90 	FactorTail -> e 	e
+81 	TermTail -> e 	e
+81 	TermTail -> e 	e
+31 	StatementTail -> e 	e
+1 	SystemGoal -> Program eof 	\program\
+2 	Program -> ProgramHeading ";" Block "." 	\program\
+3 	ProgramHeading -> "program" ProgramIdentifier 	\program\
+100 	ProgramIdentifier -> Identifier 	Identifier
+Syntax error found on line 1, column 15. Expected MP_SCOLON but found MP_LPAREN

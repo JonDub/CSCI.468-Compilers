@@ -12,7 +12,7 @@ public:
 	Scanner(void);
 	virtual ~Scanner(void);
 
-	bool openFile(const char*);
+	bool openFile(std::string);
 	Token getToken();
 	string getLexeme();
 	unsigned int getLineNumber();

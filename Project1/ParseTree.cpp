@@ -23,6 +23,10 @@ void ParseTree::LogExpansion(int rule)
 		outFile << "Unknown rule number: " << rule << '\n';
 }
 
+void ParseTree::LogMessage(std::string msg)
+{
+	outFile << msg << std::endl;
+}
 
 bool ParseTree::ReadCFGRules(std::string filename)
 {

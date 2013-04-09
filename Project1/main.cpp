@@ -71,27 +71,8 @@ bool Debug(int argc, char* argv[])
 
 
 	// test parser
-	const char* fName = "Programs/test2.mp";
+	std::string fName = "Programs/test2.mp";
 	Parser * p = new Parser(fName);
-
-	assert(p->Parse() == true);
-	
-	p->SetInputFile("Programs/error.up");
-	assert(p->Parse() == true);
-	
-	p->SetInputFile("Programs/literal.up");
-	assert(p->Parse() == true);
-	
-	p->SetInputFile("Programs/sample.mp");
-	assert(p->Parse() == true);
-	
-	p->SetInputFile("Programs/symbol.up");
-	assert(p->Parse() == true);
-	
-	p->SetInputFile("Programs/words.up");
-	assert(p->Parse() == true);
-	
-	p->SetInputFile("Programs/symbol.up");
 	assert(p->Parse() == true);
 
 	p->SetInputFile("Programs/program1.up");
@@ -128,7 +109,7 @@ int main ( int argc, char* argv[] )
 int TestParser(int argc, char* argv[])
 {
 	// name of the file to parse through
-	const char* fName = argv[1];
+	std::string fName = argv[1];
 
 	// create our parser and start getting shit done
 	Parser* parser = new Parser(fName);
@@ -147,7 +128,7 @@ int TestParser(int argc, char* argv[])
 int TestScanner(  int argc, char* argv[] )
 {
 	// name of the file to parse through
-	const char* fName = argv[1];
+	std::string fName = "Programs/test2.mp";
 
 	Scanner* dispatcher = new Scanner();
 	dispatcher->openFile(fName);

@@ -4,7 +4,7 @@ Parser::Parser(void)
 {
 }
 
-Parser::Parser(const char* fName)
+Parser::Parser(std::string fName)
 {
 	// create our scanner and parse trees
 	scanner = new Scanner();
@@ -14,10 +14,13 @@ Parser::Parser(const char* fName)
 	parseTree->ReadCFGRules("CFG_rules.txt");
 }
 
-void Parser::SetInputFile(const char* fName)
+void Parser::SetInputFile(std::string fName)
 {
 	if (scanner != NULL)
-		scanner->openFile(fName);
+		delete scanner;
+
+	scanner = new Scanner();
+	scanner->openFile(fName);
 }
 
 Parser::~Parser(void)
@@ -1465,10 +1468,19 @@ void Parser::Match(Token token)
 void Parser::Syntax_Error(Token expected)
 {
 	//stops everything and gives a meaningful error message 
-	cout << "Syntax error found on line " << scanner->getLineNumber() << ", column " << scanner->getColumnNumber();
-	
-	if (expected != MP_NULL)
-		cout << ". Expected " << EnumToString(expected) << " but found " << EnumToString(lookahead);
-	cout << endl;
+	std::string msg = "Syntax error found on line ";
+	msg.append(to_string(scanner->getLineNumber()));
+	msg.append(", column ");
+	msg.append(to_string(scanner->getColumnNumber()));
+	msg.append(". ");
+
+	if (expected != MP_NULL) {
+		msg.append("Expected ");
+		msg.append(EnumToString(expected));
+		msg.append(" but found ");
+		msg.append(EnumToString(lookahead));
+	}
+	cout << msg << std::endl;
+	parseTree->LogMessage(msg);
 	throw -1;
 }

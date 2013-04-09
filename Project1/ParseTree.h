@@ -13,6 +13,7 @@ public:
 
 	bool ReadCFGRules(std::string);
 	void LogExpansion(int);
+	void LogMessage(std::string);
 
 private:
 	std::ofstream outFile; // outfile to write parse tree
