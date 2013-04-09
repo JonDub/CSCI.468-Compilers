@@ -66,6 +66,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ParseTree.h" />
+    <ClInclude Include="Record.h" />
+    <ClInclude Include="SymbolTable.h" />
     <ClInclude Include="Tokens.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Scanner.h" />
@@ -74,7 +76,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="ParseTree.cpp" />
+    <ClCompile Include="Record.cpp" />
     <ClCompile Include="Scanner.cpp" />
+    <ClCompile Include="SymbolTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CFG_rules.txt" />
