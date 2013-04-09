@@ -73,7 +73,16 @@ bool Debug(int argc, char* argv[])
 	// test parser
 	const char* fName = argv[1];
 	Parser * p = new Parser(fName);
-	return p->Parse();
+	p->SetInputFile("../Programs/program1.up");
+	assert(p->Parse() == true);
+	p->SetInputFile("../Programs/program2.up");
+	assert(p->Parse() == true);
+	p->SetInputFile("../Programs/program3.up");
+	assert(p->Parse() == true);
+	p->SetInputFile("../Programs/program4.up");
+	assert(p->Parse() == true);
+
+	return 0;
 }
 
 
@@ -83,8 +92,8 @@ int TestScanner(int, char*[]);
 // Program Driver
 int main ( int argc, char* argv[] )
 {
-	//Debug(argc, &(*argv));
-	TestParser(argc, &(*argv));
+	Debug(argc, &(*argv));
+	//TestParser(argc, &(*argv));
 	//TestScanner(argc, &(*argv));
 }
 

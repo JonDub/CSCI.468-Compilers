@@ -1,5 +1,0 @@
-program test; 
-var train, tree, speaker, couch, ba_con: integer; 
-begin
-
-end.
