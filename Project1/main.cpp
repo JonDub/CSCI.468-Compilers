@@ -71,15 +71,42 @@ bool Debug(int argc, char* argv[])
 
 
 	// test parser
-	const char* fName = argv[1];
+	const char* fName = "Programs/test2.mp";
 	Parser * p = new Parser(fName);
-	p->SetInputFile("../Programs/program1.up");
+
 	assert(p->Parse() == true);
-	p->SetInputFile("../Programs/program2.up");
+	
+	p->SetInputFile("Programs/error.up");
 	assert(p->Parse() == true);
-	p->SetInputFile("../Programs/program3.up");
+	
+	p->SetInputFile("Programs/literal.up");
 	assert(p->Parse() == true);
-	p->SetInputFile("../Programs/program4.up");
+	
+	p->SetInputFile("Programs/sample.mp");
+	assert(p->Parse() == true);
+	
+	p->SetInputFile("Programs/symbol.up");
+	assert(p->Parse() == true);
+	
+	p->SetInputFile("Programs/words.up");
+	assert(p->Parse() == true);
+	
+	p->SetInputFile("Programs/symbol.up");
+	assert(p->Parse() == true);
+
+	p->SetInputFile("Programs/program1.up");
+	assert(p->Parse() == true);
+
+	p->SetInputFile("Programs/program2.up");
+	assert(p->Parse() == true);
+
+	p->SetInputFile("Programs/program3.up");
+	assert(p->Parse() == true);
+
+	p->SetInputFile("Programs/program4.up");
+	assert(p->Parse() == true);
+
+	p->SetInputFile("Programs/program5.up");
 	assert(p->Parse() == true);
 
 	return 0;
