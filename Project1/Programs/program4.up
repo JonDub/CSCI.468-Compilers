@@ -1,0 +1,25 @@
+{adapted from http://hypertextbookshop.com/transPL/Contents/01_Topics/04_Chapter_4/01_Section_1/02_page_2_-_Scopes.html}
+program Fred;
+   var A, B, C : Integer;
+   procedure Mary(A : in Integer);
+      var Q, X : Real;
+          Ch   : Character;
+     function Snort(W : in Integer) return Integer;
+         var X : Integer;
+       begin {Snort}
+         return(X := A + C;)
+       end Snort
+   begin {Mary}
+     Read(Q, X, Ch);
+     Write (Snort(C), Q, X, Ch);
+   end Mary;
+   function Factorial(N in Integer) return Integer;
+     begin
+       if N = 0 then return 1
+                else return N*Factorial(N-1);
+     end;
+   begin {Fred}
+     Read(A, B, C);
+     Mary(A);
+     Write(Factorial(B*C));
+   end. {Fred}
