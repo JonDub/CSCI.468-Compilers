@@ -75,7 +75,7 @@ bool Debug(int argc, char* argv[])
 	Parser * p = new Parser(fName);
 	assert(p->Parse() == true);
 
-	p->SetInputFile("Programs/program1.up");
+	p->SetInputFile("Programs/lab10_program1.mp");
 	assert(p->Parse() == true);
 
 	p->SetInputFile("Programs/program2.up");
@@ -129,7 +129,7 @@ int TestParser(int argc, char* argv[])
 int TestScanner(  int argc, char* argv[] )
 {
 	// name of the file to parse through
-	std::string fName = "Programs/test2.mp";
+	std::string fName = argv[1];
 
 	Scanner* dispatcher = new Scanner();
 	dispatcher->openFile(fName);

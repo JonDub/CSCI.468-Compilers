@@ -33,8 +33,7 @@ bool Parser::Parse()
 	try
 	{
 		// start the parser. set the first lookahead
-		lookahead = scanner->getToken();
-		
+		lookahead = scanner->getToken();		
 		return SystemGoal();
 	} 
 	catch (int ex)
@@ -50,7 +49,6 @@ bool Parser::SystemGoal()
 		
 	switch(lookahead)
 	{
-	
 	case MP_PROGRAM: //SystemGoal --> Program eof, rule #1     
 		parseTree->LogExpansion(1);
 		Program();
@@ -111,12 +109,12 @@ void Parser::Block()
 		ProcedureAndFunctionDeclarationPart();
 		StatementPart();
 		break;
-	case MP_PROCEDURE: /// this is not strictly with the grammer but a procedure should not have to declare local variables
-	case MP_FUNCTION:
-	case MP_BEGIN:
-		ProcedureAndFunctionDeclarationPart();
-		StatementPart();
-		break;
+	//case MP_PROCEDURE: /// this is not strictly with the grammer but a procedure should not have to declare local variables //DEBUG
+	//case MP_FUNCTION:
+	//case MP_BEGIN:
+	//	ProcedureAndFunctionDeclarationPart();
+	//	StatementPart();
+	//	break;
 		
 	default: //everything else
 		Syntax_Error();
@@ -136,8 +134,9 @@ void Parser::VariableDeclarationPart()
 		VariableDeclaration();
 		Match(MP_SCOLON);
 		VariableDeclarationTail();
-		break;
-	
+		break;	
+	//case :       // VariableDeclarationPart -> e		Rule# 108		// DEBUG - this rule is not in parser
+	// break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -178,33 +177,7 @@ void Parser::VariableDeclaration()
 		parseTree->LogExpansion(8);
 		IdentifierList();
 		Match(MP_COLON);
-		Type();
-		
-		
-		break;
-	default: //everything else
-		Syntax_Error();
-		break;
-	}
-}
-
-// precondition: (lookahead is a valid token)
-// postcondition: (method applies rules correctly)
-void Parser::Type()
-{
-	switch(lookahead)
-	{
-	case MP_INTEGER_LIT: //Type -> "Integer", rule #9
-		parseTree->LogExpansion(9);
-		Match(MP_INTEGER_LIT);
-		break;
-	case MP_FLOAT_LIT: //Type -> "Float", rule #10
-		parseTree->LogExpansion(10);
-		Match(MP_FLOAT_LIT);
-		break;
-	case MP_BOOLEAN: //Type -> "Boolean", rule #11
-		parseTree->LogExpansion(11);
-		Match(MP_BOOLEAN);
+		Type();		
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -218,24 +191,23 @@ void Parser::ProcedureAndFunctionDeclarationPart()
 {
 	switch(lookahead)
 	{
-	case MP_PROCEDURE: //ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart, rule #12 
-		parseTree->LogExpansion(12);
+	case MP_PROCEDURE: //ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart, rule #9 
+		parseTree->LogExpansion(9);
 		ProcedureDeclaration();
 		ProcedureAndFunctionDeclarationPart();
 		break;
-	case MP_FUNCTION: //ProcedureAndFunctionDeclarationPart -> FunctionDeclaration ProcedureAndFunctionDeclarationPart, rule #13
-		parseTree->LogExpansion(13);
+	case MP_FUNCTION: //ProcedureAndFunctionDeclarationPart -> FunctionDeclaration ProcedureAndFunctionDeclarationPart, rule #10
+		parseTree->LogExpansion(10);
 		FunctionDeclaration();
 		ProcedureAndFunctionDeclarationPart();
 		break;
-	case MP_BEGIN: //ProcedureAndFunctionDeclarationPart -> e, rule #14
-		parseTree->LogExpansion(14);
+	case MP_BEGIN: //ProcedureAndFunctionDeclarationPart -> e, rule #11
+		parseTree->LogExpansion(11);
 		break;
 	default: //everything else
 		Syntax_Error();
 		break;
-	}
-	
+	}	
 }
 
 // precondition: (lookahead is a valid token)
@@ -244,12 +216,11 @@ void Parser::ProcedureDeclaration()
 {
 	switch(lookahead)
 	{
-	case MP_PROCEDURE: //ProcedureHeading ";" Block ";", rule #15
-		parseTree->LogExpansion(15);
+	case MP_PROCEDURE: //ProcedureHeading ";" Block ";", rule #12
+		parseTree->LogExpansion(12);
 		ProcedureHeading();
 		Match(MP_SCOLON);
-		Block();
-		
+		Block();		
 		Match(MP_SCOLON);
 		break;
 	default: //everything else
@@ -264,8 +235,8 @@ void Parser::FunctionDeclaration()
 {
 	switch(lookahead)
 	{
-	case MP_FUNCTION: //FunctionDeclaration -> FunctionHeading ";" Block ";", rule #16
-		parseTree->LogExpansion(16);
+	case MP_FUNCTION: //FunctionDeclaration -> FunctionHeading ";" Block ";", rule #13
+		parseTree->LogExpansion(13);
 		FunctionHeading();
 		Match(MP_SCOLON);
 		Block();
@@ -283,8 +254,8 @@ void Parser::ProcedureHeading()
 {
 	switch(lookahead)
 	{
-	case MP_PROCEDURE: //ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList, rule #17
-		parseTree->LogExpansion(17);
+	case MP_PROCEDURE: //ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList, rule #16
+		parseTree->LogExpansion(16);
 		Match(MP_PROCEDURE);
 		ProcedureIdentifier();
 		OptionalFormalParameterList();
@@ -301,12 +272,12 @@ void Parser::FunctionHeading()
 {
 	switch(lookahead)
 	{
-	case MP_FUNCTION: //FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type rule #18
-		parseTree->LogExpansion(18);
+	case MP_FUNCTION: //FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type rule #15		// DEBUG - current grammer has changed?
+		parseTree->LogExpansion(15);
 		Match(MP_FUNCTION);
 		FunctionIdentifier();
 		OptionalFormalParameterList();
-		Match(MP_COLON);
+		//Match(MP_COLON);	//DEBUG
 		Type();
 		break;
 	default: //everything else
@@ -321,16 +292,16 @@ void Parser::OptionalFormalParameterList()
 {
 	switch(lookahead)
 	{
-	case MP_LPAREN: //OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")", rule #19
-		parseTree->LogExpansion(19);
+	case MP_LPAREN: //OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")", rule #16
+		parseTree->LogExpansion(16);
 		Match(MP_LPAREN);
 		FormalParameterSection();
 		FormalParameterSectionTail();
 		Match(MP_RPAREN);
 		break;
-	case MP_SCOLON: //OptionalFormalParameterList -> e, rule #20
-	case MP_COLON: //OptionalFormalParameterList -> e, rule #20
-		parseTree->LogExpansion(20);
+	case MP_SCOLON: //OptionalFormalParameterList -> e, rule #17
+	case MP_COLON: //OptionalFormalParameterList -> e, rule #17
+		parseTree->LogExpansion(17);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -344,14 +315,14 @@ void Parser::FormalParameterSectionTail()
 {
 	switch(lookahead)
 	{
-	case MP_SCOLON: //FormalParameterSectionTail -> ";" FormalParameterSection FormalParameterSectionTail , rule #21
-		parseTree->LogExpansion(21);
+	case MP_SCOLON: //FormalParameterSectionTail -> ";" FormalParameterSection FormalParameterSectionTail , rule #18
+		parseTree->LogExpansion(18);
 		Match(MP_SCOLON);
 		FormalParameterSection();
 		FormalParameterSectionTail();
 		break;
-	case MP_RPAREN: //FormalParameterSectionTail -> e, rule #22
-		parseTree->LogExpansion(22);
+	case MP_RPAREN: //FormalParameterSectionTail -> e, rule #19
+		parseTree->LogExpansion(19);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -365,12 +336,12 @@ void Parser::FormalParameterSection()
 {
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER:// FormalParameterSection -> ValueParameterSection, rule #23 
-		parseTree->LogExpansion(23);
+	case MP_IDENTIFIER:// FormalParameterSection -> ValueParameterSection, rule #20 
+		parseTree->LogExpansion(20);
 		ValueParameterSection();
 		break;
-	case MP_VAR: // FormalParameterSection -> VariableParameterSection, rule #24
-		parseTree->LogExpansion(24);
+	case MP_VAR: // FormalParameterSection -> VariableParameterSection, rule #21
+		parseTree->LogExpansion(21);
 		VariableParameterSection();
 		break;
 	default: //everything else
@@ -385,8 +356,8 @@ void Parser::ValueParameterSection()
 {
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER:// ValueParameterSection -> IdentifierList ":" Type, rule #25
-		parseTree->LogExpansion(25);
+	case MP_IDENTIFIER:// ValueParameterSection -> IdentifierList ":" Type, rule #22
+		parseTree->LogExpansion(22);
 		IdentifierList();
 		Match(MP_COLON);
 		Type();
@@ -403,8 +374,8 @@ void Parser::VariableParameterSection()
 {
 	switch(lookahead)
 	{
-	case MP_VAR:// VariableParameterSection -> "var" IdentifierList ":" Type, rule #26
-		parseTree->LogExpansion(26);
+	case MP_VAR:// VariableParameterSection -> "var" IdentifierList ":" Type, rule #23
+		parseTree->LogExpansion(23);
 		Match(MP_VAR);
 		IdentifierList();
 		Match(MP_COLON);
@@ -422,8 +393,8 @@ void Parser::StatementPart()
 {
 	switch(lookahead)
 	{
-	case MP_BEGIN: //StatementPart -> CompoundStatement, rule #27
-		parseTree->LogExpansion(27);
+	case MP_BEGIN: //StatementPart -> CompoundStatement, rule #24
+		parseTree->LogExpansion(24);
 		CompoundStatement();
 		break;
 	default: //everything else
@@ -438,8 +409,8 @@ void Parser::CompoundStatement()
 {
 	switch(lookahead)
 	{
-	case MP_BEGIN: //CompoundStatement -> "begin" StatementSequence "end", rule #28
-		parseTree->LogExpansion(28);
+	case MP_BEGIN: //CompoundStatement -> "begin" StatementSequence "end", rule #25
+		parseTree->LogExpansion(25);
 		Match(MP_BEGIN);
 		StatementSequence();
 		Match(MP_END);
@@ -457,22 +428,21 @@ void Parser::StatementSequence()
 
 	switch(lookahead)
 	{
-	case MP_SCOLON: //StatementSequence -> Statement StatementTail, rule #29 {e}
-	case MP_END:  //StatementSequence -> Statement StatementTail, rule #29 {e}
-	case MP_BEGIN: //StatementSequence -> Statement StatementTail, rule #29
-	case MP_READ: //StatementSequence -> Statement StatementTail, rule #29
-	case MP_WRITE: //StatementSequence -> Statement StatementTail, rule #29
-	case MP_IF: //StatementSequence -> Statement StatementTail, rule #29
-	case MP_REPEAT: //StatementSequence -> Statement StatementTail, rule #29
-	case MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #29
-	case MP_FOR: //StatementSequence -> Statement StatementTail, rule #29
-	case MP_WHILE: //StatementSequence -> Statement StatementTail, rule #29
-	
-		parseTree->LogExpansion(29);
+	case MP_SCOLON: //StatementSequence -> Statement StatementTail, rule #26 {e}
+	case MP_END:  //StatementSequence -> Statement StatementTail, rule #26 {e}
+	case MP_BEGIN: //StatementSequence -> Statement StatementTail, rule #26
+	case MP_READ: //StatementSequence -> Statement StatementTail, rule #26
+	case MP_WRITE: //StatementSequence -> Statement StatementTail, rule #26
+	case MP_IF: //StatementSequence -> Statement StatementTail, rule #26
+	case MP_REPEAT: //StatementSequence -> Statement StatementTail, rule #26
+	case MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #26
+	case MP_FOR: //StatementSequence -> Statement StatementTail, rule #26
+	case MP_WHILE: //StatementSequence -> Statement StatementTail, rule #26
+		parseTree->LogExpansion(26);
 		Statement();
 		StatementTail();
 		break;
-	case MP_VAR:
+	//case MP_VAR:	//DEBUG
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -485,15 +455,15 @@ void Parser::StatementTail()
 {
 	switch(lookahead)
 	{
-	case MP_SCOLON://StatementTail -> ";" Statement StatementTail , rule #30
-		parseTree->LogExpansion(30);
+	case MP_SCOLON://StatementTail -> ";" Statement StatementTail , rule #27
+		parseTree->LogExpansion(27);
 		Match(MP_SCOLON);
 		Statement();
 		StatementTail();
 		break;
-	case MP_END://StatementTail -> e , rule #31 
+	case MP_END://StatementTail -> e , rule #28
 	case MP_UNTIL:   // This may not be correct repeat until statements may should be bracketed in begin end?
-		parseTree->LogExpansion(31);
+		parseTree->LogExpansion(28);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -505,51 +475,49 @@ void Parser::StatementTail()
 // postcondition: (method applies rules correctly)
 void Parser::Statement()
 {
-	
 	switch(lookahead)
-	{
-	
-	case MP_END: //Statement -> EmptyStatement, rule #32
-	case MP_SCOLON: //Statement -> EmptyStatement, rule #32
+	{	
+	case MP_END: //Statement -> EmptyStatement, rule #29
+	case MP_SCOLON: //Statement -> EmptyStatement, rule #29
 	case MP_UNTIL:
 	case MP_ELSE:
-		parseTree->LogExpansion(32);
+		parseTree->LogExpansion(29);
 		EmptyStatement();
 		break;
-	case MP_BEGIN: //Statement -> CompoundStatement, rule #33
-		parseTree->LogExpansion(33);
+	case MP_BEGIN: //Statement -> CompoundStatement, rule #30
+		parseTree->LogExpansion(30);
 		CompoundStatement();
 		break;
-	case MP_READ: //Statement -> ReadStatement, rule #34
-		parseTree->LogExpansion(34);
+	case MP_READ: //Statement -> ReadStatement, rule #31
+		parseTree->LogExpansion(31);
 		ReadStatement();
 		break;
-	case MP_WRITE: //Statement -> WriteStatement, rule #35
-		parseTree->LogExpansion(35);
+	case MP_WRITE: //Statement -> WriteStatement, rule #32
+		parseTree->LogExpansion(32);
 		WriteStatement();
 		break;
-	case MP_IDENTIFIER: //Statement -> AssignmentStatement, rule #36 //Unless should be a procedure or function
-		parseTree->LogExpansion(36);
+	case MP_IDENTIFIER: //Statement -> AssignmentStatement, rule #33 //Unless should be a procedure or function
+		parseTree->LogExpansion(33);
 		AssignmentStatement();
 		break;
-	case MP_IF: //Statement -> IfStatement, rule #37
-		parseTree->LogExpansion(37);
+	case MP_IF: //Statement -> IfStatement, rule #34
+		parseTree->LogExpansion(34);
 		IfStatement();
 		break;
-	case MP_WHILE: //Statement -> WhileStatement, rule #38
-		parseTree->LogExpansion(38);
+	case MP_WHILE: //Statement -> WhileStatement, rule #35
+		parseTree->LogExpansion(35);
 		WhileStatement();
 		break;
-	case MP_REPEAT: //Statement -> RepeatStatement, rule #39
-		parseTree->LogExpansion(39);
+	case MP_REPEAT: //Statement -> RepeatStatement, rule #36
+		parseTree->LogExpansion(36);
 		RepeatStatement();
 		break;
-	case MP_FOR: //Statement -> ForStatement, rule #40
-		parseTree->LogExpansion(40);
+	case MP_FOR: //Statement -> ForStatement, rule #37
+		parseTree->LogExpansion(37);
 		ForStatement();
 		break;
-	//case MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #41
-	//	parseTree->LogExpansion(41);
+	//case MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #38			// DEBUG - this case block is commented out but has a rule for it
+	//	parseTree->LogExpansion(38);
 	//	ProcedureStatement();
 	//	break;
 	default: //everything else
@@ -565,10 +533,10 @@ void Parser::EmptyStatement()
 	switch(lookahead)
 	{
 	case MP_SCOLON:
-	case MP_END:  // EmptyStatement -> e Rule #42 
+	case MP_END:  // EmptyStatement -> e Rule #38 
 	case MP_UNTIL:
 	case MP_ELSE:
-		parseTree->LogExpansion(42);
+		parseTree->LogExpansion(38);
 		break;
 	default:
 		Syntax_Error();
@@ -582,8 +550,8 @@ void Parser::ReadStatement()
 {
 	switch(lookahead)
 	{
-	case MP_READ:  // Rule# 43 	ReadStatement -> "read" "(" ReadParameter ReadParameterTail ")" 
-		parseTree->LogExpansion(43);
+	case MP_READ:  // ReadStatement -> "read" "(" ReadParameter ReadParameterTail ")"    Rule #40
+		parseTree->LogExpansion(40);
 		Match(MP_READ);
 		Match(MP_LPAREN);
 		ReadParameter();
@@ -602,14 +570,14 @@ void Parser::ReadParameterTail()
 {
 	switch(lookahead)
 	{
-	case MP_COMMA:  // Rule# 44 	ReadParameterTail -> "," ReadParameter ReadParameterTail
-		parseTree->LogExpansion(44);
+	case MP_COMMA:  // ReadParameterTail -> "," ReadParameter ReadParameterTail		Rule# 42
+		parseTree->LogExpansion(42);
 		Match(MP_COMMA);
 		ReadParameter();
 		ReadParameterTail();
 		break;
-	case MP_RPAREN:	// Rule# 45 	ReadParameterTail -> e 	
-		parseTree->LogExpansion(45);
+	case MP_RPAREN:	// ReadParameterTail -> e 		Rule# 42
+		parseTree->LogExpansion(42);
 		break;
 	default:
 		Syntax_Error();
@@ -623,8 +591,8 @@ void Parser::ReadParameter()
 {
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER: // Rule# 46 	ReadParameter -> VariableIdentifier
-		parseTree->LogExpansion(46);
+	case MP_IDENTIFIER: // ReadParameter -> VariableIdentifier		Rule# 43
+		parseTree->LogExpansion(43);
 		Match(MP_IDENTIFIER);
 		break;
 	default:
@@ -639,12 +607,11 @@ void Parser::WriteStatement()
 {
 	switch(lookahead)
 	{
-	case MP_WRITE: // Rule# 47 	WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")"
-		parseTree->LogExpansion(47);
+	case MP_WRITE: // WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")"	Rule# 44
+		parseTree->LogExpansion(44);
 		Match(MP_WRITE);
 		Match(MP_LPAREN);
-		WriteParameter();
-		
+		WriteParameter();		
 		WriteParameterTail();
 		Match(MP_RPAREN);
 		break;
@@ -660,13 +627,14 @@ void Parser::WriteParameterTail()
 {
 	switch(lookahead)
 	{
-	case MP_COMMA:  // Rule# 48 	WriteParameterTail -> "," WriteParameter
-		parseTree->LogExpansion(48);
+	case MP_COMMA:  // WriteParameterTail -> "," WriteParameter		Rule# 45
+		parseTree->LogExpansion(45);
 		Match(MP_COMMA);
 		WriteParameter();
+		WriteParameterTail();	// DEBUG - this was not here but in the cfg
 		break;
-	case MP_RPAREN: // Rule# 49 	WriteParameterTail -> e
-		parseTree->LogExpansion(49);
+	case MP_RPAREN: // WriteParameterTail -> e		Rule# 46
+		parseTree->LogExpansion(46);
 		break;
 	default:
 		Syntax_Error();
@@ -681,10 +649,10 @@ void Parser::WriteParameter()
 	switch(lookahead)
 	{
 	case MP_PLUS:
-	case MP_MINUS:  // Rule# 50 	WriteParameter -> OrdinalExpression
+	case MP_MINUS:  // WriteParameter -> OrdinalExpression		Rule# 47
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
-		parseTree->LogExpansion(50);
+		parseTree->LogExpansion(47);
 		OrdinalExpression();
 		break;
 	default:
@@ -697,16 +665,17 @@ void Parser::WriteParameter()
 // postcondition: (method applies rules correctly)
 void Parser::AssignmentStatement()
 {
-	// TODO: Look at rule # 51, 52
 	switch (lookahead)
 	{
-	case MP_IDENTIFIER: // Rule# 51 	AssignmentStatement -> FunctionIdentifier ":=" Expression
-		parseTree->LogExpansion(52);
+	case MP_IDENTIFIER: // AssignmentStatement -> VariableIdentifier ":=" Expression		Rule# 48
+		parseTree->LogExpansion(48);
 		VariableIdentifier();
 		Match(MP_ASSIGN);
 		Expression();
 		break;
+	//	DEBUG - see rule 49, need to find follow set and add rule
 	default:
+		Syntax_Error();
 		break;
 	}
 }
@@ -717,13 +686,12 @@ void Parser::IfStatement()
 {
 	switch (lookahead)
 	{
-	case MP_IF: // Rule# 53 	IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart
-		parseTree->LogExpansion(53);
+	case MP_IF: // IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart		Rule# 50
+		parseTree->LogExpansion(50);
 		Match(MP_IF);
 		BooleanExpression();
 		Match(MP_THEN);
-		Statement();
-		
+		Statement();		
 		OptionalElsePart();
 		break;
 	default:
@@ -737,19 +705,18 @@ void Parser::OptionalElsePart()
 {
 	switch (lookahead)
 	{
-	case MP_ELSE: // Rule# 54 	OptionalElsePart -> "else" Statement
-		parseTree->LogExpansion(54);
+	case MP_ELSE: // OptionalElsePart -> "else" Statement		Rule# 51
+		parseTree->LogExpansion(51);
 		Match(MP_ELSE);
 		Statement();
 		break;
-		//case MP_ELSE CONFLICT POSSIBLE
-	
-
+	//case MP_ELSE CONFLICT POSSIBLE
 	case MP_END:
-	case MP_SCOLON: // OptionalElsePart -> e Rule #55
-		parseTree->LogExpansion(55);
+	case MP_SCOLON: // OptionalElsePart -> e	Rule #52
+		parseTree->LogExpansion(52);
 		break;
 	default:
+		Syntax_Error();
 		break;
 	}
 }
@@ -760,8 +727,8 @@ void Parser::RepeatStatement()
 {
 	switch(lookahead)
 	{
-	case MP_REPEAT: // Rule# 56 	RepeatStatement -> "repeat" StatementSequence "until" BooleanExpression
-		parseTree->LogExpansion(56);
+	case MP_REPEAT: // RepeatStatement -> "repeat" StatementSequence "until" BooleanExpression		Rule# 53
+		parseTree->LogExpansion(53);
 		Match(MP_REPEAT);
 		StatementSequence();
 		Match(MP_UNTIL);
@@ -777,14 +744,12 @@ void Parser::RepeatStatement()
 // postcondition: (method applies rules correctly)
 void Parser::WhileStatement()
 {
-	
 	switch(lookahead)
 	{
-	case MP_WHILE: // Rule# 57 	WhileStatement -> "while" BooleanExpression "do" Statement
-		parseTree->LogExpansion(57);
+	case MP_WHILE: // WhileStatement -> "while" BooleanExpression "do" Statement		Rule# 54
+		parseTree->LogExpansion(54);
 		Match(MP_WHILE);
 		BooleanExpression();
-
 		Match(MP_DO);
 		Statement();
 		break;
@@ -800,8 +765,8 @@ void Parser::ForStatement()
 {
 	switch(lookahead)
 	{
-	case MP_FOR: // Rule# 58 	"for" ControlVariable ":=" InitialValue StepValue FinalValue "do" Statement
-		parseTree->LogExpansion(58);
+	case MP_FOR: // "for" ControlVariable ":=" InitialValue StepValue FinalValue "do" Statement		Rule# 55
+		parseTree->LogExpansion(55);
 		Match(MP_FOR);
 		ControlVariable();
 		Match(MP_ASSIGN);
@@ -823,8 +788,8 @@ void Parser::ControlVariable()
 {
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER: // Rule# 59 	ControlVariable -> VariableIdentifier 	Identifier
-		parseTree->LogExpansion(59);
+	case MP_IDENTIFIER: // ControlVariable -> VariableIdentifier Identifier		Rule# 56
+		parseTree->LogExpansion(56);
 		Match(MP_IDENTIFIER);
 		break;
 	default:
@@ -838,13 +803,12 @@ void Parser::ControlVariable()
 void Parser::InitialValue()
 {
 	switch(lookahead)
-	{
-	
+	{	
 	case MP_MINUS:
-	case MP_PLUS: // Rule# 60	InitialValue -> OrdinalExpression
+	case MP_PLUS: // InitialValue -> OrdinalExpression		Rule# 57
 	case MP_INTEGER_LIT:
 	case MP_UNSIGNEDINTEGER:
-		parseTree->LogExpansion(60);
+		parseTree->LogExpansion(57);
 		OrdinalExpression();
 		break;
 	default: //everything else
@@ -859,12 +823,12 @@ void Parser::StepValue()
 {
 	switch(lookahead)
 	{
-	case MP_TO: // Rule# 61 	StepValue -> "to" 
-		parseTree->LogExpansion(61);
+	case MP_TO: // StepValue -> "to"		Rule# 58
+		parseTree->LogExpansion(58);
 		Match(MP_TO);
 		break;
-	case MP_DOWNTO: // Rule# 62 	StepValue -> "downto" 	  
-		parseTree->LogExpansion(62);
+	case MP_DOWNTO: // StepValue -> "downto" 	 Rule# 59
+		parseTree->LogExpansion(59);
 		Match(MP_DOWNTO);
 		break;
 	default:
@@ -880,10 +844,10 @@ void Parser::FinalValue()
 	switch(lookahead)
 	{
 	case MP_PLUS:
-	case MP_MINUS: // FinalValue -> OrdinalExpression Rule# 63
+	case MP_MINUS: // FinalValue -> OrdinalExpression	Rule# 60
 	case MP_INTEGER_LIT:
 	case MP_UNSIGNEDINTEGER:
-		parseTree->LogExpansion(63);
+		parseTree->LogExpansion(60);
 		OrdinalExpression();
 		break;
 	default:
@@ -898,13 +862,13 @@ void Parser::ProcedureStatement()
 {
 	switch (lookahead)
 	{
-	case MP_IDENTIFIER: // Rule# 64 	ProcedureStatement -> ProcedureIdentifier OptionalActualParameterList
-		parseTree->LogExpansion(64);
+	case MP_IDENTIFIER: // ProcedureStatement -> ProcedureIdentifier OptionalActualParameterList		Rule# 61
+		parseTree->LogExpansion(61);
 		Match(MP_IDENTIFIER);
 		OptionalActualParameterList();
 		break;
-		//had case MP_SCOLON -> rule 30, not sure
 	default:
+		Syntax_Error();
 		break;
 	}
 }
@@ -915,16 +879,16 @@ void Parser::OptionalActualParameterList()
 {
 	switch(lookahead)
 	{
-	case MP_LPAREN: //OptionalActualParameterList -> "(" ActualParameter ActualParameterTail ")" Rule# 65 
-		parseTree->LogExpansion(65);
+	case MP_LPAREN: // OptionalActualParameterList -> "(" ActualParameter ActualParameterTail ")"		Rule# 62
+		parseTree->LogExpansion(62);
 		Match(MP_LPAREN);
 		ActualParameter();
 		ActualParameterTail();
 		Match(MP_RPAREN);
 		break;
 	case MP_END:
-	case MP_IDENTIFIER: //OptionalActualParameterList -> e Rule #66
-		parseTree->LogExpansion(66);
+	case MP_IDENTIFIER: // OptionalActualParameterList -> e		Rule # 63
+		parseTree->LogExpansion(63);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -938,14 +902,14 @@ void Parser::ActualParameterTail()
 {
 	switch(lookahead)
 	{
-	case MP_COMMA: // ActualParameterTail -> "," ActualParameter ActualParameterTail Rule #67
-		parseTree->LogExpansion(67);
+	case MP_COMMA: // ActualParameterTail -> "," ActualParameter ActualParameterTail Rule #64
+		parseTree->LogExpansion(64);
 		Match(MP_COMMA);
 		ActualParameter();
 		ActualParameterTail();
 		break;
-	case MP_RPAREN: // ActualParameterTail -> e Rule #68
-		parseTree->LogExpansion(68);
+	case MP_RPAREN: // ActualParameterTail -> e		Rule #65
+		parseTree->LogExpansion(65);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -960,8 +924,8 @@ void Parser::ActualParameter()
 	switch(lookahead)
 	{
 	case MP_PLUS:
-	case MP_MINUS: // ActualParameter -> OrdinalExpression 	Rule# 69
-		parseTree->LogExpansion(69);
+	case MP_MINUS: // ActualParameter -> OrdinalExpression 	Rule# 66
+		parseTree->LogExpansion(66);
 		OrdinalExpression();
 		break;
 	default: //everything else
@@ -974,15 +938,14 @@ void Parser::ActualParameter()
 // postcondition: (method applies rules correctly)
 void Parser::Expression()
 {
-	
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER:
 	case MP_INTEGER_LIT:
 	case MP_UNSIGNEDINTEGER:
 	case MP_MINUS:
-	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	Rule# 70
-		parseTree->LogExpansion(70);
+	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	Rule# 67
+		parseTree->LogExpansion(67);
 		SimpleExpression();
 		OptionalRelationalPart();
 		break;
@@ -1003,8 +966,8 @@ void Parser::OptionalRelationalPart()
 	case MP_GTHAN:
 	case MP_LEQUAL:
 	case MP_GEQUAL:
-	case MP_NEQUAL: //OptionalRelationalPart -> RelationalOperator SimpleExpression  Rule #71
-		parseTree->LogExpansion(71);
+	case MP_NEQUAL: // OptionalRelationalPart -> RelationalOperator SimpleExpression	Rule #68
+		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression();
 		break;
@@ -1015,8 +978,8 @@ void Parser::OptionalRelationalPart()
 	case MP_RPAREN:
 	case MP_TO:
 	case MP_DOWNTO:
-	case MP_DO: //OptionalRelationalPart -> e Rule #72
-		parseTree->LogExpansion(72);
+	case MP_DO: // OptionalRelationalPart -> e		Rule #69
+		parseTree->LogExpansion(69);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1030,28 +993,28 @@ void Parser::RelationalOperator()
 {
 	switch(lookahead)
 	{
-	case MP_EQUAL:	// Rule# 73 	RelationalOperator -> "="
-		parseTree->LogExpansion(73);
+	case MP_EQUAL:	// RelationalOperator -> "="		Rule# 70
+		parseTree->LogExpansion(70);
 		Match(MP_EQUAL);
 		break;
-	case MP_LTHAN: // Rule# 74 	RelationalOperator -> "<"
-		parseTree->LogExpansion(74);
+	case MP_LTHAN: // RelationalOperator -> "<"		Rule# 71
+		parseTree->LogExpansion(71);
 		Match(MP_LTHAN);
 		break;
-	case MP_GTHAN: // Rule# 75 	RelationalOperator -> ">"
-		parseTree->LogExpansion(75);
+	case MP_GTHAN: // RelationalOperator -> ">"		Rule# 72
+		parseTree->LogExpansion(72);
 		Match(MP_GTHAN);
 		break;
-	case MP_LEQUAL: // Rule# 76 	RelationalOperator -> "<=" 
-		parseTree->LogExpansion(76);
+	case MP_LEQUAL: // RelationalOperator -> "<="		Rule# 73
+		parseTree->LogExpansion(73);
 		Match(MP_LEQUAL);
 		break;
-	case MP_GEQUAL: // Rule# 77 	RelationalOperator -> ">=" 
-		parseTree->LogExpansion(77);
+	case MP_GEQUAL: // RelationalOperator -> ">="	Rule# 74
+		parseTree->LogExpansion(74);
 		Match(MP_GEQUAL);
 		break;
-	case MP_NEQUAL: // Rule# 78 	RelationalOperator -> "<>" 
-		parseTree->LogExpansion(78);
+	case MP_NEQUAL: // RelationalOperator -> "<>"	Rule# 75
+		parseTree->LogExpansion(75);
 		Match(MP_NEQUAL);
 		break;
 	default: //everything else
@@ -1070,14 +1033,12 @@ void Parser::SimpleExpression()
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
 	case MP_MINUS:
-	case MP_PLUS: // Rule# 79 	SimpleExpression -> OptionalSign Term TermTail  +,-
-		parseTree->LogExpansion(79);
+	case MP_PLUS: // SimpleExpression -> OptionalSign Term TermTail  +,-		Rule# 76
+		parseTree->LogExpansion(76);
 		OptionalSign();
 		Term();
 		TermTail();
-		break;
-	
-		
+		break;		
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -1088,19 +1049,17 @@ void Parser::SimpleExpression()
 // postcondition: (method applies rules correctly)
 void Parser::TermTail()
 {
-	
 	switch(lookahead)
-	{
-	
+	{	
 	case MP_OR:
 	case MP_PLUS:
-	case MP_MINUS:// TermTail -> AddingOperator Term TermTail  	Rule# 80
-		parseTree->LogExpansion(80);
+	case MP_MINUS:// TermTail -> AddingOperator Term TermTail  	Rule# 77
+		parseTree->LogExpansion(77);
 		AddingOperator();
 		Term();
 		TermTail();
 	case MP_END:
-	case MP_SCOLON: // TermTail -> {e} 	Rule# 81
+	case MP_SCOLON: // TermTail -> {e} 		Rule# 78
 	case MP_EQUAL:
 	case MP_LTHAN:
 	case MP_GTHAN:
@@ -1112,7 +1071,7 @@ void Parser::TermTail()
 	case MP_TO:
 	case MP_DOWNTO:
 	case MP_ELSE:
-		parseTree->LogExpansion(81);
+		parseTree->LogExpansion(78);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1124,15 +1083,14 @@ void Parser::TermTail()
 // postcondition: (method applies rules correctly)
 void Parser::OptionalSign()
 {
-	
 	switch(lookahead)
 	{
-	case MP_PLUS: // OptionalSign -> "+" Rule #82
-		parseTree->LogExpansion(82);
+	case MP_PLUS: // OptionalSign -> "+"	Rule #79
+		parseTree->LogExpansion(79);
 		Match(MP_PLUS);
 		break;
-	case MP_MINUS: // OptionalSign -> "-" Rule #83
-		parseTree->LogExpansion(83);
+	case MP_MINUS: // OptionalSign -> "-"	Rule #80
+		parseTree->LogExpansion(80);
 		Match(MP_MINUS);
 		break;
 	case MP_IDENTIFIER:
@@ -1140,8 +1098,8 @@ void Parser::OptionalSign()
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
 	case MP_RPAREN:
-	case MP_LPAREN: // OptionalSign -> {e} Rule #84
-		parseTree->LogExpansion(84);
+	case MP_LPAREN: // OptionalSign -> {e}	Rule #81
+		parseTree->LogExpansion(81);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1155,16 +1113,16 @@ void Parser::AddingOperator()
 {
 	switch(lookahead)
 	{
-	case MP_PLUS: // AddingOperator -> "+"  	Rule# 85
-		parseTree->LogExpansion(85);
+	case MP_PLUS: // AddingOperator -> "+"  	Rule# 82
+		parseTree->LogExpansion(82);
 		Match(MP_PLUS);
 		break;
-	case MP_MINUS: // AddingOperator -> "-"  	Rule# 86
-		parseTree->LogExpansion(86);
+	case MP_MINUS: // AddingOperator -> "-"  	Rule# 83
+		parseTree->LogExpansion(83);
 		Match(MP_MINUS);
 		break;
-	case MP_OR: // AddingOperator -> "or" 	Rule# 87
-		parseTree->LogExpansion(87);
+	case MP_OR: // AddingOperator -> "or" 	Rule# 84
+		parseTree->LogExpansion(84);
 		Match(MP_OR);
 		break;
 	default: //everything else
@@ -1182,11 +1140,11 @@ void Parser::Term()
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
 	case MP_NOT:
-	case MP_IDENTIFIER: // Term -> Factor FactorTail  	Rule# 88
-		parseTree->LogExpansion(88);
+	case MP_IDENTIFIER: // Term -> Factor FactorTail  	Rule# 85
+		parseTree->LogExpansion(85);
 		Factor();
 		FactorTail();
-		TermTail();
+		//TermTail();		// DEBUG - this is not in the grammar
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1203,8 +1161,8 @@ void Parser::FactorTail()
 	case MP_DIV:
 	case MP_TIMES:
 	case MP_MOD:
-	case MP_AND: // FactorTail -> MultiplyingOperator Factor FactorTail  	Rule# 89
-		parseTree->LogExpansion(89);
+	case MP_AND: // FactorTail -> MultiplyingOperator Factor FactorTail  	Rule# 86
+		parseTree->LogExpansion(86);
 		MultiplyingOperator();
 		Factor();
 		FactorTail();
@@ -1226,8 +1184,8 @@ void Parser::FactorTail()
 	case MP_ELSE:
 	case MP_TO:
 	case MP_DOWNTO:
-	case MP_NEQUAL: // FactorTail -> {e}	Rule# 90
-		parseTree->LogExpansion(90);
+	case MP_NEQUAL: // FactorTail -> {e}	Rule# 87
+		parseTree->LogExpansion(87);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1241,21 +1199,21 @@ void Parser::MultiplyingOperator()
 {
 	switch(lookahead)
 	{
-	case MP_AND: // MultiplyingOperator -> "and"  	Rule# 94
-		parseTree->LogExpansion(94);
-		Match(MP_AND);
+	case MP_TIMES: // MultiplyingOperator -> "*"  	Rule# 88
+		parseTree->LogExpansion(88);
+		Match(MP_TIMES);
 		break;
-	case MP_MOD: // MultiplyingOperator -> "mod"  	Rule# 93
-		parseTree->LogExpansion(93);
-		Match(MP_MOD);
-		break;
-	case MP_DIV: // MultiplyingOperator -> "div"  	Rule# 92
-		parseTree->LogExpansion(92);
+	case MP_DIV: // MultiplyingOperator -> "div"  	Rule# 89
+		parseTree->LogExpansion(89);
 		Match(MP_DIV);
 		break;
-	case MP_TIMES: // MultiplyingOperator -> "*"  	Rule# 91
+	case MP_MOD: // MultiplyingOperator -> "mod"  	Rule# 90
+		parseTree->LogExpansion(90);
+		Match(MP_MOD);
+		break;
+	case MP_AND: // MultiplyingOperator -> "and"  	Rule# 91
 		parseTree->LogExpansion(91);
-		Match(MP_TIMES);
+		Match(MP_AND);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1267,36 +1225,33 @@ void Parser::MultiplyingOperator()
 // postcondition: (method applies rules correctly)
 void Parser::Factor()
 {
-	
 	switch(lookahead)
 	{
-		// Scanner Issue Integer_Lits instead of UnsignedInteger
-	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95
-		parseTree->LogExpansion(95);
-		Match(MP_INTEGER_LIT);
-		break;
-	case MP_UNSIGNEDINTEGER: // Factor -> UnsignedInteger  	Rule# 95
-		parseTree->LogExpansion(95);
+	case MP_UNSIGNEDINTEGER: // Factor -> UnsignedInteger  	Rule# 92
+		parseTree->LogExpansion(92);
 		Match(MP_UNSIGNEDINTEGER);
 		break;
 		//////////////////////// Conflict 96, 99
-	case MP_NOT: // "not" Factor  	Rule# 97
-		parseTree->LogExpansion(97);
+	case MP_IDENTIFIER:		// Factor -> VariableIdentifier		Rule # 93
+		parseTree->LogExpansion(96);
+		VariableIdentifier();
+		break;
+	case MP_NOT: // "not" Factor  	Rule# 94
+		parseTree->LogExpansion(94);
 		Match(MP_NOT);
 		Factor();
 		break;
-	case MP_LPAREN: // Factor -> "(" Expression ")"  	Rule# 98
-		parseTree->LogExpansion(98);
+	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95		// DEBUG - conflict
+		parseTree->LogExpansion(95);
+		Match(MP_INTEGER_LIT);
+		break;
+	case MP_LPAREN: // Factor -> "(" Expression ")"  	Rule# 95
+		parseTree->LogExpansion(95);
 		Match(MP_LPAREN);
 		Expression();
 		Match(MP_RPAREN);
 		break;
 		//////////////////////// Conflict 96, 99
-	case MP_IDENTIFIER:
-		parseTree->LogExpansion(96);
-		VariableIdentifier();
-		
-		break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -1309,8 +1264,8 @@ void Parser::ProgramIdentifier()
 {
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER: // ProgramIdentifier -> Identifier  	Rule# 100
-		parseTree->LogExpansion(100);
+	case MP_IDENTIFIER: // ProgramIdentifier -> Identifier  	Rule# 97
+		parseTree->LogExpansion(97);
 		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
@@ -1325,8 +1280,8 @@ void Parser::VariableIdentifier()
 {
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER: // VariableIdentifier -> Identifier  	Rule# 101
-		parseTree->LogExpansion(101);
+	case MP_IDENTIFIER: // VariableIdentifier -> Identifier  	Rule# 98
+		parseTree->LogExpansion(98);
 		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
@@ -1341,8 +1296,8 @@ void Parser::ProcedureIdentifier()
 {
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER: // ProcedureIdentifier -> Identifier 	Rule# 102
-		parseTree->LogExpansion(102);
+	case MP_IDENTIFIER: // ProcedureIdentifier -> Identifier 	Rule# 99
+		parseTree->LogExpansion(99);
 		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
@@ -1357,8 +1312,8 @@ void Parser::FunctionIdentifier()
 {
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER: // FunctionIdentifier -> Identifier 	Rule# 103
-		parseTree->LogExpansion(103);
+	case MP_IDENTIFIER: // FunctionIdentifier -> Identifier 	Rule# 100
+		parseTree->LogExpansion(100);
 		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
@@ -1370,8 +1325,7 @@ void Parser::FunctionIdentifier()
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
 void Parser::BooleanExpression()
-{
-	
+{	
 	switch(lookahead)
 	{
 	case MP_LPAREN:
@@ -1381,8 +1335,8 @@ void Parser::BooleanExpression()
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
 	case MP_NOT:
-	case MP_IDENTIFIER: // BooleanExpression -> Expression 	Rule# 104
-		parseTree->LogExpansion(104);
+	case MP_IDENTIFIER: // BooleanExpression -> Expression 	Rule# 101
+		parseTree->LogExpansion(101);
 		Expression();
 		break;
 	default: //everything else
@@ -1404,8 +1358,8 @@ void Parser::OrdinalExpression()
 	case MP_INTEGER_LIT:
 	//case MP_RPAREN:
 	case MP_LPAREN:
-	case MP_PLUS: // OrdinalExpression -> Expression	Rule# 105
-		parseTree->LogExpansion(105);
+	case MP_PLUS: // OrdinalExpression -> Expression	Rule# 102
+		parseTree->LogExpansion(102);
 		Expression();
 		break;
 	default: //everything else
@@ -1420,8 +1374,8 @@ void Parser::IdentifierList()
 {
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 106
-		parseTree->LogExpansion(106);
+	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 103
+		parseTree->LogExpansion(103);
 		Match(MP_IDENTIFIER);
 		IdentifierTail();
 		break;
@@ -1437,14 +1391,14 @@ void Parser::IdentifierTail()
 {
 	switch(lookahead)
 	{
-	case MP_COMMA: // IdentifierTail -> "," Identifier IdentifierTail  		Rule# 107
-		parseTree->LogExpansion(107);
+	case MP_COMMA: // IdentifierTail -> "," Identifier IdentifierTail  		Rule# 104
+		parseTree->LogExpansion(104);
 		Match(MP_COMMA);
 		Match(MP_IDENTIFIER);
 		IdentifierTail();
 		break;
-	case MP_COLON: // IdentifierTail -> e  		Rule# 108
-		parseTree->LogExpansion(108);
+	case MP_COLON: // IdentifierTail -> e  		Rule# 105
+		parseTree->LogExpansion(105);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1455,12 +1409,45 @@ void Parser::IdentifierTail()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
+void Parser::Type()
+{
+	switch(lookahead)
+	{
+	case MP_INTEGER_LIT: //Type -> "Integer", rule #107
+		parseTree->LogExpansion(107);
+		Match(MP_INTEGER_LIT);
+		break;
+	case MP_FLOAT_LIT: //Type -> "Float", rule #108
+		parseTree->LogExpansion(108);
+		Match(MP_FLOAT_LIT);
+		break;
+	case MP_STRING:	// Type -> "String", rule #109
+		parseTree->LogExpansion(109);
+		Match(MP_STRING);
+		break;
+	case MP_BOOLEAN: //Type -> "Boolean", rule #110
+		parseTree->LogExpansion(110);
+		Match(MP_BOOLEAN);
+		break;
+	default: //everything else
+		Syntax_Error();
+		break;
+	}
+}
+
+
+
+// precondition: (lookahead is a valid token)
+// postcondition: (method applies rules correctly)
 void Parser::Match(Token token)
 {
 	// puts a token on the tree
 	// gets the next lookahead
 	if (token == lookahead)
-		lookahead = scanner->getToken();
+	{
+		parseTree->LogMessage("Matched: " + EnumToString(token) + " = " + scanner->getLexeme());
+		lookahead = scanner->getToken();		
+	}
 	else
 		Syntax_Error(token);
 }
@@ -1468,19 +1455,9 @@ void Parser::Match(Token token)
 void Parser::Syntax_Error(Token expected)
 {
 	//stops everything and gives a meaningful error message 
-	std::string msg = "Syntax error found on line ";
-	msg.append(to_string(scanner->getLineNumber()));
-	msg.append(", column ");
-	msg.append(to_string(scanner->getColumnNumber()));
-	msg.append(". ");
-
-	if (expected != MP_NULL) {
-		msg.append("Expected ");
-		msg.append(EnumToString(expected));
-		msg.append(" but found ");
-		msg.append(EnumToString(lookahead));
-	}
-	cout << msg << std::endl;
+	std::string msg = "";
+	msg.append("Syntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + ". Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + '\n');
+	cout << msg;
 	parseTree->LogMessage(msg);
 	throw -1;
 }
