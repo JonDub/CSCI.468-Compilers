@@ -109,13 +109,12 @@ void Parser::Block()
 		ProcedureAndFunctionDeclarationPart();
 		StatementPart();
 		break;
-	//case MP_PROCEDURE: /// this is not strictly with the grammer but a procedure should not have to declare local variables //DEBUG
-	//case MP_FUNCTION:
-	//case MP_BEGIN:
-	//	ProcedureAndFunctionDeclarationPart();
-	//	StatementPart();
-	//	break;
-		
+	case MP_PROCEDURE: /// this is not strictly with the grammer but a procedure should not have to declare local variables //DEBUG - was commented out
+	case MP_FUNCTION:
+	case MP_BEGIN:
+		ProcedureAndFunctionDeclarationPart();
+		StatementPart();
+		break;		
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -652,6 +651,8 @@ void Parser::WriteParameter()
 	case MP_MINUS:  // WriteParameter -> OrdinalExpression		Rule# 47
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
+	case MP_STRING:	// added
+	case MP_IDENTIFIER: //added
 		parseTree->LogExpansion(47);
 		OrdinalExpression();
 		break;
@@ -945,6 +946,7 @@ void Parser::Expression()
 	case MP_UNSIGNEDINTEGER:
 	case MP_MINUS:
 	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	Rule# 67
+	case MP_STRING: // added
 		parseTree->LogExpansion(67);
 		SimpleExpression();
 		OptionalRelationalPart();
@@ -979,6 +981,7 @@ void Parser::OptionalRelationalPart()
 	case MP_TO:
 	case MP_DOWNTO:
 	case MP_DO: // OptionalRelationalPart -> e		Rule #69
+	case MP_COMMA: //added
 		parseTree->LogExpansion(69);
 		break;
 	default: //everything else
@@ -1034,6 +1037,7 @@ void Parser::SimpleExpression()
 	case MP_INTEGER_LIT:
 	case MP_MINUS:
 	case MP_PLUS: // SimpleExpression -> OptionalSign Term TermTail  +,-		Rule# 76
+	case MP_STRING: // added
 		parseTree->LogExpansion(76);
 		OptionalSign();
 		Term();
@@ -1071,6 +1075,7 @@ void Parser::TermTail()
 	case MP_TO:
 	case MP_DOWNTO:
 	case MP_ELSE:
+	case MP_COMMA: //added
 		parseTree->LogExpansion(78);
 		break;
 	default: //everything else
@@ -1099,6 +1104,7 @@ void Parser::OptionalSign()
 	case MP_INTEGER_LIT:
 	case MP_RPAREN:
 	case MP_LPAREN: // OptionalSign -> {e}	Rule #81
+	case MP_STRING: //added
 		parseTree->LogExpansion(81);
 		break;
 	default: //everything else
@@ -1141,6 +1147,7 @@ void Parser::Term()
 	case MP_INTEGER_LIT:
 	case MP_NOT:
 	case MP_IDENTIFIER: // Term -> Factor FactorTail  	Rule# 85
+	case MP_STRING: //added
 		parseTree->LogExpansion(85);
 		Factor();
 		FactorTail();
@@ -1185,6 +1192,8 @@ void Parser::FactorTail()
 	case MP_TO:
 	case MP_DOWNTO:
 	case MP_NEQUAL: // FactorTail -> {e}	Rule# 87
+	case MP_STRING: //added
+	case MP_COMMA: //added
 		parseTree->LogExpansion(87);
 		break;
 	default: //everything else
@@ -1252,6 +1261,10 @@ void Parser::Factor()
 		Match(MP_RPAREN);
 		break;
 		//////////////////////// Conflict 96, 99
+	case MP_STRING:	//added
+		parseTree->LogExpansion(114);
+		Match(MP_STRING);
+		break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -1359,6 +1372,7 @@ void Parser::OrdinalExpression()
 	//case MP_RPAREN:
 	case MP_LPAREN:
 	case MP_PLUS: // OrdinalExpression -> Expression	Rule# 102
+	case MP_STRING: // added
 		parseTree->LogExpansion(102);
 		Expression();
 		break;
@@ -1445,7 +1459,7 @@ void Parser::Match(Token token)
 	// gets the next lookahead
 	if (token == lookahead)
 	{
-		parseTree->LogMessage("Matched: " + EnumToString(token) + " = " + scanner->getLexeme());
+		parseTree->LogMessage("      Matched: " + EnumToString(token) + " = " + scanner->getLexeme());
 		lookahead = scanner->getToken();		
 	}
 	else
@@ -1456,7 +1470,8 @@ void Parser::Syntax_Error(Token expected)
 {
 	//stops everything and gives a meaningful error message 
 	std::string msg = "";
-	msg.append("Syntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + ". Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + '\n');
+	msg.append("\nSyntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + 
+		".\n    Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + " = " + scanner->getLexeme() + ".\n    Next token: " + EnumToString(scanner->getToken()) + '\n');
 	cout << msg;
 	parseTree->LogMessage(msg);
 	throw -1;

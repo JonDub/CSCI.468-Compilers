@@ -14,6 +14,9 @@ using namespace std;
 /*
 *	FUNCTION PROTOTYPES
 */
+int TestParser(string);	// int TestParser(int, char*[]);
+int TestScanner(string);  // int TestScanner(int, char*[]);
+
 bool Debug(int argc, char* argv[])
 {
 	bool in;
@@ -71,8 +74,10 @@ bool Debug(int argc, char* argv[])
 
 
 	// test parser
-	std::string fName = "Programs/test2.mp";
-	Parser * p = new Parser(fName);
+	string file = "Programs/test2.mp";
+	Parser * p = new Parser(file);
+
+	//TestScanner(file);
 	assert(p->Parse() == true);
 
 	p->SetInputFile("Programs/lab10_program1.mp");
@@ -93,10 +98,6 @@ bool Debug(int argc, char* argv[])
 	return 0;
 }
 
-
-int TestParser(int, char*[]);
-int TestScanner(int, char*[]);
-
 // Program Driver
 int main ( int argc, char* argv[] )
 {
@@ -106,11 +107,10 @@ int main ( int argc, char* argv[] )
 	//TestScanner(argc, &(*argv));
 }
 
-
-int TestParser(int argc, char* argv[])
+int TestParser(string argv) // int TestParser(int argc, char* argv[])
 {
 	// name of the file to parse through
-	std::string fName = argv[1];
+	std::string fName = argv;
 
 	// create our parser and start getting shit done
 	Parser* parser = new Parser(fName);
@@ -125,11 +125,12 @@ int TestParser(int argc, char* argv[])
 	cin.get();
 	return 0;
 }
+
 // was used to test the scanner
-int TestScanner(  int argc, char* argv[] )
+int TestScanner(  string argv ) // int TestScanner(  int argc, char* argv[] )
 {
 	// name of the file to parse through
-	std::string fName = argv[1];
+	std::string fName = argv;
 
 	Scanner* dispatcher = new Scanner();
 	dispatcher->openFile(fName);
