@@ -72,6 +72,8 @@ bool Parser::SystemGoal()
 // postcondition: (method applies rules correctly)
 void Parser::Program()
 {
+	symbolTable->createTable(); // table for main
+
 	switch(lookahead)
 	{
 	case MP_PROGRAM: //Program --> ProgramHeading ";" Block ".", rule #2 
@@ -182,9 +184,12 @@ void Parser::VariableDeclaration()
 	{
 	case MP_IDENTIFIER: // VariableDeclaration -> Identifierlist ":" Type , rule #8
 		parseTree->LogExpansion(8);
+		
 		IdentifierList();
 		Match(MP_COLON);
 		Type();		
+		// insert into symbol table here
+
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -699,9 +704,13 @@ void Parser::AssignmentStatement()
 	{
 	case MP_IDENTIFIER: // AssignmentStatement -> VariableIdentifier ":=" Expression		Rule# 48
 		parseTree->LogExpansion(48);
+		
+		
 		VariableIdentifier();
 		Match(MP_ASSIGN);
 		Expression();
+		// update in symbol table here with the value for the variable
+
 		break;
 	//	DEBUG - see rule 49, need to find follow set and add rule
 	default:
@@ -1460,6 +1469,7 @@ void Parser::Type()
 	case MP_INTEGER_LIT: //Type -> "Integer", rule #107
 		parseTree->LogExpansion(107);
 		Match(MP_INTEGER_LIT);
+		// insert into symbol table here
 		break;
 	case MP_FLOAT_LIT: //Type -> "Float", rule #108
 		parseTree->LogExpansion(108);

@@ -22,7 +22,7 @@ bool SymbolTable::insertRecord(Token token, string name, int row, int col)
 		t->offset++;
 		return true;
 	} else {
-		return false;
+		return false;	// could throw an error here if needed
 	}
 }
 

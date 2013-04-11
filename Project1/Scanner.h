@@ -19,6 +19,8 @@ public:
 	unsigned int getColumnNumber();
 	bool hasToken();
 
+	string lexeme; // only for debugging
+
 protected:
 private:
 	// Variables
@@ -26,7 +28,7 @@ private:
 	unsigned int lines;
 	unsigned int cols;
 	Token token;
-	string lexeme;
+	//string lexeme;
 	Token lookahead;
 	unordered_map <string, Token> tokens;
 

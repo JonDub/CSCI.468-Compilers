@@ -33,7 +33,9 @@ bool Debug(int argc, char* argv[])
 	r = table->lookupRecord("test3");
 	r = table->lookupRecord("test6");
 	r = table->lookupRecord("test2");
-
+	
+	in = table->contains("test6");
+	in = table->contains("test66");
 
 	// test parser
 	string file = "Programs/test2.mp";

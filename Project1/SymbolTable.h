@@ -15,7 +15,7 @@ public:
 	~SymbolTable();
 
 	// Insert a record into the top most table in the vector
-	bool insertRecord(Token, string, int, int);
+	bool insertRecord(Token, string name, int row, int col);
 
 	// Search the top most table in the vector, then its parent, and so on
 	// Search by name

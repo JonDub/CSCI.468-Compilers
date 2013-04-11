@@ -5,15 +5,15 @@ Record::Record(void)
 {
 	_token = MP_NULL;
 	_name = "";
-	_row = -1;
+	_line = -1;
 	_col = -1;
 }
 
-Record::Record(Token t, string n, int r, int c, int off)
+Record::Record(Token t, string n, int l, int c, int off)
 {
 	_token = t;
 	_name = n;
-	_row = r;
+	_line = l;
 	_col = c;
 	_offset = off;
 }
