@@ -19,3 +19,5 @@ Opening file: Programs/lab10_program1.mp
       Matched: MP_IDENTIFIER = A
 105	IdentifierTail      	->	e       
       Matched: MP_COLON = :
+107	Type 	->	 "Integer"
+      Matched: MP_INTEGER_LIT = integer
