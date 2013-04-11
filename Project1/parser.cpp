@@ -280,6 +280,7 @@ void Parser::FunctionHeading()
 		FunctionIdentifier();
 		OptionalFormalParameterList();
 		//Match(MP_COLON);	//DEBUG
+		Match(MP_RETURN);	//added for function return type
 		Type();
 		break;
 	default: //everything else
@@ -417,6 +418,11 @@ void Parser::CompoundStatement()
 		StatementSequence();
 		Match(MP_END);
 		break;
+	//case MP_RETURN:	//added for function, no rul
+	//	parseTree->LogMessage("No rule defined. Function immediately returns.");
+	//	Match(MP_RETURN);
+	//	StatementSequence();
+	//	break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -441,6 +447,7 @@ void Parser::StatementSequence()
 	case MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_FOR: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_WHILE: //StatementSequence -> Statement StatementTail, rule #26
+	//case MP_RETURN: //added for function
 		parseTree->LogExpansion(26);
 		Statement();
 		StatementTail();
@@ -484,6 +491,7 @@ void Parser::Statement()
 	case MP_SCOLON: //Statement -> EmptyStatement, rule #29
 	case MP_UNTIL:
 	case MP_ELSE:
+	//case MP_RETURN: //added for function
 		parseTree->LogExpansion(29);
 		EmptyStatement();
 		break;
@@ -540,6 +548,7 @@ void Parser::EmptyStatement()
 	case MP_END:  // EmptyStatement -> e Rule #38 
 	case MP_UNTIL:
 	case MP_ELSE:
+	//case MP_RETURN: //added for function
 		parseTree->LogExpansion(38);
 		break;
 	default:
@@ -1456,6 +1465,19 @@ void Parser::Type()
 		parseTree->LogExpansion(110);
 		Match(MP_BOOLEAN);
 		break;
+	case MP_REAL:	// Type -> "Float"  (aka Real)		Rule# 108		//added to support real data type (float)
+		parseTree->LogExpansion(108);
+		Match(MP_REAL);
+		break;
+	case MP_IN:	//added to support in parameters
+		parseTree->LogMessage("No rule defined. In parameter matched.");
+		Match(MP_IN);
+		Type();
+		break;
+	case MP_CHARACTER:	// added to support character data type		
+		parseTree->LogMessage("No rule defined. Character data type matched.");
+		Match(MP_CHARACTER);
+		break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -1484,7 +1506,8 @@ void Parser::Syntax_Error(Token expected)
 	//stops everything and gives a meaningful error message 
 	std::string msg = "";
 	msg.append("\nFile: " + fileName + ": \nSyntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + 
-		".\n    Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + " = " + scanner->getLexeme() + ".\n    Next token: " + EnumToString(scanner->getToken()) + '\n');
+		".\n    Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + ".\n    Next token: " + EnumToString(scanner->getToken())
+		+ "\n    Next Lexeme: " + scanner->getLexeme());
 	cout << msg;
 	parseTree->LogMessage(msg);
 	throw -1;

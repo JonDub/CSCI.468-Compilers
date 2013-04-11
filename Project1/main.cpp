@@ -34,22 +34,22 @@ bool Debug(int argc, char* argv[])
 	Parser * p = new Parser(file);
 
 	//TestScanner(file);
-	//assert(p->Parse() == true);
+	assert(p->Parse() == true);
 
 	file = "Programs/lab10_program1.mp";
 	p->SetInputFile(file);
 	//TestScanner(file);
-	//assert(p->Parse() == true);
+	assert(p->Parse() == true);
 
 	file = "Programs/lab10_program2.mp";
 	p->SetInputFile(file);
 	//TestScanner(file);
-	//assert(p->Parse() == true);
+	assert(p->Parse() == true);
 
 	file = "Programs/lab10_program3.mp";
 	p->SetInputFile(file);
 	//TestScanner(file); // added MP_WRITELN
-	//assert(p->Parse() == true);
+	assert(p->Parse() == true);
 
 	file = "Programs/program1.up";
 	p->SetInputFile(file);
@@ -69,12 +69,12 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/program4.up";
 	p->SetInputFile(file);
 	//TestScanner(file);
-	assert(p->Parse() == true);
+	//assert(p->Parse() == true);
 
 	file = "Programs/program5.up";
 	p->SetInputFile(file);
 	//TestScanner(file);
-	assert(p->Parse() == true);
+	//assert(p->Parse() == true);
 
 	return 0;
 }

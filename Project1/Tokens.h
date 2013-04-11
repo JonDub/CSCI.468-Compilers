@@ -12,6 +12,7 @@ enum Token
 	MP_ASSIGN,
 	MP_BEGIN,
 	MP_BOOLEAN,
+	MP_CHARACTER,
 	MP_COLON,
 	MP_COMMA,
 	MP_COMMENT,
@@ -31,6 +32,7 @@ enum Token
 	MP_GTHAN,
 	MP_IDENTIFIER,
 	MP_IF,
+	MP_IN,
 	MP_INTEGER_LIT,
 	MP_LEQUAL,
 	MP_LTHAN,
@@ -45,7 +47,9 @@ enum Token
 	MP_PROCEDURE,
 	MP_PROGRAM,
 	MP_READ,
+	MP_REAL,
 	MP_REPEAT,
+	MP_RETURN,
 	MP_RPAREN,
 	MP_RUN_COMMENT,
 	MP_RUN_STRING,
@@ -73,6 +77,7 @@ static std::string EnumToString(Token t)
 	case MP_ASSIGN: return "MP_ASSIGN";
 	case MP_BEGIN: return "MP_BEGIN";
 	case MP_COLON: return "MP_COLON";
+	case MP_CHARACTER: return "MP_CHARACTER";
 	case MP_COMMA: return "MP_COMMA";
 	case MP_COMMENT: return "MP_COMMENT";
 	case MP_DIV: return "MP_DIV";
@@ -91,6 +96,7 @@ static std::string EnumToString(Token t)
 	case MP_GTHAN: return "MP_GTHAN";
 	case MP_IDENTIFIER: return "MP_IDENTIFIER";
 	case MP_IF: return "MP_IF";
+	case MP_IN: return "MP_IN";
 	case MP_INTEGER_LIT: return "MP_INTEGER_LIT";
 	case MP_LEQUAL: return "MP_LEQUAL";
 	case MP_LTHAN: return "MP_LTHAN";
@@ -105,7 +111,9 @@ static std::string EnumToString(Token t)
 	case MP_PROCEDURE: return "MP_PROCEDURE";
 	case MP_PROGRAM: return "MP_PROGRAM";
 	case MP_READ: return "MP_READ";
+	case MP_REAL: return "MP_REAL";
 	case MP_REPEAT: return "MP_REPEAT";
+	//case MP_RETURN: return "MP_RETURN";
 	case MP_RPAREN: return "MP_RPAREN";
 	case MP_RUN_COMMENT: return "MP_RUN_COMMENT";
 	case MP_RUN_STRING: return "MP_RUN_STRING";

@@ -13,6 +13,7 @@ Scanner::Scanner()
 	// to retrieve values from hash map --> Token t = tokens["read"];
 	tokens["and"]		= MP_AND;
 	tokens["begin"]		= MP_BEGIN;
+	tokens["character"]	= MP_CHARACTER;
 	tokens["div"]		= MP_DIV;
 	tokens["do"]		= MP_DO;
 	tokens["downto"]	= MP_DOWNTO;
@@ -23,6 +24,7 @@ Scanner::Scanner()
 	tokens["for"]		= MP_FOR;
 	tokens["function"]	= MP_FUNCTION;
 	tokens["if"]		= MP_IF;
+	tokens["in"]		= MP_IN;
 	tokens["integer"]	= MP_INTEGER_LIT;
 	tokens["mod"]		= MP_MOD;
 	tokens["not"]		= MP_NOT;
@@ -30,6 +32,8 @@ Scanner::Scanner()
 	tokens["procedure"]	= MP_PROCEDURE;
 	tokens["program"]	= MP_PROGRAM;
 	tokens["read"]		= MP_READ;
+	tokens["real"]		= MP_REAL;
+	tokens["return"]	= MP_RETURN;
 	tokens["repeat"]	= MP_REPEAT;
 	tokens["then"]		= MP_THEN;
 	tokens["to"]		= MP_TO;
