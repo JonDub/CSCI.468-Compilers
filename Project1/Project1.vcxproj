@@ -67,6 +67,8 @@
   <ItemGroup>
     <ClInclude Include="ParseTree.h" />
     <ClInclude Include="Record.h" />
+    <ClInclude Include="SemanticAnalyzer.h" />
+    <ClInclude Include="SemanticRecord.h" />
     <ClInclude Include="SymbolTable.h" />
     <ClInclude Include="Tokens.h" />
     <ClInclude Include="Parser.h" />
@@ -78,6 +80,8 @@
     <ClCompile Include="ParseTree.cpp" />
     <ClCompile Include="Record.cpp" />
     <ClCompile Include="Scanner.cpp" />
+    <ClCompile Include="SemanticAnalyzer.cpp" />
+    <ClCompile Include="SemanticRecord.cpp" />
     <ClCompile Include="SymbolTable.cpp" />
   </ItemGroup>
   <ItemGroup>

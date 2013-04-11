@@ -4,20 +4,21 @@
 #include <fstream>
 #include <vector>
 #include "Tokens.h"
+using namespace std;
 
 class ParseTree
 {
 public:
-	ParseTree(std::string);
+	ParseTree(string);
 	~ParseTree(void);
 
-	bool ReadCFGRules(std::string);
+	bool ReadCFGRules(string);
 	void LogExpansion(int);
-	void LogMessage(std::string);
+	void LogMessage(string);
 
 private:
 	std::ofstream outFile; // outfile to write parse tree
-	std::vector<std::string> rules;
+	std::vector<string> rules;
 		
 };
 
