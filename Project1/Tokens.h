@@ -113,7 +113,7 @@ static std::string EnumToString(Token t)
 	case MP_READ: return "MP_READ";
 	case MP_REAL: return "MP_REAL";
 	case MP_REPEAT: return "MP_REPEAT";
-	//case MP_RETURN: return "MP_RETURN";
+	case MP_RETURN: return "MP_RETURN";
 	case MP_RPAREN: return "MP_RPAREN";
 	case MP_RUN_COMMENT: return "MP_RUN_COMMENT";
 	case MP_RUN_STRING: return "MP_RUN_STRING";

@@ -9,18 +9,20 @@ class Record
 {
 public:
 	Record(void);
-	Record(Token, string, int, int);
+	Record(Token, string, int, int, int);
 	~Record(void);
 
-	int Row(){ return _row; };
-	int Col(){ return _col; };
-	string Name(){ return _name; };
+	int cow(){ return _row; };
+	int col(){ return _col; };
+	int offset(){ return _offset; };
+	string name(){ return _name; };
 	Token token(){ return _token; };
 
 private:
+	int _offset;
 	int _row;
 	int _col;
-	string _name;
+	string _name; // more or less the lexeme
 	Token _token;
 
 };

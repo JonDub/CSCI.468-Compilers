@@ -6,23 +6,30 @@
 #include "Scanner.h"
 #include "Tokens.h"
 #include "ParseTree.h"
+#include "SemanticAnalyzer.h"
+#include "SemanticRecord.h"
+#include "SymbolTable.h"
+#include "Record.h"
+using namespace std;
 
 class Parser
 {
 public:
 	Parser(void);
-	Parser(std::string);
-	void SetInputFile(std::string);
+	Parser(string);
 	~Parser(void);
 
-	bool Parse();
+	bool parse();
+	void setInputFile(string);	
 
 private:
-	Token lookahead;
+	Token lookahead;	
+	string fileName;
 	Scanner* scanner;
 	ParseTree* parseTree;
-	string fileName;
-
+	SemanticAnalyzer* analyzer;
+	SymbolTable* symbolTable;
+	
 	bool SystemGoal();
 	void Program();
 	void ProgramHeading();

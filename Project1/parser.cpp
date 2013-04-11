@@ -4,16 +4,18 @@ Parser::Parser(void)
 {
 }
 
-Parser::Parser(std::string fName)
+Parser::Parser(string fName)
 {
 	// create our scanner and parse trees
+	symbolTable = new SymbolTable();
+	analyzer = new SemanticAnalyzer();
 	scanner = new Scanner();
 	parseTree = new ParseTree("parse_tree.txt");
 	parseTree->ReadCFGRules("CFG_rules.txt");
-	SetInputFile(fName);	
+	setInputFile(fName);	
 }
 
-void Parser::SetInputFile(std::string fName)
+void Parser::setInputFile(string fName)
 {
 	fileName = fName;
 	if (scanner != NULL)
@@ -29,9 +31,12 @@ void Parser::SetInputFile(std::string fName)
 Parser::~Parser(void)
 {
 	delete scanner;
+	delete analyzer;
+	delete parseTree;
+	delete symbolTable;
 }
 
-bool Parser::Parse()
+bool Parser::parse()
 {
 	try
 	{
@@ -688,6 +693,8 @@ void Parser::WriteParameter()
 // postcondition: (method applies rules correctly)
 void Parser::AssignmentStatement()
 {
+	SemanticRecord rec;
+
 	switch (lookahead)
 	{
 	case MP_IDENTIFIER: // AssignmentStatement -> VariableIdentifier ":=" Expression		Rule# 48
@@ -701,6 +708,7 @@ void Parser::AssignmentStatement()
 		Syntax_Error();
 		break;
 	}
+	analyzer->genAssign(&rec);
 }
 
 // precondition: (lookahead is a valid token)
@@ -1504,7 +1512,7 @@ void Parser::Match(Token token)
 void Parser::Syntax_Error(Token expected)
 {
 	//stops everything and gives a meaningful error message 
-	std::string msg = "";
+	string msg = "";
 	msg.append("\nFile: " + fileName + ": \nSyntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + 
 		".\n    Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + ".\n    Next token: " + EnumToString(scanner->getToken())
 		+ "\n    Next Lexeme: " + scanner->getLexeme());

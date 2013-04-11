@@ -20,13 +20,19 @@ int TestScanner(string);  // int TestScanner(int, char*[]);
 bool Debug(int argc, char* argv[])
 {
 	// How to use the symbol table
-	/*bool in;
+	bool in;
 	Record* r;	
 	SymbolTable* table = new SymbolTable();
-	table->CreateTable();
-	in = table->InsertRecord(MP_ASSIGN, "test2", 2, 16);
-	assert(in == true);
-	r = table->LookupRecord("test7");*/
+	table->createTable();
+	in = table->insertRecord(MP_ASSIGN, "test2", 2, 16);
+	in = table->insertRecord(MP_BEGIN, "test3", 2, 16);
+	in = table->insertRecord(MP_COLON, "test4", 2, 16);
+	table->createTable();
+	in = table->insertRecord(MP_COMMA, "test5", 2, 16);
+	in = table->insertRecord(MP_ELSE, "test6", 2, 16);
+	r = table->lookupRecord("test3");
+	r = table->lookupRecord("test6");
+	r = table->lookupRecord("test2");
 
 
 	// test parser
@@ -34,47 +40,48 @@ bool Debug(int argc, char* argv[])
 	Parser * p = new Parser(file);
 
 	//TestScanner(file);
-	assert(p->Parse() == true);
+	//assert(p->Parse() == true);
 
 	file = "Programs/lab10_program1.mp";
-	p->SetInputFile(file);
+	p->setInputFile(file);
 	//TestScanner(file);
-	assert(p->Parse() == true);
+	assert(p->parse() == true);
+	return true;
 
 	file = "Programs/lab10_program2.mp";
-	p->SetInputFile(file);
+	p->setInputFile(file);
 	//TestScanner(file);
-	assert(p->Parse() == true);
+	assert(p->parse() == true);
 
 	file = "Programs/lab10_program3.mp";
-	p->SetInputFile(file);
+	p->setInputFile(file);
 	//TestScanner(file); // added MP_WRITELN
-	assert(p->Parse() == true);
+	assert(p->parse() == true);
 
 	file = "Programs/program1.up";
-	p->SetInputFile(file);
+	p->setInputFile(file);
 	//TestScanner(file);
-	//assert(p->Parse() == true);	// this test program has parameters going into the main program call. I don't know if this is legal or not. 
+	//assert(p->parse() == true);	// this test program has parameters going into the main program call. I don't know if this is legal or not. 
 
 	file = "Programs/program2.up";
-	p->SetInputFile(file);
+	p->setInputFile(file);
 	//TestScanner(file);
-	assert(p->Parse() == true);
+	assert(p->parse() == true);
 
 	file = "Programs/program3.up";
-	p->SetInputFile(file);
+	p->setInputFile(file);
 	//TestScanner(file);
-	assert(p->Parse() == true);
+	assert(p->parse() == true);
 
 	file = "Programs/program4.up";
-	p->SetInputFile(file);
+	p->setInputFile(file);
 	//TestScanner(file);
-	//assert(p->Parse() == true);
+	//assert(p->parse() == true);
 
 	file = "Programs/program5.up";
-	p->SetInputFile(file);
+	p->setInputFile(file);
 	//TestScanner(file);
-	//assert(p->Parse() == true);
+	//assert(p->parse() == true);
 
 	return 0;
 }
@@ -96,7 +103,7 @@ int TestParser(string argv) // int TestParser(int argc, char* argv[])
 	// create our parser and start getting shit done
 	Parser* parser = new Parser(fName);
 
-	if (parser->Parse())
+	if (parser->parse())
 	{
 		cout << "The input program parses!" << endl;
 	} 

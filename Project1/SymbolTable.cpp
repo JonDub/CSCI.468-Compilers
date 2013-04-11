@@ -12,21 +12,27 @@ SymbolTable::~SymbolTable(void)
 
 
 // Insert a record into the top most table in the vector
-bool SymbolTable::InsertRecord(Token token, string name, int row, int col)
+bool SymbolTable::insertRecord(Token token, string name, int row, int col)
 {
-	Record* r = LookupRecord(name);
+	Record* r = lookupRecord(name);
 
 	if (r == NULL){
 		Table* t = tables.at(tables.size() - 1);
-		t->records[name] = new Record(token, name, row, col); 
+		t->records[name] = new Record(token, name, row, col, t->offset); 
+		t->offset++;
 		return true;
 	} else {
 		return false;
 	}
 }
 
+bool SymbolTable::contains(string s)
+{
+	if (lookupRecord(s) == NULL) return false; else return true;
+}
+
 // Search the top most table in the vector, then its parent, and so on to the root table
-Record* SymbolTable::LookupRecord(string name)
+Record* SymbolTable::lookupRecord(string name)
 {
 	unordered_map< string, Record* >::const_iterator p;
 
@@ -42,14 +48,16 @@ Record* SymbolTable::LookupRecord(string name)
 }
 
 // Always creates a table at the top of the vector 
-bool SymbolTable::CreateTable()
+bool SymbolTable::createTable()
 {	
-	tables.push_back(new Table);
+	Table* t = new Table();
+	t->offset = 0;
+	tables.push_back(t);
 	return true;
 }
 
 // Always remove the top most table in the vecotr
-bool SymbolTable::RemoveTable()
+bool SymbolTable::removeTable()
 {
 	tables.pop_back();
 	return true;
