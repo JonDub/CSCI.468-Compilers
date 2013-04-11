@@ -21,6 +21,7 @@ private:
 	Token lookahead;
 	Scanner* scanner;
 	ParseTree* parseTree;
+	string fileName;
 
 	bool SystemGoal();
 	void Program();

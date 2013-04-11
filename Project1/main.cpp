@@ -19,58 +19,14 @@ int TestScanner(string);  // int TestScanner(int, char*[]);
 
 bool Debug(int argc, char* argv[])
 {
-	bool in;
-	Record* r;
+	// How to use the symbol table
+	/*bool in;
+	Record* r;	
 	SymbolTable* table = new SymbolTable();
-
 	table->CreateTable();
-
 	in = table->InsertRecord(MP_ASSIGN, "test2", 2, 16);
 	assert(in == true);
-	in = table->InsertRecord(MP_ASSIGN, "test55", 2, 16);
-	assert(in == true);
-	in = table->InsertRecord(MP_DIV, "test234234", 2, 16);
-	in = table->InsertRecord(MP_DOWNTO, "test6345", 2, 16);
-	in = table->InsertRecord(MP_COMMENT, "test234", 2, 16);
-
-	table->CreateTable();
-	in = table->InsertRecord(MP_ASSIGN, "test", 2, 16);
-	assert(in == true);
-	in = table->InsertRecord(MP_BEGIN, "test2", 22, 64);
-	assert(in == false);
-	in = table->InsertRecord(MP_COMMENT, "test3", 21, 654);
-	in = table->InsertRecord(MP_DO, "test4", 223, 698);
-	in = table->InsertRecord(MP_GTHAN, "test5", 25, 648);
-	assert(in == true);
-	in = table->InsertRecord(MP_ASSIGN, "test234", 26, 1586);
-	assert(in == false);
-	in = table->InsertRecord(MP_ASSIGN, "test7", 29, 156);
-	in = table->InsertRecord(MP_ASSIGN, "test8", 20, 625);
-	in = table->InsertRecord(MP_ASSIGN, "test884", 20, 625);
-	in = table->InsertRecord(MP_ASSIGN, "test4", 23, 625);
-	
-	r = table->LookupRecord("test7");
-	assert(r != NULL);
-	assert(strcmp(r->Name().c_str(), "test7") == 0);
-	assert(r->Row() == 29);
-	assert(r->Col() == 156);
-	assert(r->token() == MP_ASSIGN);
-	r = table->LookupRecord("test234234");
-	assert(r != NULL);
-	r = table->LookupRecord("test55879455");
-	assert(r == NULL);
-	r = table->LookupRecord("test12342");
-	r = table->LookupRecord("test8");
-	assert(r != NULL);
-	assert(strcmp(r->Name().c_str(), "test8") == 0);
-	assert(r->Row() == 20);
-	assert(r->Col() == 625);
-	assert(r->token() == MP_ASSIGN);
-
-	r = table->LookupRecord("test88234");
-	assert(r == NULL);
-	r = table->LookupRecord("test7sd2");
-	assert(r == NULL);
+	r = table->LookupRecord("test7");*/
 
 
 	// test parser
@@ -78,21 +34,46 @@ bool Debug(int argc, char* argv[])
 	Parser * p = new Parser(file);
 
 	//TestScanner(file);
+	//assert(p->Parse() == true);
+
+	file = "Programs/lab10_program1.mp";
+	p->SetInputFile(file);
+	//TestScanner(file);
+	//assert(p->Parse() == true);
+
+	file = "Programs/lab10_program2.mp";
+	p->SetInputFile(file);
+	//TestScanner(file);
+	//assert(p->Parse() == true);
+
+	file = "Programs/lab10_program3.mp";
+	p->SetInputFile(file);
+	//TestScanner(file); // added MP_WRITELN
+	//assert(p->Parse() == true);
+
+	file = "Programs/program1.up";
+	p->SetInputFile(file);
+	//TestScanner(file);
+	//assert(p->Parse() == true);	// this test program has parameters going into the main program call. I don't know if this is legal or not. 
+
+	file = "Programs/program2.up";
+	p->SetInputFile(file);
+	//TestScanner(file);
 	assert(p->Parse() == true);
 
-	p->SetInputFile("Programs/lab10_program1.mp");
+	file = "Programs/program3.up";
+	p->SetInputFile(file);
+	//TestScanner(file);
 	assert(p->Parse() == true);
 
-	p->SetInputFile("Programs/program2.up");
+	file = "Programs/program4.up";
+	p->SetInputFile(file);
+	//TestScanner(file);
 	assert(p->Parse() == true);
 
-	p->SetInputFile("Programs/program3.up");
-	assert(p->Parse() == true);
-
-	p->SetInputFile("Programs/program4.up");
-	assert(p->Parse() == true);
-
-	p->SetInputFile("Programs/program5.up");
+	file = "Programs/program5.up";
+	p->SetInputFile(file);
+	//TestScanner(file);
 	assert(p->Parse() == true);
 
 	return 0;

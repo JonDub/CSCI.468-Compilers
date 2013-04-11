@@ -58,7 +58,8 @@ enum Token
 	MP_UNSIGNEDINTEGER,
 	MP_VAR,
 	MP_WHILE,
-	MP_WRITE
+	MP_WRITE,
+	MP_WRITELN
 };
 
 // Sorry, I couldn't find any easier way to do this. 
@@ -117,6 +118,7 @@ static std::string EnumToString(Token t)
 	case MP_VAR: return "MP_VAR";
 	case MP_WHILE: return "MP_WHILE";
 	case MP_WRITE: return "MP_WRITE";
+	case MP_WRITELN: return "MP_WRITELN";
 	default: return "UNKNOWN";
 	}
 };

@@ -8,19 +8,22 @@ Parser::Parser(std::string fName)
 {
 	// create our scanner and parse trees
 	scanner = new Scanner();
-	scanner->openFile(fName);
-
 	parseTree = new ParseTree("parse_tree.txt");
 	parseTree->ReadCFGRules("CFG_rules.txt");
+	SetInputFile(fName);	
 }
 
 void Parser::SetInputFile(std::string fName)
 {
+	fileName = fName;
 	if (scanner != NULL)
 		delete scanner;
 
 	scanner = new Scanner();
-	scanner->openFile(fName);
+	parseTree->LogMessage("\nOpening file: " + fileName + "\n");
+	
+	if (!scanner->openFile(fileName))
+		parseTree->LogMessage("Unable to open file.\n");
 }
 
 Parser::~Parser(void)
@@ -432,6 +435,7 @@ void Parser::StatementSequence()
 	case MP_BEGIN: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_READ: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_WRITE: //StatementSequence -> Statement StatementTail, rule #26
+	case MP_WRITELN://added
 	case MP_IF: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_REPEAT: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #26
@@ -492,6 +496,7 @@ void Parser::Statement()
 		ReadStatement();
 		break;
 	case MP_WRITE: //Statement -> WriteStatement, rule #32
+	case MP_WRITELN://added
 		parseTree->LogExpansion(32);
 		WriteStatement();
 		break;
@@ -606,6 +611,14 @@ void Parser::WriteStatement()
 {
 	switch(lookahead)
 	{
+	case MP_WRITELN://added		// WriteStatement -> "writeln" "(" WriteParameter WriteParameterTail ")"		Rule# 111
+		parseTree->LogExpansion(44);
+		Match(MP_WRITELN);
+		Match(MP_LPAREN);
+		WriteParameter();		
+		WriteParameterTail();
+		Match(MP_RPAREN);
+		break;
 	case MP_WRITE: // WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")"	Rule# 44
 		parseTree->LogExpansion(44);
 		Match(MP_WRITE);
@@ -1470,7 +1483,7 @@ void Parser::Syntax_Error(Token expected)
 {
 	//stops everything and gives a meaningful error message 
 	std::string msg = "";
-	msg.append("\nSyntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + 
+	msg.append("\nFile: " + fileName + ": \nSyntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + 
 		".\n    Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + " = " + scanner->getLexeme() + ".\n    Next token: " + EnumToString(scanner->getToken()) + '\n');
 	cout << msg;
 	parseTree->LogMessage(msg);
