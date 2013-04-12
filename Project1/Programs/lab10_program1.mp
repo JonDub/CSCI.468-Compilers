@@ -1,5 +1,5 @@
 program Program1;
-	var A : integer;
+	var A, b, Cc : integer;
 	begin
 		A := 1;
 		Write('A = ', A)

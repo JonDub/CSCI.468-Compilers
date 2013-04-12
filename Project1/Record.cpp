@@ -9,13 +9,14 @@ Record::Record(void)
 	_col = -1;
 }
 
-Record::Record(Token t, string n, int l, int c, int off)
+Record::Record(Token t, string n, int off, Token type)
 {
 	_token = t;
 	_name = n;
-	_line = l;
-	_col = c;
+	_line = 0;
+	_col = 0;
 	_offset = off;
+	_type = type;
 }
 
 Record::~Record(void)

@@ -12,13 +12,13 @@ SymbolTable::~SymbolTable(void)
 
 
 // Insert a record into the top most table in the vector
-bool SymbolTable::insertRecord(Token token, string name, int row, int col)
+bool SymbolTable::insertRecord(Token token, string name, Token type)
 {
 	Record* r = lookupRecord(name);
 
 	if (r == NULL){
 		Table* t = tables.at(tables.size() - 1);
-		t->records[name] = new Record(token, name, row, col, t->offset); 
+		t->records[name] = new Record(token, name, t->offset, type); 
 		t->offset++;
 		return true;
 	} else {
@@ -46,6 +46,8 @@ Record* SymbolTable::lookupRecord(string name)
 	}
 	return NULL;
 }
+
+
 
 // Always creates a table at the top of the vector 
 bool SymbolTable::createTable()

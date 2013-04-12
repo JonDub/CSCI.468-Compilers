@@ -17,8 +17,8 @@ public:
 	void LogMessage(string);
 
 private:
-	std::ofstream outFile; // outfile to write parse tree
-	std::vector<string> rules;
+	ofstream outFile; // outfile to write parse tree
+	vector<string> rules;
 		
 };
 

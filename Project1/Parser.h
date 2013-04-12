@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <iomanip>
 #include "Scanner.h"
 #include "Tokens.h"
@@ -25,6 +26,8 @@ public:
 private:
 	Token lookahead;	
 	string fileName;
+	string currentLexeme;
+	Token currentToken;
 	Scanner* scanner;
 	ParseTree* parseTree;
 	SemanticAnalyzer* analyzer;
@@ -38,7 +41,7 @@ private:
 	void VariableDeclarationPart();
 	void VariableDeclarationTail();
 	void VariableDeclaration();
-	void Type();
+	Token Type();
 	void ProcedureAndFunctionDeclarationPart();
 	void ProcedureDeclaration();
 	void ProcedureIdentifier();
@@ -65,7 +68,7 @@ private:
 	void StatementTail();
 	void Statement();
 	void EmptyStatement();
-	void IdentifierList();
+	void IdentifierList();	
 	void IdentifierTail();
 	void ReadStatement();
 	void WriteStatement();

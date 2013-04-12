@@ -17,6 +17,12 @@ Opening file: Programs/lab10_program1.mp
 8	VariableDeclaration 	->	Identifierlist ":" Type
 103	IdentifierList      	->	identifier IdentifierTail
       Matched: MP_IDENTIFIER = A
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = b
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = Cc
 105	IdentifierTail      	->	e       
       Matched: MP_COLON = :
 107	Type 	->	 "Integer"

@@ -90,7 +90,7 @@ bool Scanner::hasToken()
 		return true;
 
 	// set lexeme to EOF ascii value
-	lexeme = get();
+	_lexeme = get();
 	return false;
 }
 
@@ -110,8 +110,8 @@ Token Scanner::getToken()
 		char next = peek();	
 
 		// reset the TOKEN and LEXEME variables, FSA will set new values
-		token = MP_NULL;
-		lexeme = "";
+		_token = MP_NULL;
+		_lexeme = "";
 
 		// which FSA to call 
 		if (next == '\'') // handle strings, start with ' (single quote)
@@ -125,21 +125,26 @@ Token Scanner::getToken()
 		else if (ispunct(next))
 			handleSymbol();
 		else if (next == EOF) {
-			token = MP_EOF;
-			lexeme = get();
+			_token = MP_EOF;
+			_lexeme = get();
 		}
-	} while (token == MP_COMMENT);
+	} while (_token == MP_COMMENT);
 
-	return token; 
+	return _token; 
 };
 
-string Scanner::getLexeme()
+string Scanner::lexeme()
 {
 	/*
 		Returns the last lexeme that was filled in
 	*/
-	return lexeme;
+	return _lexeme;
 };
+
+Token Scanner::token()
+{
+		return _token;
+}
 
 unsigned int Scanner::getLineNumber()
 {
@@ -154,7 +159,7 @@ unsigned int Scanner::getColumnNumber()
 	/*
 		Returns the current column counter from the start of the lexeme. 
 	*/
-	return (cols - lexeme.length());
+	return (cols - _lexeme.length());
 };
 
 Token Scanner::handleWord()
@@ -180,11 +185,11 @@ Token Scanner::handleWord()
 			if (next == '_'){
 				state = 2;
 				next = get();
-				lexeme.push_back(next);				
+				_lexeme.push_back(next);				
 			} else if (isalpha(next) || isdigit(next)){
 				state = 1;
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 			} else {
 				state = 3;
 			}
@@ -192,15 +197,15 @@ Token Scanner::handleWord()
 		case 1:
 			// Accept state. 
 			accept = true;
-			token = MP_IDENTIFIER;
+			_token = MP_IDENTIFIER;
 			if (isalpha(next) || isdigit(next)){
 				state = 1;
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 			} else if (next == '_'){
 				state = 2;
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 			} else {
 				state = 3;
 			}
@@ -211,7 +216,7 @@ Token Scanner::handleWord()
 			if (isalpha(next) || isdigit(next) ){
 				state = 1;
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 			} else {
 				state = 3;
 			}
@@ -223,13 +228,13 @@ Token Scanner::handleWord()
 	}
 
 	// check to see if lexeme == '_'
-	if (!accept && lexeme.size() == 1){
-		token = MP_ERROR;
-		return token;
+	if (!accept && _lexeme.size() == 1){
+		_token = MP_ERROR;
+		return _token;
 	}		
 	// must check to see if this lexeme is a reserved word or not
-	isReservedWord(lexeme);
-	return token;
+	isReservedWord(_lexeme);
+	return _token;
 }
 
 Token Scanner::handleComment()
@@ -254,15 +259,15 @@ Token Scanner::handleComment()
 			if (next == '{')
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_COMMENT;
+				_lexeme.push_back(next);
+				_token = MP_COMMENT;
 				state = 1;
 			} 
 			else
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_ERROR;
+				_lexeme.push_back(next);
+				_token = MP_ERROR;
 				state = 2;
 			}
 			break;
@@ -270,20 +275,20 @@ Token Scanner::handleComment()
 			if (next == '}') // end comment
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_COMMENT;
+				_lexeme.push_back(next);
+				_token = MP_COMMENT;
 				state = 2;
 			}
 			else if (next == '\n') // run on comment
 			{
 				next = get();
-				token = MP_RUN_COMMENT;
+				_token = MP_RUN_COMMENT;
 				state = 2;
 			} 
 			else
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 			}
 			break;
 		case 2:
@@ -292,7 +297,7 @@ Token Scanner::handleComment()
 		}
 	}
 
-	return token;
+	return _token;
 }
 
 Token Scanner::handleString()
@@ -317,15 +322,15 @@ Token Scanner::handleString()
 			if (next == '\'') // comment start
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_STRING;
+				_lexeme.push_back(next);
+				_token = MP_STRING;
 				state = 1;
 			} 
 			else 
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_ERROR;
+				_lexeme.push_back(next);
+				_token = MP_ERROR;
 				state = 2;			
 			}
 			break;
@@ -333,20 +338,20 @@ Token Scanner::handleString()
 			if (next == '\'') // closing ' for string
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_STRING;
+				_lexeme.push_back(next);
+				_token = MP_STRING;
 				state = 2;
 			} 
 			else if (next == '\n')
 			{
 				//get(); // consume EOF
-				token = MP_RUN_STRING;
+				_token = MP_RUN_STRING;
 				state = 2;
 			}
 			else 
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 			}
 			break;
 		case 2:
@@ -355,7 +360,7 @@ Token Scanner::handleString()
 		}
 	}
 
-	return token;
+	return _token;
 }
 
 Token Scanner::handleNumberic()
@@ -380,9 +385,9 @@ Token Scanner::handleNumberic()
 			if (isdigit((int)next))
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 1;
-				token = MP_INTEGER_LIT;
+				_token = MP_INTEGER_LIT;
 			} 
 			else 
 			{
@@ -395,13 +400,13 @@ Token Scanner::handleNumberic()
 			if (isdigit((int)next))
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_INTEGER_LIT;
+				_lexeme.push_back(next);
+				_token = MP_INTEGER_LIT;
 			} 
 			else if (next == '.') 
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 2;
 			} 
 			else 
@@ -414,9 +419,9 @@ Token Scanner::handleNumberic()
 			if (isdigit((int)next))
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 3;
-				token = MP_FIXED_LIT;
+				_token = MP_FIXED_LIT;
 			}  
 			else 
 			{
@@ -428,12 +433,12 @@ Token Scanner::handleNumberic()
 			if (isdigit((int)next))
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 			}
 			else if ((next == 'e') | (next == 'E'))
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 4;
 			}
 			else
@@ -446,7 +451,7 @@ Token Scanner::handleNumberic()
 			if ((next == '+') | (next == '-'))
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 5;
 			}
 			else
@@ -459,8 +464,8 @@ Token Scanner::handleNumberic()
 			if (isdigit((int)next))
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_FLOAT_LIT;
+				_lexeme.push_back(next);
+				_token = MP_FLOAT_LIT;
 			}
 			else
 			{
@@ -474,9 +479,9 @@ Token Scanner::handleNumberic()
 	if (!accept)
 	{
 		seek(-1);
-		lexeme.pop_back();
+		_lexeme.pop_back();
 	} 
-	return token;
+	return _token;
 };
 
 Token Scanner::handleSymbol()
@@ -501,80 +506,80 @@ Token Scanner::handleSymbol()
 			if(next == '.')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 1;
 			}
 			else if(next == ',')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 2;
 			}
 			else if(next == ';')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 3;
 			}
 			else if(next == '(')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 4;
 			}
 			else if(next == ')')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 5;
 			}
 			else if(next == '=')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 6;
 			}
 			else if(next == '+')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 7;
 			}
 			else if(next == '-')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 8;
 			}
 			else if(next == '*')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 9;
 			}
 			else if(next == '>')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 10;
 			}
 			else if(next == '<')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 11;
 			}
 			else if(next == ':')
 			{
 				next = get();
-				lexeme.push_back(next);
+				_lexeme.push_back(next);
 				state = 12;
 			}
 			else
 			{
 				//error=true;
-				lexeme.push_back(get());
-				token = MP_ERROR;
+				_lexeme.push_back(get());
+				_token = MP_ERROR;
 				done=true;
 				accept=true;
 			}
@@ -582,55 +587,55 @@ Token Scanner::handleSymbol()
 		//Trivial cases
 		case 1: //symbol is period
 			accept = true;
-			token = MP_PERIOD;
+			_token = MP_PERIOD;
 			done = true;
 			break;
 
 		case 2: //symbol is comma
 			accept = true;
-			token = MP_COMMA;
+			_token = MP_COMMA;
 			done = true;
 			break;
 
 		case 3: //symbol is semicolon
 			accept = true;
-			token = MP_SCOLON;
+			_token = MP_SCOLON;
 			done = true;
 			break;
 
 		case 4: //symbol is left paren
 			accept = true;
-			token = MP_LPAREN;
+			_token = MP_LPAREN;
 			done = true;
 			break;
 
 		case 5: //symbol is right paren
 			accept = true;
-			token = MP_RPAREN;
+			_token = MP_RPAREN;
 			done = true;
 			break;
 
 		case 6: //symbol is equal
 			accept = true;
-			token = MP_EQUAL;
+			_token = MP_EQUAL;
 			done = true;
 			break;
 
 		case 7: //symbol is plus
 			accept = true;
-			token = MP_PLUS;
+			_token = MP_PLUS;
 			done = true;
 			break;
 
 		case 8: //symbol is minus
 			accept = true;
-			token = MP_MINUS;
+			_token = MP_MINUS;
 			done = true;
 			break;
 
 		case 9: //symbol is times
 			accept = true;
-			token = MP_TIMES;
+			_token = MP_TIMES;
 			done = true;
 			break;
 
@@ -640,13 +645,13 @@ Token Scanner::handleSymbol()
 			if (next == '=') 
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_GEQUAL;
+				_lexeme.push_back(next);
+				_token = MP_GEQUAL;
 				done = true;
 			} 
 			else 
 			{
-				token = MP_GTHAN;
+				_token = MP_GTHAN;
 				done = true;
 			}
 			break;
@@ -655,20 +660,20 @@ Token Scanner::handleSymbol()
 			if (next == '=') 
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_LEQUAL;
+				_lexeme.push_back(next);
+				_token = MP_LEQUAL;
 				done = true;
 			} 
 			else if (next == '>') 
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_NEQUAL;
+				_lexeme.push_back(next);
+				_token = MP_NEQUAL;
 				done = true;
 			} 
 			else 
 			{
-				token = MP_LTHAN;
+				_token = MP_LTHAN;
 				done = true;
 			}
 			break;
@@ -677,13 +682,13 @@ Token Scanner::handleSymbol()
 			if (next == '=') 
 			{
 				next = get();
-				lexeme.push_back(next);
-				token = MP_ASSIGN;
+				_lexeme.push_back(next);
+				_token = MP_ASSIGN;
 				done = true;
 			} 
 			else 
 			{
-				token = MP_COLON;
+				_token = MP_COLON;
 				done = true;
 			}
 			break;
@@ -694,9 +699,9 @@ Token Scanner::handleSymbol()
 	if (!accept)
 	{
 		seek(-1);
-		lexeme.pop_back();
+		_lexeme.pop_back();
 	} 
-	return token;
+	return _token;
 };
 
 bool Scanner::isReservedWord(string word)
@@ -713,7 +718,7 @@ bool Scanner::isReservedWord(string word)
 	unordered_map<string, Token>::const_iterator got = tokens.find (w);
 	
 	if (got != tokens.end()) {
-		token = got->second;
+		_token = got->second;
 		return true;
 	}
 

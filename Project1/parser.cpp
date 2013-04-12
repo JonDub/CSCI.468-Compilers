@@ -180,21 +180,25 @@ void Parser::VariableDeclarationTail()
 // postcondition: (method applies rules correctly)
 void Parser::VariableDeclaration()
 {
+	Token type = MP_NULL;
+	int num = 0;
+
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // VariableDeclaration -> Identifierlist ":" Type , rule #8
 		parseTree->LogExpansion(8);
-		
 		IdentifierList();
 		Match(MP_COLON);
-		Type();		
-		// insert into symbol table here
+		type = Type();
 
+		// insert into symbol table here
 		break;
 	default: //everything else
 		Syntax_Error();
 		break;
 	}
+
+
 }
 
 // precondition: (lookahead is a valid token)
@@ -367,6 +371,8 @@ void Parser::FormalParameterSection()
 // postcondition: (method applies rules correctly)
 void Parser::ValueParameterSection()
 {
+	Token type;
+
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER:// ValueParameterSection -> IdentifierList ":" Type, rule #22
@@ -385,6 +391,8 @@ void Parser::ValueParameterSection()
 // postcondition: (method applies rules correctly)
 void Parser::VariableParameterSection()
 {
+	Token type; 
+
 	switch(lookahead)
 	{
 	case MP_VAR:// VariableParameterSection -> "var" IdentifierList ":" Type, rule #23
@@ -698,14 +706,10 @@ void Parser::WriteParameter()
 // postcondition: (method applies rules correctly)
 void Parser::AssignmentStatement()
 {
-	SemanticRecord rec;
-
 	switch (lookahead)
 	{
 	case MP_IDENTIFIER: // AssignmentStatement -> VariableIdentifier ":=" Expression		Rule# 48
-		parseTree->LogExpansion(48);
-		
-		
+		parseTree->LogExpansion(48);		
 		VariableIdentifier();
 		Match(MP_ASSIGN);
 		Expression();
@@ -717,7 +721,6 @@ void Parser::AssignmentStatement()
 		Syntax_Error();
 		break;
 	}
-	analyzer->genAssign(&rec);
 }
 
 // precondition: (lookahead is a valid token)
@@ -1425,11 +1428,13 @@ void Parser::OrdinalExpression()
 // postcondition: (method applies rules correctly)
 void Parser::IdentifierList()
 {
+	string lex = "";
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 103
 		parseTree->LogExpansion(103);
 		Match(MP_IDENTIFIER);
+		lex = currentLexeme;
 		IdentifierTail();
 		break;
 	default: //everything else
@@ -1442,12 +1447,15 @@ void Parser::IdentifierList()
 // postcondition: (method applies rules correctly)
 void Parser::IdentifierTail()
 {
+	string lex = "";
+
 	switch(lookahead)
 	{
 	case MP_COMMA: // IdentifierTail -> "," Identifier IdentifierTail  		Rule# 104
 		parseTree->LogExpansion(104);
 		Match(MP_COMMA);
 		Match(MP_IDENTIFIER);
+		lex = currentLexeme;
 		IdentifierTail();
 		break;
 	case MP_COLON: // IdentifierTail -> e  		Rule# 105
@@ -1462,7 +1470,7 @@ void Parser::IdentifierTail()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Type()
+Token Parser::Type()
 {
 	switch(lookahead)
 	{
@@ -1470,35 +1478,35 @@ void Parser::Type()
 		parseTree->LogExpansion(107);
 		Match(MP_INTEGER_LIT);
 		// insert into symbol table here
-		break;
+		return MP_INTEGER_LIT;
 	case MP_FLOAT_LIT: //Type -> "Float", rule #108
 		parseTree->LogExpansion(108);
 		Match(MP_FLOAT_LIT);
-		break;
+		return MP_FLOAT_LIT;
 	case MP_STRING:	// Type -> "String", rule #109
 		parseTree->LogExpansion(109);
 		Match(MP_STRING);
-		break;
+		return MP_STRING;
 	case MP_BOOLEAN: //Type -> "Boolean", rule #110
 		parseTree->LogExpansion(110);
 		Match(MP_BOOLEAN);
-		break;
+		return MP_BOOLEAN;
 	case MP_REAL:	// Type -> "Float"  (aka Real)		Rule# 108		//added to support real data type (float)
 		parseTree->LogExpansion(108);
 		Match(MP_REAL);
-		break;
+		return MP_REAL;
 	case MP_IN:	//added to support in parameters
 		parseTree->LogMessage("No rule defined. In parameter matched.");
 		Match(MP_IN);
 		Type();
-		break;
+		return MP_IN;
 	case MP_CHARACTER:	// added to support character data type		
 		parseTree->LogMessage("No rule defined. Character data type matched.");
 		Match(MP_CHARACTER);
-		break;
+		return MP_CHARACTER;
 	default: //everything else
 		Syntax_Error();
-		break;
+		return MP_NULL;
 	}
 }
 
@@ -1512,8 +1520,10 @@ void Parser::Match(Token token)
 	// gets the next lookahead
 	if (token == lookahead)
 	{
-		parseTree->LogMessage("      Matched: " + EnumToString(token) + " = " + scanner->getLexeme());
-		lookahead = scanner->getToken();		
+		parseTree->LogMessage("      Matched: " + EnumToString(token) + " = " + scanner->lexeme());
+		currentLexeme = scanner->lexeme();
+		currentToken = scanner->token();
+		lookahead = scanner->getToken();
 	}
 	else
 		Syntax_Error(token);
@@ -1525,7 +1535,7 @@ void Parser::Syntax_Error(Token expected)
 	string msg = "";
 	msg.append("\nFile: " + fileName + ": \nSyntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + 
 		".\n    Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + ".\n    Next token: " + EnumToString(scanner->getToken())
-		+ "\n    Next Lexeme: " + scanner->getLexeme());
+		+ "\n    Next Lexeme: " + scanner->lexeme());
 	cout << msg;
 	parseTree->LogMessage(msg);
 	throw -1;

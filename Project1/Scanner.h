@@ -12,14 +12,15 @@ public:
 	Scanner(void);
 	virtual ~Scanner(void);
 
-	bool openFile(std::string);
+	bool openFile(string);
 	Token getToken();
-	string getLexeme();
+	string lexeme();
+	Token token();
 	unsigned int getLineNumber();
 	unsigned int getColumnNumber();
 	bool hasToken();
 
-	string lexeme; // only for debugging
+	string _lexeme; // only for debugging
 
 protected:
 private:
@@ -27,8 +28,8 @@ private:
 	ifstream file;
 	unsigned int lines;
 	unsigned int cols;
-	Token token;
-	//string lexeme;
+	Token _token;
+	//string _lexeme;
 	Token lookahead;
 	unordered_map <string, Token> tokens;
 
