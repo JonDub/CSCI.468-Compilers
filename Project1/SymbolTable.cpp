@@ -8,41 +8,47 @@ SymbolTable::SymbolTable(void)
 
 SymbolTable::~SymbolTable(void)
 {
+	tables.clear();
 }
 
 
 // Insert a record into the top most table in the vector
-bool SymbolTable::insertRecord(Token token, string name, Token type)
+bool SymbolTable::insertRecord(Token token, string name, int row, int col, SymbolTable::Type type)
 {
-	Record* r = lookupRecord(name);
+	Record* r = lookupRecord(name, type);
 
 	if (r == NULL){
 		Table* t = tables.at(tables.size() - 1);
-		t->records[name] = new Record(token, name, t->offset, type); 
-		t->offset++;
+		Record* r = new Record();
+		r->col = col;
+		r->line = row;
+		r->name = name;
+		r->token = token;
+		r->type = type;
+		t->records.push_back(r); 
 		return true;
 	} else {
 		return false;	// could throw an error here if needed
 	}
 }
 
-bool SymbolTable::contains(string s)
+bool SymbolTable::contains(string s, Type t)
 {
-	if (lookupRecord(s) == NULL) return false; else return true;
+	if (lookupRecord(s, t) == NULL) return false; else return true;
 }
 
 // Search the top most table in the vector, then its parent, and so on to the root table
-Record* SymbolTable::lookupRecord(string name)
+SymbolTable::Record* SymbolTable::lookupRecord(string name, Type type)
 {
-	unordered_map< string, Record* >::const_iterator p;
-
-	for (int i = 0; i < tables.size(); i++)
+	for (int i = tables.size() - 1; i >= 0; i--)
 	{
-		Table* t = tables.at(tables.size() - 1 - i);
-		p = t->records.find(name);
+		Table* t = tables.at(i);
 
-		if (p != t->records.end())
-			return p->second;
+		for (int j = t->records.size() - 1; j >= 0; j--)
+		{
+			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->type == type) )
+				return t->records.at(j);
+		}
 	}
 	return NULL;
 }
@@ -52,9 +58,7 @@ Record* SymbolTable::lookupRecord(string name)
 // Always creates a table at the top of the vector 
 bool SymbolTable::createTable()
 {	
-	Table* t = new Table();
-	t->offset = 0;
-	tables.push_back(t);
+	tables.push_back(new Table());
 	return true;
 }
 

@@ -10,7 +10,6 @@
 #include "SemanticAnalyzer.h"
 #include "SemanticRecord.h"
 #include "SymbolTable.h"
-#include "Record.h"
 using namespace std;
 
 class Parser

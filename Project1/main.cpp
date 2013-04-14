@@ -7,7 +7,6 @@
 #include "Parser.h"
 #include "Tokens.h"
 #include "SymbolTable.h"
-#include "Record.h"
 
 using namespace std;
 
@@ -21,10 +20,35 @@ bool Debug(int argc, char* argv[])
 {
 	// How to use the symbol table
 	bool in;
-	Record* r;	
+	SymbolTable::Record* r;	
 	SymbolTable* table = new SymbolTable();
 	table->createTable();
+	in = table->insertRecord(MP_AND, "and", 0, 5, SymbolTable::TYPE_FUNCTION);
 
+	table->createTable();
+	in = table->insertRecord(MP_AND, "and2", 0, 5, SymbolTable::TYPE_FUNCTION);
+	table->createTable();
+	in = table->insertRecord(MP_AND, "and2", 0, 5, SymbolTable::TYPE_FUNCTION);
+	table->createTable();
+	in = table->insertRecord(MP_AND, "and", 0, 5, SymbolTable::TYPE_FUNCTION);
+	in = table->insertRecord(MP_AND, "and1", 0, 5, SymbolTable::TYPE_FUNCTION);
+	in = table->insertRecord(MP_AND, "and2", 0, 5, SymbolTable::TYPE_FUNCTION);
+	in = table->insertRecord(MP_AND, "and3", 0, 5, SymbolTable::TYPE_FUNCTION);
+	in = table->insertRecord(MP_AND, "and", 0, 5, SymbolTable::TYPE_FUNCTION);
+
+	table->createTable();
+	in = table->insertRecord(MP_AND, "and22", 0, 5, SymbolTable::TYPE_FUNCTION);
+	in = table->insertRecord(MP_AND, "and24", 0, 5, SymbolTable::TYPE_FUNCTION);
+
+	table->removeTable();
+	table->createTable();
+	in = table->insertRecord(MP_AND, "and33", 0, 5, SymbolTable::TYPE_FUNCTION);
+	in = table->insertRecord(MP_AND, "and35", 0, 5, SymbolTable::TYPE_FUNCTION);
+	in = table->insertRecord(MP_AND, "and", 0, 5, SymbolTable::TYPE_FUNCTION);
+	
+	
+	
+	
 	// test parser
 	string file = "Programs/test2.mp";
 	Parser * p = new Parser(file);
