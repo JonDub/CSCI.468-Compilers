@@ -8,7 +8,7 @@ Parser::Parser(string fName)
 {
 	// create our scanner and parse trees
 	symbolTable = new SymbolTable();
-	analyzer = new SemanticAnalyzer();
+	analyzer = new SemanticAnalyzer(symbolTable);
 	scanner = new Scanner();
 	parseTree = new ParseTree("parse_tree.txt");
 	parseTree->ReadCFGRules("CFG_rules.txt");
@@ -180,8 +180,8 @@ void Parser::VariableDeclarationTail()
 // postcondition: (method applies rules correctly)
 void Parser::VariableDeclaration()
 {
+	int start = symbolTable->tableSize();
 	Token type = MP_NULL;
-	int num = 0;
 
 	switch(lookahead)
 	{
@@ -190,12 +190,22 @@ void Parser::VariableDeclaration()
 		IdentifierList();
 		Match(MP_COLON);
 		type = Type();
-
-		// insert into symbol table here
 		break;
 	default: //everything else
 		Syntax_Error();
 		break;
+	}
+
+	int end = symbolTable->tableSize();
+	for (int i = start; i < end; i++)
+	{
+		SymbolTable::Record* rec = symbolTable->lookupRecord(i);
+
+		if (rec != NULL)
+		{
+			//rec->type = SymbolTable::TYPE_VARIABLE;
+			rec->token = type;
+		}
 	}
 
 
@@ -286,20 +296,34 @@ void Parser::ProcedureHeading()
 // postcondition: (method applies rules correctly)
 void Parser::FunctionHeading()
 {
+	Token type;
+	int offset;
+
 	switch(lookahead)
 	{
 	case MP_FUNCTION: //FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type rule #15		// DEBUG - current grammer has changed?
 		parseTree->LogExpansion(15);
 		Match(MP_FUNCTION);
+		
+		// get offset where the last function was inserted
+		offset = symbolTable->tableSize(0);
 		FunctionIdentifier();
+
 		OptionalFormalParameterList();
 		//Match(MP_COLON);	//DEBUG
-		Match(MP_RETURN);	//added for function return type
-		Type();
+		Match(MP_RETURN);
+		type = Type();
 		break;
 	default: //everything else
 		Syntax_Error();
 		break;
+	}
+
+	// update the last functin that was put into the table with its data return type
+	SymbolTable::Record* r = symbolTable->lookupRecord(offset, 0);
+	if (r != NULL)
+	{
+		r->token = type;
 	}
 }
 
@@ -372,6 +396,7 @@ void Parser::FormalParameterSection()
 void Parser::ValueParameterSection()
 {
 	Token type;
+	int start = symbolTable->tableSize();
 
 	switch(lookahead)
 	{
@@ -379,11 +404,22 @@ void Parser::ValueParameterSection()
 		parseTree->LogExpansion(22);
 		IdentifierList();
 		Match(MP_COLON);
-		Type();
+		//OptionalPassMode();
+		type = Type();
 		break;
 	default: //everything else
 		Syntax_Error();
 		break;
+	}
+
+	int end = symbolTable->tableSize();
+	for (int i = start; i < end; i++)
+	{
+		SymbolTable::Record* r = symbolTable->lookupRecord(i);
+		if (r != NULL)
+		{
+			r->token = type;
+		}
 	}
 }
 
@@ -492,6 +528,9 @@ void Parser::StatementTail()
 	case MP_END://StatementTail -> e , rule #28
 	case MP_UNTIL:   // This may not be correct repeat until statements may should be bracketed in begin end?
 		parseTree->LogExpansion(28);
+		break;
+	case MP_RETURN:
+		Match(MP_RETURN);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -713,8 +752,6 @@ void Parser::AssignmentStatement()
 		VariableIdentifier();
 		Match(MP_ASSIGN);
 		Expression();
-		// update in symbol table here with the value for the variable
-
 		break;
 	//	DEBUG - see rule 49, need to find follow set and add rule
 	default:
@@ -1337,6 +1374,9 @@ void Parser::VariableIdentifier()
 	{
 	case MP_IDENTIFIER: // VariableIdentifier -> Identifier  	Rule# 98
 		parseTree->LogExpansion(98);
+
+		// add variable to the table, will update more info on it later
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_VARIABLE, scanner->token(), scanner->line(), scanner->column());
 		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
@@ -1353,6 +1393,10 @@ void Parser::ProcedureIdentifier()
 	{
 	case MP_IDENTIFIER: // ProcedureIdentifier -> Identifier 	Rule# 99
 		parseTree->LogExpansion(99);
+
+		// create table for new procedure, create new scope table for that procedure
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_PROCEDURE, MP_NULL, scanner->line(), scanner->column());
+		symbolTable->createTable();
 		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
@@ -1369,6 +1413,11 @@ void Parser::FunctionIdentifier()
 	{
 	case MP_IDENTIFIER: // FunctionIdentifier -> Identifier 	Rule# 100
 		parseTree->LogExpansion(100);
+
+		// add the function to the symbol table
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_FUNCTION, scanner->token(), scanner->line(), scanner->column());
+		symbolTable->createTable();
+
 		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
@@ -1428,13 +1477,12 @@ void Parser::OrdinalExpression()
 // postcondition: (method applies rules correctly)
 void Parser::IdentifierList()
 {
-	string lex = "";
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 103
 		parseTree->LogExpansion(103);
-		Match(MP_IDENTIFIER);
-		lex = currentLexeme;
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_VARIABLE, scanner->token(), scanner->line(), scanner->column());
+		Match(MP_IDENTIFIER);		
 		IdentifierTail();
 		break;
 	default: //everything else
@@ -1447,15 +1495,13 @@ void Parser::IdentifierList()
 // postcondition: (method applies rules correctly)
 void Parser::IdentifierTail()
 {
-	string lex = "";
-
 	switch(lookahead)
 	{
 	case MP_COMMA: // IdentifierTail -> "," Identifier IdentifierTail  		Rule# 104
 		parseTree->LogExpansion(104);
 		Match(MP_COMMA);
-		Match(MP_IDENTIFIER);
-		lex = currentLexeme;
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_VARIABLE, scanner->token(), scanner->line(), scanner->column());
+		Match(MP_IDENTIFIER);		
 		IdentifierTail();
 		break;
 	case MP_COLON: // IdentifierTail -> e  		Rule# 105
@@ -1498,8 +1544,7 @@ Token Parser::Type()
 	case MP_IN:	//added to support in parameters
 		parseTree->LogMessage("No rule defined. In parameter matched.");
 		Match(MP_IN);
-		Type();
-		return MP_IN;
+		return Type();
 	case MP_CHARACTER:	// added to support character data type		
 		parseTree->LogMessage("No rule defined. Character data type matched.");
 		Match(MP_CHARACTER);
@@ -1533,7 +1578,7 @@ void Parser::Syntax_Error(Token expected)
 {
 	//stops everything and gives a meaningful error message 
 	string msg = "";
-	msg.append("\nFile: " + fileName + ": \nSyntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + 
+	msg.append("\nFile: " + fileName + ": \nSyntax error found on line " + to_string(scanner->line()) + ", column " + to_string(scanner->column()) + 
 		".\n    Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + ".\n    Next token: " + EnumToString(scanner->getToken())
 		+ "\n    Next Lexeme: " + scanner->lexeme());
 	cout << msg;

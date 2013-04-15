@@ -146,7 +146,7 @@ Token Scanner::token()
 		return _token;
 }
 
-unsigned int Scanner::getLineNumber()
+unsigned int Scanner::line()
 {
 	/*
 		Returns the current line number
@@ -154,7 +154,7 @@ unsigned int Scanner::getLineNumber()
 	return lines;
 };
 
-unsigned int Scanner::getColumnNumber()
+unsigned int Scanner::column()
 {
 	/*
 		Returns the current column counter from the start of the lexeme. 

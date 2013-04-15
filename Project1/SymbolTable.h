@@ -20,20 +20,19 @@ public:
 	};
 
 	struct Record {
-		int line;
-		int col;
 		string name;
-		Token token;
 		Type type;
+		Token token;
+		int line;
+		int col;		
 	};
 
 	// Insert a record into the top most table in the vector
-	bool insertRecord(Token token, string name, int row, int col, Type type);
+	bool insertRecord(string name, Type type, Token token = MP_NULL, int row = 0, int col = 0);
 
-	// Search the top most table in the vector, then its parent, and so on
-	// Search by name
 	// Returns a pointer to the record of information, returns a NULL pointer otherwise
-	Record* lookupRecord(string name, Type type);	
+	Record* lookupRecord(string name, Type type, int table = -1);	
+	Record* lookupRecord(int offset, int table = -1);
 
 	// Check to see if record is in table or not
 	bool contains(string name, Type type);
@@ -46,11 +45,14 @@ public:
 	// Returns true if table was removed
 	bool removeTable();
 
+	int tableSize(int table = -1);
+
 private:
-	
+
 	struct Table {
 		vector< Record* > records;
 	};
 
 	vector< Table* > tables;
+
 };

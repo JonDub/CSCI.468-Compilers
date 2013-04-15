@@ -21,34 +21,19 @@ bool Debug(int argc, char* argv[])
 	// How to use the symbol table
 	bool in;
 	SymbolTable::Record* r;	
-	SymbolTable* table = new SymbolTable();
-	table->createTable();
-	in = table->insertRecord(MP_AND, "and", 0, 5, SymbolTable::TYPE_FUNCTION);
+	SymbolTable* t = new SymbolTable();
+	t->createTable();
+	in = t->insertRecord("Func1",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	in = t->insertRecord("Func2",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	in = t->insertRecord("Func1",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	t->createTable();
+	in = t->insertRecord("Func1sdfds",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	t->removeTable();
+	t->createTable();
+	in = t->insertRecord("Func1",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	in = t->insertRecord("Func2",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	in = t->insertRecord("Func3",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
 
-	table->createTable();
-	in = table->insertRecord(MP_AND, "and2", 0, 5, SymbolTable::TYPE_FUNCTION);
-	table->createTable();
-	in = table->insertRecord(MP_AND, "and2", 0, 5, SymbolTable::TYPE_FUNCTION);
-	table->createTable();
-	in = table->insertRecord(MP_AND, "and", 0, 5, SymbolTable::TYPE_FUNCTION);
-	in = table->insertRecord(MP_AND, "and1", 0, 5, SymbolTable::TYPE_FUNCTION);
-	in = table->insertRecord(MP_AND, "and2", 0, 5, SymbolTable::TYPE_FUNCTION);
-	in = table->insertRecord(MP_AND, "and3", 0, 5, SymbolTable::TYPE_FUNCTION);
-	in = table->insertRecord(MP_AND, "and", 0, 5, SymbolTable::TYPE_FUNCTION);
-
-	table->createTable();
-	in = table->insertRecord(MP_AND, "and22", 0, 5, SymbolTable::TYPE_FUNCTION);
-	in = table->insertRecord(MP_AND, "and24", 0, 5, SymbolTable::TYPE_FUNCTION);
-
-	table->removeTable();
-	table->createTable();
-	in = table->insertRecord(MP_AND, "and33", 0, 5, SymbolTable::TYPE_FUNCTION);
-	in = table->insertRecord(MP_AND, "and35", 0, 5, SymbolTable::TYPE_FUNCTION);
-	in = table->insertRecord(MP_AND, "and", 0, 5, SymbolTable::TYPE_FUNCTION);
-	
-	
-	
-	
 	// test parser
 	string file = "Programs/test2.mp";
 	Parser * p = new Parser(file);
@@ -59,8 +44,7 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/lab10_program1.mp";
 	p->setInputFile(file);
 	//TestScanner(file);
-	assert(p->parse() == true);
-	return true;
+	//assert(p->parse() == true);
 
 	file = "Programs/lab10_program2.mp";
 	p->setInputFile(file);
@@ -90,7 +74,7 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/program4.up";
 	p->setInputFile(file);
 	//TestScanner(file);
-	//assert(p->parse() == true);
+	assert(p->parse() == true);
 
 	file = "Programs/program5.up";
 	p->setInputFile(file);
@@ -151,10 +135,10 @@ int TestScanner(  string argv ) // int TestScanner(  int argc, char* argv[] )
 		} else
 			cout << dispatcher->lexeme();
 
-		cout << setw(8) << dispatcher->getLineNumber() << setw(8) << dispatcher->getColumnNumber() << endl;
+		cout << setw(8) << dispatcher->line() << setw(8) << dispatcher->column() << endl;
 	}
 	cout << setw(15) << left << EnumToString(dispatcher->getToken()) << setw(45) << dispatcher->lexeme() 
-		<< setw(8) << dispatcher->getLineNumber() << setw(8) << dispatcher->getColumnNumber() << endl << endl;
+		<< setw(8) << dispatcher->line() << setw(8) << dispatcher->column() << endl << endl;
 
 	// press enter to exit
 	printf("Done. Press Enter to exit.\n");

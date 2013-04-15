@@ -13,11 +13,11 @@ public:
 	virtual ~Scanner(void);
 
 	bool openFile(string);
-	Token getToken();
-	string lexeme();
-	Token token();
-	unsigned int getLineNumber();
-	unsigned int getColumnNumber();
+	Token getToken(); // retrieves the next token
+	string lexeme();	// returns the current lexeme
+	Token token();	// returns the current token
+	unsigned int line(); // returns the current line counter
+	unsigned int column();	// returns the current column counter
 	bool hasToken();
 
 	string _lexeme; // only for debugging

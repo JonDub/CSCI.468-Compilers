@@ -1,7 +1,7 @@
 #include "SemanticAnalyzer.h"
 
 
-SemanticAnalyzer::SemanticAnalyzer(void)
+SemanticAnalyzer::SemanticAnalyzer(SymbolTable* tbl)
 {
 	// open the log file 
 	irFilename = "uCode.pas";

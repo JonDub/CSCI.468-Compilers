@@ -3,13 +3,14 @@
 #include <string>
 #include <fstream>
 #include "SemanticRecord.h"
+#include "SymbolTable.h"
 #include "Tokens.h"
 using namespace std;
 
 class SemanticAnalyzer
 {
 public:
-	SemanticAnalyzer(void);
+	SemanticAnalyzer(SymbolTable* table);
 	~SemanticAnalyzer(void);
 
 	void genAssign(SemanticRecord*);
@@ -17,6 +18,7 @@ public:
 private:
 	string irFilename;
 	std::ofstream irFile;
+	SymbolTable* symbolTable;
 
 	void write(string);
 };
