@@ -200,15 +200,9 @@ void Parser::VariableDeclaration()
 	for (int i = start; i < end; i++)
 	{
 		SymbolTable::Record* rec = symbolTable->lookupRecord(i);
-
 		if (rec != NULL)
-		{
-			//rec->type = SymbolTable::TYPE_VARIABLE;
 			rec->token = type;
-		}
 	}
-
-
 }
 
 // precondition: (lookahead is a valid token)

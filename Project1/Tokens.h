@@ -76,6 +76,7 @@ static std::string EnumToString(Token t)
 	case MP_AND: return "MP_AND";
 	case MP_ASSIGN: return "MP_ASSIGN";
 	case MP_BEGIN: return "MP_BEGIN";
+	case MP_BOOLEAN: return "MP_BOOLEAN";
 	case MP_COLON: return "MP_COLON";
 	case MP_CHARACTER: return "MP_CHARACTER";
 	case MP_COMMA: return "MP_COMMA";

@@ -13,6 +13,7 @@ Scanner::Scanner()
 	// to retrieve values from hash map --> Token t = tokens["read"];
 	tokens["and"]		= MP_AND;
 	tokens["begin"]		= MP_BEGIN;
+	tokens["boolean"]	= MP_BOOLEAN;
 	tokens["character"]	= MP_CHARACTER;
 	tokens["div"]		= MP_DIV;
 	tokens["do"]		= MP_DO;

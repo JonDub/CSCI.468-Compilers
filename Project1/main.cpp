@@ -26,11 +26,16 @@ bool Debug(int argc, char* argv[])
 	in = t->insertRecord("Func1",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
 	in = t->insertRecord("Func2",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
 	in = t->insertRecord("Func1",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	in = t->insertRecord("v1",SymbolTable::TYPE_VARIABLE);
+	in = t->insertRecord("v2",SymbolTable::TYPE_VARIABLE);
+
 	t->createTable();
 	in = t->insertRecord("Func1sdfds",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	in = t->insertRecord("v1",SymbolTable::TYPE_VARIABLE);
 	t->removeTable();
 	t->createTable();
 	in = t->insertRecord("Func1",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	in = t->insertRecord("v1",SymbolTable::TYPE_VARIABLE);
 	in = t->insertRecord("Func2",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
 	in = t->insertRecord("Func3",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
 
@@ -44,7 +49,8 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/lab10_program1.mp";
 	p->setInputFile(file);
 	//TestScanner(file);
-	//assert(p->parse() == true);
+	assert(p->parse() == true);
+	return true;
 
 	file = "Programs/lab10_program2.mp";
 	p->setInputFile(file);
