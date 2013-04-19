@@ -2,6 +2,7 @@ program Program3;
 	var A : integer;
 		B : float;
 		C : integer;
+		boo : boolean;
 	begin
 		Write('Enter an integer for A: ');
 		Read(A);

@@ -13,16 +13,16 @@ SymbolTable::~SymbolTable(void)
 
 
 // Insert a record into the top most table in the vector
-bool SymbolTable::insertRecord(string name, SymbolTable::Type type, Token token, int row, int col)
+bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token, int row, int col)
 {
 	Record* r;
 
-	switch (type)
+	switch (kind)
 	{
-	case SymbolTable::TYPE_PROCEDURE:
-	case SymbolTable::TYPE_FUNCTION:
+	case SymbolTable::KIND_PROCEDURE:
+	case SymbolTable::KIND_FUNCTION:
 		// add the function to the main symbol table 0
-		r = lookupRecord(name, type, 0);
+		r = lookupRecord(name, kind, 0);
 
 		if (r == NULL)
 		{
@@ -32,12 +32,12 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Type type, Token token,
 			r->line = row;
 			r->name = name;
 			r->token = token;
-			r->type = type;
+			r->kind = kind;
 			t->records.push_back(r);
 		}
 		// do not put break here
-	case SymbolTable::TYPE_VARIABLE:
-		r = lookupRecord(name, type);
+	case SymbolTable::KIND_VARIABLE:
+		r = lookupRecord(name, kind);
 
 		if (r == NULL){
 			Table* t = tables.back();
@@ -46,9 +46,8 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Type type, Token token,
 			r->line = row;
 			r->name = name;
 			r->token = token;
-			r->type = type;
+			r->kind = kind;
 			t->records.push_back(r);
-			return true;
 		}
 		break;
 	default:
@@ -57,13 +56,13 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Type type, Token token,
 	return true;
 }
 
-bool SymbolTable::contains(string s, Type t)
+bool SymbolTable::contains(string s, Kind k)
 {
-	if (lookupRecord(s, t) == NULL) return false; else return true;
+	if (lookupRecord(s, k) == NULL) return false; else return true;
 }
 
 // Search the top most table in the vector, then its parent, and so on to the root table
-SymbolTable::Record* SymbolTable::lookupRecord(string name, Type type, int table)
+SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table)
 {
 	// if a table number is specified then search that table, otherwise just search the top table
 	if (table > -1 && table < tables.size())
@@ -73,7 +72,7 @@ SymbolTable::Record* SymbolTable::lookupRecord(string name, Type type, int table
 		// search the table in reverse (start at the end of table)
 		for (int j = t->records.size() - 1; j >= 0; j--)
 		{
-			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->type == type) )
+			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
 				return t->records.at(j);
 		}
 	}
@@ -83,7 +82,7 @@ SymbolTable::Record* SymbolTable::lookupRecord(string name, Type type, int table
 
 		for (int j = t->records.size() - 1; j >= 0; j--)
 		{
-			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->type == type) )
+			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
 				return t->records.at(j);
 		}
 	}
