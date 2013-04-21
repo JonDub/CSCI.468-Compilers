@@ -8,7 +8,7 @@ Parser::Parser(string fName)
 {
 	// create our scanner and parse trees
 	symbolTable = new SymbolTable();
-	analyzer = new SemanticAnalyzer(symbolTable);
+	/*analyzer = new SemanticAnalyzer(symbolTable);*/
 	scanner = new Scanner();
 	parseTree = new ParseTree("parse_tree.txt");
 	parseTree->ReadCFGRules("CFG_rules.txt");
@@ -23,7 +23,7 @@ void Parser::setInputFile(string fName)
 
 	scanner = new Scanner();
 	parseTree->LogMessage("\nOpening file: " + fileName + "\n");
-	
+
 	if (!scanner->openFile(fileName))
 		parseTree->LogMessage("Unable to open file.\n");
 }
@@ -54,7 +54,7 @@ bool Parser::parse()
 // postcondition: (method applies rules correctly)
 bool Parser::SystemGoal()
 {
-		
+
 	switch(lookahead)
 	{
 	case MP_PROGRAM: //SystemGoal --> Program eof, rule #1     
@@ -110,7 +110,7 @@ void Parser::ProgramHeading()
 // postcondition: (method applies rules correctly)
 void Parser::Block()
 {
-	
+
 	switch (lookahead)
 	{
 	case MP_VAR: // Rule# 4		Block -> VariableDeclarationPart 
@@ -144,8 +144,8 @@ void Parser::VariableDeclarationPart()
 		Match(MP_SCOLON);
 		VariableDeclarationTail();
 		break;	
-	//case :       // VariableDeclarationPart -> e		Rule# 108		// DEBUG - this rule is not in parser
-	// break;
+		//case :       // VariableDeclarationPart -> e		Rule# 108		// DEBUG - this rule is not in parser
+		// break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -173,7 +173,7 @@ void Parser::VariableDeclarationTail()
 		Syntax_Error();
 		break;
 	}
-	
+
 }
 
 // precondition: (lookahead is a valid token)
@@ -201,8 +201,9 @@ void Parser::VariableDeclaration()
 	{
 		SymbolTable::Record* rec = symbolTable->lookupRecord(i);
 		if (rec != NULL)
-			rec->token = type;
+			rec->token = type; 
 	}
+	
 }
 
 // precondition: (lookahead is a valid token)
@@ -298,7 +299,7 @@ void Parser::FunctionHeading()
 	case MP_FUNCTION: //FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type rule #15		// DEBUG - current grammer has changed?
 		parseTree->LogExpansion(15);
 		Match(MP_FUNCTION);
-		
+
 		// get offset where the last function was inserted
 		offset = symbolTable->tableSize(0);
 		FunctionIdentifier();
@@ -314,11 +315,11 @@ void Parser::FunctionHeading()
 	}
 
 	// update the last functin that was put into the table with its data return type
-	SymbolTable::Record* r = symbolTable->lookupRecord(offset, 0);
+	/*SymbolTable::Record* r = symbolTable->lookupRecord(offset, 0);
 	if (r != NULL)
 	{
 		r->token = type;
-	}
+	}*/
 }
 
 // precondition: (lookahead is a valid token)
@@ -406,7 +407,7 @@ void Parser::ValueParameterSection()
 		break;
 	}
 
-	int end = symbolTable->tableSize();
+	/*int end = symbolTable->tableSize();
 	for (int i = start; i < end; i++)
 	{
 		SymbolTable::Record* r = symbolTable->lookupRecord(i);
@@ -414,7 +415,8 @@ void Parser::ValueParameterSection()
 		{
 			r->token = type;
 		}
-	}
+	}*/
+
 }
 
 // precondition: (lookahead is a valid token)
@@ -466,11 +468,11 @@ void Parser::CompoundStatement()
 		StatementSequence();
 		Match(MP_END);
 		break;
-	//case MP_RETURN:	//added for function, no rul
-	//	parseTree->LogMessage("No rule defined. Function immediately returns.");
-	//	Match(MP_RETURN);
-	//	StatementSequence();
-	//	break;
+		//case MP_RETURN:	//added for function, no rul
+		//	parseTree->LogMessage("No rule defined. Function immediately returns.");
+		//	Match(MP_RETURN);
+		//	StatementSequence();
+		//	break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -495,12 +497,12 @@ void Parser::StatementSequence()
 	case MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_FOR: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_WHILE: //StatementSequence -> Statement StatementTail, rule #26
-	//case MP_RETURN: //added for function
+		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(26);
 		Statement();
 		StatementTail();
 		break;
-	//case MP_VAR:	//DEBUG
+		//case MP_VAR:	//DEBUG
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -536,13 +538,15 @@ void Parser::StatementTail()
 // postcondition: (method applies rules correctly)
 void Parser::Statement()
 {
+	record = new SemanticRecord(); // create new semantic record here
+
 	switch(lookahead)
 	{	
 	case MP_END: //Statement -> EmptyStatement, rule #29
 	case MP_SCOLON: //Statement -> EmptyStatement, rule #29
 	case MP_UNTIL:
 	case MP_ELSE:
-	//case MP_RETURN: //added for function
+		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(29);
 		EmptyStatement();
 		break;
@@ -579,14 +583,16 @@ void Parser::Statement()
 		parseTree->LogExpansion(37);
 		ForStatement();
 		break;
-	//case MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #38			// DEBUG - this case block is commented out but has a rule for it
-	//	parseTree->LogExpansion(38);
-	//	ProcedureStatement();
-	//	break;
+		//case MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #38			// DEBUG - this case block is commented out but has a rule for it
+		//	parseTree->LogExpansion(38);
+		//	ProcedureStatement();
+		//	break;
 	default: //everything else
 		Syntax_Error();
 		break;
 	}
+
+	delete record;
 }
 
 // precondition: (lookahead is a valid token)
@@ -599,7 +605,7 @@ void Parser::EmptyStatement()
 	case MP_END:  // EmptyStatement -> e Rule #38 
 	case MP_UNTIL:
 	case MP_ELSE:
-	//case MP_RETURN: //added for function
+		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(38);
 		break;
 	default:
@@ -669,6 +675,8 @@ void Parser::ReadParameter()
 // postcondition: (method applies rules correctly)
 void Parser::WriteStatement()
 {
+	string v = scanner->lexeme();
+
 	switch(lookahead)
 	{
 	case MP_WRITELN://added		// WriteStatement -> "writeln" "(" WriteParameter WriteParameterTail ")"		Rule# 111
@@ -718,6 +726,8 @@ void Parser::WriteParameterTail()
 // postcondition: (method applies rules correctly)
 void Parser::WriteParameter()
 {
+	string v = scanner->lexeme();
+
 	switch(lookahead)
 	{
 	case MP_PLUS:
@@ -739,6 +749,8 @@ void Parser::WriteParameter()
 // postcondition: (method applies rules correctly)
 void Parser::AssignmentStatement()
 {
+	string v = scanner->lexeme();
+
 	switch (lookahead)
 	{
 	case MP_IDENTIFIER: // AssignmentStatement -> VariableIdentifier ":=" Expression		Rule# 48
@@ -747,7 +759,7 @@ void Parser::AssignmentStatement()
 		Match(MP_ASSIGN);
 		Expression();
 		break;
-	//	DEBUG - see rule 49, need to find follow set and add rule
+		//	DEBUG - see rule 49, need to find follow set and add rule
 	default:
 		Syntax_Error();
 		break;
@@ -784,7 +796,7 @@ void Parser::OptionalElsePart()
 		Match(MP_ELSE);
 		Statement();
 		break;
-	//case MP_ELSE CONFLICT POSSIBLE
+		//case MP_ELSE CONFLICT POSSIBLE
 	case MP_END:
 	case MP_SCOLON: // OptionalElsePart -> e	Rule #52
 		parseTree->LogExpansion(52);
@@ -1019,7 +1031,7 @@ void Parser::Expression()
 	case MP_UNSIGNEDINTEGER:
 	case MP_MINUS:
 	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	Rule# 67
-	case MP_STRING: // added
+	case MP_STRING: // added for strings
 		parseTree->LogExpansion(67);
 		SimpleExpression();
 		OptionalRelationalPart();
@@ -1103,6 +1115,8 @@ void Parser::RelationalOperator()
 // postcondition: (method applies rules correctly)
 void Parser::SimpleExpression()
 {
+	string v = scanner->lexeme();
+
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER:
@@ -1214,6 +1228,8 @@ void Parser::AddingOperator()
 // postcondition: (method applies rules correctly)
 void Parser::Term()
 {
+	string v = scanner->lexeme();
+
 	switch(lookahead)
 	{
 	case MP_UNSIGNEDINTEGER:
@@ -1307,6 +1323,8 @@ void Parser::MultiplyingOperator()
 // postcondition: (method applies rules correctly)
 void Parser::Factor()
 {
+	string v = scanner->lexeme();
+
 	switch(lookahead)
 	{
 	case MP_UNSIGNEDINTEGER: // Factor -> UnsignedInteger  	Rule# 92
@@ -1342,6 +1360,8 @@ void Parser::Factor()
 		Syntax_Error();
 		break;
 	}
+
+	// set right side of record
 }
 
 // precondition: (lookahead is a valid token)
@@ -1364,13 +1384,16 @@ void Parser::ProgramIdentifier()
 // postcondition: (method applies rules correctly)
 void Parser::VariableIdentifier()
 {
+	string v = scanner->lexeme();
+
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // VariableIdentifier -> Identifier  	Rule# 98
 		parseTree->LogExpansion(98);
+		// We need some more information about how we got to this point 
 
-		// add variable to the table, will update more info on it later
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_VARIABLE, scanner->token(), scanner->line(), scanner->column());
+		//if (semantic
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
 		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
@@ -1389,7 +1412,7 @@ void Parser::ProcedureIdentifier()
 		parseTree->LogExpansion(99);
 
 		// create table for new procedure, create new scope table for that procedure
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_PROCEDURE, MP_NULL, scanner->line(), scanner->column());
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_PROCEDURE, MP_NULL/*, scanner->line(), scanner->column()*/);
 		symbolTable->createTable();
 		Match(MP_IDENTIFIER);
 		break;
@@ -1409,7 +1432,7 @@ void Parser::FunctionIdentifier()
 		parseTree->LogExpansion(100);
 
 		// add the function to the symbol table
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_FUNCTION, scanner->token(), scanner->line(), scanner->column());
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_FUNCTION, scanner->token()/*, scanner->line(), scanner->column()*/);
 		symbolTable->createTable();
 
 		Match(MP_IDENTIFIER);
@@ -1454,7 +1477,7 @@ void Parser::OrdinalExpression()
 	case MP_NOT:
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
-	//case MP_RPAREN:
+		//case MP_RPAREN:
 	case MP_LPAREN:
 	case MP_PLUS: // OrdinalExpression -> Expression	Rule# 102
 	case MP_STRING: // added
@@ -1475,8 +1498,9 @@ void Parser::IdentifierList()
 	{
 	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 103
 		parseTree->LogExpansion(103);
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_VARIABLE, scanner->token(), scanner->line(), scanner->column());
-		Match(MP_IDENTIFIER);		
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+		Match(MP_IDENTIFIER);	
+		
 		IdentifierTail();
 		break;
 	default: //everything else
@@ -1494,7 +1518,7 @@ void Parser::IdentifierTail()
 	case MP_COMMA: // IdentifierTail -> "," Identifier IdentifierTail  		Rule# 104
 		parseTree->LogExpansion(104);
 		Match(MP_COMMA);
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::TYPE_VARIABLE, scanner->token(), scanner->line(), scanner->column());
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
 		Match(MP_IDENTIFIER);		
 		IdentifierTail();
 		break;

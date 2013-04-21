@@ -3,5 +3,6 @@ program Program1;
 	boo : BoOLean;
 	begin
 		A := 1;
-		Write('A = ', A)
+		Write('A = ', A); { i think that write and writeln need ; at end }
+		boo := true;
 	end.
