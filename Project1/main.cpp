@@ -24,6 +24,7 @@ bool Debug(int argc, char* argv[])
 	SymbolTable* t = new SymbolTable();
 	t->createTable();
 <<<<<<< HEAD
+<<<<<<< HEAD
 	in = t->insertRecord("A",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
 	in = t->insertRecord("b",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
 	in = t->insertRecord("Cc",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
@@ -32,11 +33,16 @@ bool Debug(int argc, char* argv[])
 	
 	test=t->contains("A", SymbolTable::KIND_VARIABLE);
 =======
+=======
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 	in = t->insertRecord("A",SymbolTable::KIND_VARIABLE);
 	in = t->insertRecord("b",SymbolTable::KIND_VARIABLE);
 	in = t->insertRecord("Cc",SymbolTable::KIND_VARIABLE);
 	in = t->insertRecord("boo",SymbolTable::KIND_VARIABLE);
 	
+<<<<<<< HEAD
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
+=======
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 
 	SemanticAnalyzer* sa = new SemanticAnalyzer(t);

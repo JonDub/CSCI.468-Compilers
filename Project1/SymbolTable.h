@@ -48,11 +48,18 @@ public:
 	
 	// Insert a record into the top most table in the vector
 <<<<<<< HEAD
+<<<<<<< HEAD
 	bool insertRecord(string name, Kind kind, Token token); // insert a Var type
 	bool insertRecord(string name, Kind kind, Token token, Mode mode);
 
 	// Returns a pointer to the record of information, returns a NULL pointer otherwise
 	Record* lookupRecord(string name,Kind kind,int table = -1);	
+=======
+	bool insertRecord(string name, Kind kind, Token token = MP_NULL, int row = 0, int col = 0);
+
+	// Returns a pointer to the record of information, returns a NULL pointer otherwise
+	Record* lookupRecord(string name, Kind kind, int table = -1);	
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 =======
 	bool insertRecord(string name, Kind kind, Token token = MP_NULL, int row = 0, int col = 0);
 

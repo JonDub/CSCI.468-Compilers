@@ -120,6 +120,9 @@ Opening file: C:\Temp\Test.txt
 87	FactorTail          	->	e             
 78	TermTail            	->	e
 69	OptionalRelationalPart	->	e
+<<<<<<< HEAD
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
+=======
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;

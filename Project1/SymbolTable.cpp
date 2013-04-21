@@ -30,7 +30,11 @@ int SymbolTable::getNextOffset()
 
 // Insert a record into the top most table in the vector
 <<<<<<< HEAD
+<<<<<<< HEAD
 bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token)
+=======
+bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token, int row, int col)
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 =======
 bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token, int row, int col)
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
@@ -43,7 +47,11 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token,
 	case SymbolTable::KIND_FUNCTION:
 		// add the function to the main symbol table 0
 <<<<<<< HEAD
+<<<<<<< HEAD
 		r = lookupRecord(name,kind);
+=======
+		r = lookupRecord(name, kind, 0);
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 =======
 		r = lookupRecord(name, kind, 0);
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
@@ -58,7 +66,10 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token,
 			r->token = token;
 			r->kind = kind;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			//r->offset=nextOffset; nextOffset++;
+=======
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 =======
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 			t->records.push_back(r);
@@ -74,9 +85,13 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token,
 			r->token = token;
 			r->kind = kind;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			r->offset= getNextOffset();
 			t->records.push_back(r);
 			activationRecordSize++;
+=======
+			t->records.push_back(r);
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 =======
 			t->records.push_back(r);
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
@@ -95,7 +110,11 @@ bool SymbolTable::contains(string s, Kind k)
 
 // Search the top most table in the vector, then its parent, and so on to the root table
 <<<<<<< HEAD
+<<<<<<< HEAD
 SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind,int table)
+=======
+SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table)
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 =======
 SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table)
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
@@ -109,7 +128,11 @@ SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table
 		for (int j = t->records.size() - 1; j >= 0; j--)
 		{
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) /*&& (t->records.at(j)->kind == kind)*/ )
+=======
+			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 =======
 			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
@@ -123,7 +146,11 @@ SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table
 		for (int j = t->records.size() - 1; j >= 0; j--)
 		{
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) /*&& (t->records.at(j)->kind == kind)*/ )
+=======
+			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 =======
 			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
