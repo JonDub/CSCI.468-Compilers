@@ -24,6 +24,15 @@ public:
 		MODE_OUT,
 		MODE_REFERENCE
 
+<<<<<<< HEAD
+=======
+	struct Record {
+		string name;
+		Kind kind;
+		Token token;
+		int line;
+		int col;		
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 	};
 
 	struct Record {
@@ -38,11 +47,18 @@ public:
 	int getNextOffset();
 	
 	// Insert a record into the top most table in the vector
+<<<<<<< HEAD
 	bool insertRecord(string name, Kind kind, Token token); // insert a Var type
 	bool insertRecord(string name, Kind kind, Token token, Mode mode);
 
 	// Returns a pointer to the record of information, returns a NULL pointer otherwise
 	Record* lookupRecord(string name,Kind kind,int table = -1);	
+=======
+	bool insertRecord(string name, Kind kind, Token token = MP_NULL, int row = 0, int col = 0);
+
+	// Returns a pointer to the record of information, returns a NULL pointer otherwise
+	Record* lookupRecord(string name, Kind kind, int table = -1);	
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 	Record* lookupRecord(int offset, int table = -1);
 
 	// Check to see if record is in table or not

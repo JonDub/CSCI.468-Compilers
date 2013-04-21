@@ -99,6 +99,28 @@ Opening file: C:\Temp\Test.txt
 78	TermTail            	->	e
 78	TermTail            	->	e
 69	OptionalRelationalPart	->	e
+<<<<<<< HEAD
+=======
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = boo
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = true
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
 29	Statement   	->	EmptyStatement

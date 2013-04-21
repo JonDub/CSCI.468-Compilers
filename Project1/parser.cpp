@@ -1390,10 +1390,14 @@ void Parser::VariableIdentifier()
 	{
 	case MP_IDENTIFIER: // VariableIdentifier -> Identifier  	Rule# 98
 		parseTree->LogExpansion(98);
+<<<<<<< HEAD
 		// We need some more information about how we got to this point 
 
 		//if (semantic
 		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+=======
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token(), scanner->line(), scanner->column());
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 		Match(MP_IDENTIFIER);
 		break;
 	default: //everything else
@@ -1412,7 +1416,11 @@ void Parser::ProcedureIdentifier()
 		parseTree->LogExpansion(99);
 
 		// create table for new procedure, create new scope table for that procedure
+<<<<<<< HEAD
 		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_PROCEDURE, MP_NULL/*, scanner->line(), scanner->column()*/);
+=======
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_PROCEDURE, MP_NULL, scanner->line(), scanner->column());
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 		symbolTable->createTable();
 		Match(MP_IDENTIFIER);
 		break;
@@ -1432,7 +1440,11 @@ void Parser::FunctionIdentifier()
 		parseTree->LogExpansion(100);
 
 		// add the function to the symbol table
+<<<<<<< HEAD
 		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_FUNCTION, scanner->token()/*, scanner->line(), scanner->column()*/);
+=======
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_FUNCTION, scanner->token(), scanner->line(), scanner->column());
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 		symbolTable->createTable();
 
 		Match(MP_IDENTIFIER);
@@ -1498,9 +1510,14 @@ void Parser::IdentifierList()
 	{
 	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 103
 		parseTree->LogExpansion(103);
+<<<<<<< HEAD
 		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
 		Match(MP_IDENTIFIER);	
 		
+=======
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token(), scanner->line(), scanner->column());
+		Match(MP_IDENTIFIER);		
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 		IdentifierTail();
 		break;
 	default: //everything else
@@ -1518,7 +1535,11 @@ void Parser::IdentifierTail()
 	case MP_COMMA: // IdentifierTail -> "," Identifier IdentifierTail  		Rule# 104
 		parseTree->LogExpansion(104);
 		Match(MP_COMMA);
+<<<<<<< HEAD
 		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+=======
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token(), scanner->line(), scanner->column());
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 		Match(MP_IDENTIFIER);		
 		IdentifierTail();
 		break;

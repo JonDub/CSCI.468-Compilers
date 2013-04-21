@@ -63,4 +63,7 @@
   <ItemGroup>
     <Text Include="CFG_rules.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
 </Project>
