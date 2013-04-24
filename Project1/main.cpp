@@ -19,26 +19,29 @@ int TestScanner(string);  // int TestScanner(int, char*[]);
 bool Debug(int argc, char* argv[])
 {
 	// How to use the symbol table
-	bool in;
-	SymbolTable::Record* r;	
+	bool in,test;
+	//	SymbolTable::Record* r;	
 	SymbolTable* t = new SymbolTable();
 	t->createTable();
-	in = t->insertRecord("Func1",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
-	in = t->insertRecord("Func2",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
-	in = t->insertRecord("Func1",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
-	in = t->insertRecord("v1",SymbolTable::TYPE_VARIABLE);
-	in = t->insertRecord("v2",SymbolTable::TYPE_VARIABLE);
 
-	t->createTable();
-	in = t->insertRecord("Func1sdfds",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
-	in = t->insertRecord("v1",SymbolTable::TYPE_VARIABLE);
-	t->removeTable();
-	t->createTable();
-	in = t->insertRecord("Func1",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
-	in = t->insertRecord("v1",SymbolTable::TYPE_VARIABLE);
-	in = t->insertRecord("Func2",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
-	in = t->insertRecord("Func3",SymbolTable::TYPE_FUNCTION, MP_NULL, 5, 5);
+	in = t->insertRecord("A",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
+	in = t->insertRecord("b",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
+	in = t->insertRecord("Cc",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
+	in = t->insertRecord("boo",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
+	
+	
+	test=t->contains("A", SymbolTable::KIND_VARIABLE);
 
+
+
+	SemanticAnalyzer* sa = new SemanticAnalyzer(t);
+	SemanticRecord* sr = new SemanticRecord();
+
+	sr->add("A");
+	sr->add("1");
+
+	//return 0;
+	
 	// test parser
 	string file = "Programs/test2.mp";
 	Parser * p = new Parser(file);
@@ -50,7 +53,7 @@ bool Debug(int argc, char* argv[])
 	p->setInputFile(file);
 	//TestScanner(file);
 	assert(p->parse() == true);
-	return true;
+	return 0;
 
 	file = "Programs/lab10_program2.mp";
 	p->setInputFile(file);
@@ -60,7 +63,7 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/lab10_program3.mp";
 	p->setInputFile(file);
 	//TestScanner(file); // added MP_WRITELN
-	//assert(p->parse() == true);
+	assert(p->parse() == true);
 
 	file = "Programs/program1.up";
 	p->setInputFile(file);
@@ -91,11 +94,12 @@ bool Debug(int argc, char* argv[])
 }
 
 // Program Driver
-int main ( int argc, char* argv[] )
+
+int main (int argc, char* argv[])
 {
 	// USE THIS BRANCH
-	Debug(argc, &(*argv));
-	//TestParser(argc, &(*argv));
+	//Debug(argc, &(*argv));
+	TestParser( argv[1]);
 	//TestScanner(argc, &(*argv));
 }
 

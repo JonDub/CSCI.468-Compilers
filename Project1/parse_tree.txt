@@ -1,41 +1,41 @@
 
-Opening file: Programs/test2.mp
-
-
-Opening file: Programs/lab10_program1.mp
+Opening file: C:\Temp\Test.txt
 
 1	SystemGoal	->	Program EOF
 2	Program 	->	ProgramHeading ";" Block "."
 3	ProgramHeading 	->	"program" ProgramIdentifier
       Matched: MP_PROGRAM = program
 97	ProgramIdentifier  	->	Identifier
-      Matched: MP_IDENTIFIER = Program1
+      Matched: MP_IDENTIFIER = HelloWorld
       Matched: MP_SCOLON = ;
 4	Block 	->	VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart         
 5	VariableDeclarationPart 	->	"var" VariableDeclaration ";" VariableDeclarationTail
       Matched: MP_VAR = var
 8	VariableDeclaration 	->	Identifierlist ":" Type
 103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = A
+      Matched: MP_IDENTIFIER = a
 104	IdentifierTail      	->	"," identifier IdentifierTail
       Matched: MP_COMMA = ,
       Matched: MP_IDENTIFIER = b
 104	IdentifierTail      	->	"," identifier IdentifierTail
       Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = Cc
+      Matched: MP_IDENTIFIER = c
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = x
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = y
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = z
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = min
 105	IdentifierTail      	->	e       
       Matched: MP_COLON = :
 107	Type 	->	 "Integer"
-      Matched: MP_INTEGER_LIT = integer
-      Matched: MP_SCOLON = ;
-6	VariableDeclarationTail 	->	VariableDeclaration ";"
-8	VariableDeclaration 	->	Identifierlist ":" Type
-103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = boo
-105	IdentifierTail      	->	e       
-      Matched: MP_COLON = :
-110	Type	->	"Boolean"
-      Matched: MP_BOOLEAN = BoOLean
+      Matched: MP_INTEGER_LIT = Integer
       Matched: MP_SCOLON = ;
 7	VariableDeclarationTail 	->	e
 11	ProcedureAndFunctionDeclarationPart	->	e 
@@ -46,7 +46,7 @@ Opening file: Programs/lab10_program1.mp
 33	Statement   	->	AssignmentStatement
 48	AssignmentStatement	->	VariableIdentifier ":=" Expression
 98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = A
+      Matched: MP_IDENTIFIER = a
       Matched: MP_ASSIGN = :=
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
@@ -59,37 +59,75 @@ Opening file: Programs/lab10_program1.mp
 69	OptionalRelationalPart	->	e
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITE = Write
-      Matched: MP_LPAREN = (
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = b
+      Matched: MP_ASSIGN = :=
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
-      Matched: MP_STRING = 'A = '
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 2
 87	FactorTail          	->	e             
 78	TermTail            	->	e
 69	OptionalRelationalPart	->	e
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = c
+      Matched: MP_ASSIGN = :=
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
 96	Factor               	->	FunctionIdentifier OptionalActualParameterList
 98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = A
+      Matched: MP_IDENTIFIER = a
+87	FactorTail          	->	e             
+77	TermTail            	->	AddingOperator Term TermTail
+82	AddingOperator        	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = b
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+<<<<<<< HEAD
+=======
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = boo
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = true
 87	FactorTail          	->	e             
 78	TermTail            	->	e
 69	OptionalRelationalPart	->	e
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
+<<<<<<< HEAD
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
+=======
+>>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+29	Statement   	->	EmptyStatement
+38	Statement   	->	ProcedureStatement 
 28	StatementTail  	->	e
       Matched: MP_END = end
       Matched: MP_PERIOD = .

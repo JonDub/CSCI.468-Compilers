@@ -31,6 +31,7 @@ private:
 	ParseTree* parseTree;
 	SemanticAnalyzer* analyzer;
 	SymbolTable* symbolTable;
+	SemanticRecord* record;
 	
 	bool SystemGoal();
 	void Program();
