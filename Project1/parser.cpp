@@ -1197,6 +1197,7 @@ void Parser::TermTail()
 	case MP_DO:
 	case MP_THEN:
 	case MP_RPAREN:
+	case MP_LPAREN:
 	case MP_TO:
 	case MP_DOWNTO:
 	case MP_ELSE:
@@ -1277,6 +1278,7 @@ void Parser::Term()
 	case MP_NOT:
 	case MP_IDENTIFIER: // Term -> Factor FactorTail  	Rule# 85
 	case MP_STRING: //added
+	case MP_LPAREN:
 		parseTree->LogExpansion(85);
 		Factor();
 		FactorTail();

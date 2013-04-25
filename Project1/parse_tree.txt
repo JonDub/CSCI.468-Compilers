@@ -67,14 +67,29 @@ Opening file: C:\Temp\Test.txt
 88	MultiplyingOperator  	->	"*"
       Matched: MP_TIMES = *
 95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 4
+      Matched: MP_LPAREN = (
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 17
 87	FactorTail          	->	e             
 77	TermTail            	->	AddingOperator Term TermTail
 82	AddingOperator        	->	"+"
       Matched: MP_PLUS = +
 85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
-      Matched: MP_FIXED_LIT = 7.5
+      Matched: MP_INTEGER_LIT = 19
+86	FactorTail          	->	MultiplyingOperator Factor FactorTail
+88	MultiplyingOperator  	->	"*"
+      Matched: MP_TIMES = *
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 23
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+      Matched: MP_RPAREN = )
 87	FactorTail          	->	e             
 78	TermTail            	->	e
 69	OptionalRelationalPart	->	e
