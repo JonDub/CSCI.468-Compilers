@@ -12,7 +12,7 @@ Parser::Parser(string fName)
 	analyzer = new SemanticAnalyzer(symbolTable);
 	scanner = new Scanner();
 	parseTree = new ParseTree("parse_tree.txt");
-	//parseTree->ReadCFGRules("CFG_rules.txt");
+	//parseTree->ReadCFGRules("CFG_rules.txt"); // is this here?
 	setInputFile(fName);	
 }
 
@@ -506,6 +506,7 @@ void Parser::StatementTail()
 		StatementTail();
 		break;
 	default: //everything else
+		Syntax_Error();
 		break;
 	}
 }
@@ -555,6 +556,7 @@ void Parser::Statement()
 		ForStatement();
 		break;
 	default: //everything else	
+		Syntax_Error();
 		break;
 	}
 
@@ -767,6 +769,7 @@ void Parser::IfStatement()
 		OptionalElsePart();
 		break;
 	default:
+		Syntax_Error();
 		break;
 	}
 }
@@ -856,7 +859,7 @@ void Parser::ForStatement()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::ControlVariable()
+void Parser::ControlVariable()													// ERROR CHECK MISSING
 {
 		parseTree->LogExpansion(56);
 		Match(MP_IDENTIFIER);
@@ -864,10 +867,11 @@ void Parser::ControlVariable()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::InitialValue()
+void Parser::InitialValue()														// ERROR CHECK MISSING
 {
 		parseTree->LogExpansion(57);
 		OrdinalExpression();
+		
 }
 
 // precondition: (lookahead is a valid token)
@@ -892,7 +896,7 @@ void Parser::StepValue()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::FinalValue()
+void Parser::FinalValue()														// ERROR CHECK MISSING
 {
 	parseTree->LogExpansion(60);
 	OrdinalExpression();
@@ -900,7 +904,7 @@ void Parser::FinalValue()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::ProcedureStatement()
+void Parser::ProcedureStatement()														// ERROR CHECK MISSING
 {
 		parseTree->LogExpansion(61);
 		Match(MP_IDENTIFIER);
@@ -909,7 +913,7 @@ void Parser::ProcedureStatement()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::OptionalActualParameterList()
+void Parser::OptionalActualParameterList()														// ERROR CHECK MISSING MAYBE
 {
 	switch(lookahead)
 	{
@@ -928,7 +932,7 @@ void Parser::OptionalActualParameterList()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::ActualParameterTail()
+void Parser::ActualParameterTail()														// ERROR CHECK MISSING MAYBE
 {
 	switch(lookahead)
 	{
@@ -946,14 +950,14 @@ void Parser::ActualParameterTail()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::ActualParameter()
+void Parser::ActualParameter()														// ERROR CHECK MISSING
 {
 		OrdinalExpression();
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Expression()
+void Parser::Expression()														// ERROR CHECK MISSING
 {
 		parseTree->LogExpansion(67);
 		SimpleExpression();
@@ -1015,7 +1019,7 @@ void Parser::OptionalRelationalPart()
 			break;
 		}
 	default: //everything else
-
+		Syntax_Error();
 		break;
 	}
 }
@@ -1058,7 +1062,7 @@ void Parser::RelationalOperator()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::SimpleExpression()
+void Parser::SimpleExpression()														// ERROR CHECK MISSING
 {
 	//parseTree->LogExpansion(76);
 	OptionalSign();
@@ -1101,7 +1105,7 @@ void Parser::TermTail()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::OptionalSign()
+void Parser::OptionalSign()														// ERROR CHECK MISSING MAYBE
 {
 	switch(lookahead)
 	{
@@ -1145,7 +1149,7 @@ void Parser::AddingOperator()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Term()
+void Parser::Term()														// ERROR CHECK MISSING
 {
 
 	Factor();
@@ -1155,7 +1159,7 @@ void Parser::Term()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::FactorTail()
+void Parser::FactorTail()														// ERROR CHECK MISSING MAYBE
 {
 	switch(lookahead)
 	{
@@ -1216,7 +1220,7 @@ void Parser::MultiplyingOperator()
 		Match(MP_AND);
 		break;
 	default: //everything else
-
+		Syntax_Error();
 		break;
 	}
 }
@@ -1380,7 +1384,7 @@ void Parser::BooleanExpression()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::OrdinalExpression()
+void Parser::OrdinalExpression()														// ERROR CHECK MISSING MAYBE
 {
 	
 		parseTree->LogExpansion(102);
@@ -1408,7 +1412,7 @@ void Parser::IdentifierList()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::IdentifierTail()
+void Parser::IdentifierTail()														// ERROR CHECK MISSING MAYBE
 {
 	switch(lookahead)
 	{
@@ -1421,7 +1425,7 @@ void Parser::IdentifierTail()
 		break;
 
 	default: //everything else
-		
+		Syntax_Error();
 		break;
 	}
 }
@@ -1487,7 +1491,7 @@ void Parser::Match(Token token)
 		Syntax_Error(token);
 }
 
-void Parser::Syntax_Error(Token expected)
+void Parser::Syntax_Error(Token expected)					// NEEDS TO BE UNCOMMENTED
 {
 	//stops everything and gives a meaningful error message 
 	/*string msg = "";
