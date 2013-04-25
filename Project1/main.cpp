@@ -20,7 +20,7 @@ bool Debug(int argc, char* argv[])
 {
 	// How to use the symbol table
 	bool in,test;
-	//	SymbolTable::Record* r;	
+	SymbolTable::Record* r;	
 	SymbolTable* t = new SymbolTable();
 	t->createTable();
 

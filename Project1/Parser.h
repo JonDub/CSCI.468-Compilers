@@ -31,8 +31,10 @@ private:
 	ParseTree* parseTree;
 	SemanticAnalyzer* analyzer;
 	SymbolTable* symbolTable;
-	SemanticRecord* record;
-	
+	SemanticRecord* caller;
+	string operation; // probably a better way
+	string operationSide; // ditto
+	string currentRightHandSide;
 	bool SystemGoal();
 	void Program();
 	void ProgramHeading();

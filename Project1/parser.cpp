@@ -1,5 +1,6 @@
 #include "Parser.h"
 
+
 Parser::Parser(void)
 {
 }
@@ -12,7 +13,9 @@ Parser::Parser(string fName)
 	scanner = new Scanner();
 	parseTree = new ParseTree("parse_tree.txt");
 	parseTree->ReadCFGRules("CFG_rules.txt");
-	setInputFile(fName);	
+	setInputFile(fName);
+	caller = new SemanticRecord();
+	//analyzer= new SemanticAnalyzer("program.txt");
 }
 
 void Parser::setInputFile(string fName)
@@ -98,6 +101,7 @@ void Parser::ProgramHeading()
 	case MP_PROGRAM: //ProgramHeading  --> "program" ProgramIdentifier, rule #3 
 		parseTree->LogExpansion(3);
 		Match(MP_PROGRAM);
+		caller->setKind(SemanticRecord::PROGRAM);
 		ProgramIdentifier();
 		break;
 	default: //everything else
@@ -140,6 +144,7 @@ void Parser::VariableDeclarationPart()
 	case MP_VAR: //VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail, rule #5
 		parseTree->LogExpansion(5);
 		Match(MP_VAR);
+		
 		VariableDeclaration();
 		Match(MP_SCOLON);
 		VariableDeclarationTail();
@@ -182,7 +187,7 @@ void Parser::VariableDeclaration()
 {
 	int start = symbolTable->tableSize();
 	Token type = MP_NULL;
-
+	caller->setKind(SemanticRecord::DECLARATION);
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // VariableDeclaration -> Identifierlist ":" Type , rule #8
@@ -203,7 +208,7 @@ void Parser::VariableDeclaration()
 		if (rec != NULL)
 			rec->token = type; 
 	}
-	
+	printf("ADD SP #%d SP\n",(symbolTable->tableSize()));
 }
 
 // precondition: (lookahead is a valid token)
@@ -538,7 +543,7 @@ void Parser::StatementTail()
 // postcondition: (method applies rules correctly)
 void Parser::Statement()
 {
-	record = new SemanticRecord(); // create new semantic record here
+	//record = new SemanticRecord(); // create new semantic record here
 
 	switch(lookahead)
 	{	
@@ -592,7 +597,7 @@ void Parser::Statement()
 		break;
 	}
 
-	delete record;
+	//delete record;
 }
 
 // precondition: (lookahead is a valid token)
@@ -750,14 +755,17 @@ void Parser::WriteParameter()
 void Parser::AssignmentStatement()
 {
 	string v = scanner->lexeme();
-
+	SymbolTable::Record* tempRecord = symbolTable->lookupRecord(v,SymbolTable::KIND_VARIABLE,0);
 	switch (lookahead)
 	{
 	case MP_IDENTIFIER: // AssignmentStatement -> VariableIdentifier ":=" Expression		Rule# 48
-		parseTree->LogExpansion(48);		
+		parseTree->LogExpansion(48);	
+		
+		caller->setKind(SemanticRecord::ASSIGNMENT);
 		VariableIdentifier();
 		Match(MP_ASSIGN);
 		Expression();
+		printf("POP %d(DO)\n", tempRecord->offset);
 		break;
 		//	DEBUG - see rule 49, need to find follow set and add rule
 	default:
@@ -1029,6 +1037,7 @@ void Parser::Expression()
 	case MP_IDENTIFIER:
 	case MP_INTEGER_LIT:
 	case MP_UNSIGNEDINTEGER:
+	case MP_FIXED_LIT:
 	case MP_MINUS:
 	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	Rule# 67
 	case MP_STRING: // added for strings
@@ -1122,6 +1131,7 @@ void Parser::SimpleExpression()
 	case MP_IDENTIFIER:
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
+	case MP_FIXED_LIT:
 	case MP_MINUS:
 	case MP_PLUS: // SimpleExpression -> OptionalSign Term TermTail  +,-		Rule# 76
 	case MP_STRING: // added
@@ -1143,12 +1153,40 @@ void Parser::TermTail()
 	switch(lookahead)
 	{	
 	case MP_OR:
+		parseTree->LogExpansion(77);
+		AddingOperator();
+		Term();
+		TermTail();
+		printf("ORS\n");
+		break;
 	case MP_PLUS:
+		parseTree->LogExpansion(77);
+		AddingOperator();
+		Term();
+		TermTail();
+		if (caller->getType()==MP_INTEGER_LIT)
+			{
+				printf("ADDS\n");
+		}
+		if (caller->getType()==MP_FLOAT_LIT)
+			{
+				printf("ADDSF\n");
+		}
+		break;
 	case MP_MINUS:// TermTail -> AddingOperator Term TermTail  	Rule# 77
 		parseTree->LogExpansion(77);
 		AddingOperator();
 		Term();
 		TermTail();
+		if (caller->getType()==MP_INTEGER_LIT)
+			{
+				printf("SUBS\n");
+		}
+		if (caller->getType()==MP_FLOAT_LIT)
+			{
+				printf("SUBSF\n");
+		}
+		break;
 	case MP_END:
 	case MP_SCOLON: // TermTail -> {e} 		Rule# 78
 	case MP_EQUAL:
@@ -1189,6 +1227,7 @@ void Parser::OptionalSign()
 	case MP_NOT:
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
+	case MP_FIXED_LIT:
 	case MP_RPAREN:
 	case MP_LPAREN: // OptionalSign -> {e}	Rule #81
 	case MP_STRING: //added
@@ -1234,6 +1273,7 @@ void Parser::Term()
 	{
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
+	case MP_FIXED_LIT:
 	case MP_NOT:
 	case MP_IDENTIFIER: // Term -> Factor FactorTail  	Rule# 85
 	case MP_STRING: //added
@@ -1255,13 +1295,60 @@ void Parser::FactorTail()
 	switch(lookahead)
 	{
 	case MP_DIV:
+		parseTree->LogExpansion(86);
+		MultiplyingOperator();
+		Factor();
+		FactorTail();
+		if (caller->getType()==MP_INTEGER_LIT)
+			{
+				printf("DIVS\n");
+		}
+		if (caller->getType()==MP_FLOAT_LIT)
+			{
+				printf("DIVSF\n");
+		}
+		break;
 	case MP_TIMES:
+		parseTree->LogExpansion(86);
+		MultiplyingOperator();
+		Factor();
+		FactorTail();
+		if (caller->getType()==MP_INTEGER_LIT)
+			{
+				printf("MULS\n");
+		}
+		if (caller->getType()==MP_FLOAT_LIT)
+			{
+				printf("MULSF\n");
+		}
+		break;
 	case MP_MOD:
+		parseTree->LogExpansion(86);
+		MultiplyingOperator();
+		Factor();
+		FactorTail();
+		if (caller->getType()==MP_INTEGER_LIT)
+			{
+				printf("MODS\n");
+		}
+		if (caller->getType()==MP_FLOAT_LIT)
+			{
+				printf("MODSF\n");
+		}
+		break;
 	case MP_AND: // FactorTail -> MultiplyingOperator Factor FactorTail  	Rule# 86
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
 		Factor();
 		FactorTail();
+		if (caller->getType()==MP_INTEGER_LIT) // Need to look at this block not sure you can even and a float?
+			{
+				printf("ANDS\n");
+		}
+		if (caller->getType()==MP_FLOAT_LIT)
+			{
+				printf("ANDS\n");
+		}
 		break;
 	case MP_OR:
 	case MP_MINUS:
@@ -1324,6 +1411,7 @@ void Parser::MultiplyingOperator()
 void Parser::Factor()
 {
 	string v = scanner->lexeme();
+	SymbolTable::Record* tempRecord = symbolTable->lookupRecord(v,SymbolTable::KIND_VARIABLE,0);
 
 	switch(lookahead)
 	{
@@ -1334,6 +1422,21 @@ void Parser::Factor()
 		//////////////////////// Conflict 96, 99
 	case MP_IDENTIFIER:		// Factor -> VariableIdentifier		Rule # 93
 		parseTree->LogExpansion(96);
+		
+		if (caller->getType()==MP_INTEGER_LIT)
+		{
+			if (tempRecord->token==MP_INTEGER_LIT)
+			{
+				printf("PUSH %d(D0)\n",tempRecord->offset);
+			}
+			if (tempRecord->token==MP_FIXED_LIT)
+			{
+				printf("CASTSF");
+				printf("PUSH %d(D0)\n",tempRecord->offset);
+			}
+
+		}
+			
 		VariableIdentifier();
 		break;
 	case MP_NOT: // "not" Factor  	Rule# 94
@@ -1343,7 +1446,33 @@ void Parser::Factor()
 		break;
 	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
+		if (caller->getType()==MP_INTEGER_LIT)
+		{
+			printf("PUSH #%s\n",v.c_str());
+		}
+		if (caller->getType()==MP_FLOAT_LIT)
+		{
+			printf("PUSH #%s\n",v.c_str());
+			printf("CASTSF\n");
+			
+		}
 		Match(MP_INTEGER_LIT);
+
+		break;
+	case MP_FIXED_LIT: // Factor -> FIXED_LIT  	Rule# 95		// DEBUG - conflict
+		parseTree->LogExpansion(95);
+		if (caller->getType()==MP_FLOAT_LIT)
+		{
+			printf("PUSH #%s\n",v.c_str());
+		}
+		if (caller->getType()==MP_INTEGER_LIT)
+		{
+			printf("PUSH #%s\n",v.c_str());
+			printf("CASTSI\n"); 
+			
+		}
+		Match(MP_FIXED_LIT);
+
 		break;
 	case MP_LPAREN: // Factor -> "(" Expression ")"  	Rule# 95
 		parseTree->LogExpansion(95);
@@ -1393,8 +1522,16 @@ void Parser::VariableIdentifier()
 
 		// We need some more information about how we got to this point 
 
-		//if (semantic
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+		if (caller->getKind()==SemanticRecord::DECLARATION) // We are declaring variables so add them to the symbol table
+		{
+			symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+		}
+		if (caller->getKind()==SemanticRecord::ASSIGNMENT) // We are at the start of an assignment statement get the variables type and add it to the caller semantic record
+		{
+			SymbolTable::Record* rec=symbolTable->lookupRecord(v, SymbolTable::KIND_VARIABLE, 0);
+			
+			caller->setType(rec->token);
+		}
 
 		Match(MP_IDENTIFIER);
 		break;
@@ -1503,8 +1640,10 @@ void Parser::IdentifierList()
 	{
 	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 103
 		parseTree->LogExpansion(103);
-
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+		
+		
+			symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+		
 		Match(MP_IDENTIFIER);	
 		
 

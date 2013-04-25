@@ -15,7 +15,8 @@ SymbolTable::~SymbolTable(void)
 {
  	tables.clear();
  }
- 
+
+// Get next offSetValue and Increment it
 int SymbolTable::getNextOffset()
 {
 	int tempOffset=nextOffset;
@@ -88,40 +89,79 @@ bool SymbolTable::contains(string s, Kind k)
  }
  
  // Search the top most table in the vector, then its parent, and so on to the root table
+SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table)
+{	// if a table number is specified then search that table, otherwise just search the top table
+	if (table > -1 && table < tables.size())	
+	{		Table* t = tables.at(table);		// search the table in reverse (start at the end of table)		
+		for (int j = t->records.size() - 1; j >= 0; j--)		
+		{			
+			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )				
+				return t->records.at(j);		
+		}	
+	}	
+	else // search through the top table in reverse order	
+	{		Table* t = tables.back();		
+		for (int j = t->records.size() - 1; j >= 0; j--)		
+		{			
+			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )				
+				return t->records.at(j);		
+		}	
+	}	
+	return NULL;
+}
 
-SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind,int table)
- {
- 	// if a table number is specified then search that table, otherwise just search the top table
- 	if (table > -1 && table < tables.size())
 
- 		// search the table in reverse (start at the end of table)
- 		for (int j = t->records.size() - 1; j >= 0; j--)
- 		{
 
-			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) /*&& (t->records.at(j)->kind == kind)*/ )
- 				return t->records.at(j);
- 		}
- 	}
-@@ -83,7 +99,7 @@ SymbolTable::Record* SymbolTable::lookupRecord(string name, Type type, int table
+
+
+
+
+
+
+
+SymbolTable::Record* SymbolTable::lookupRecord(int offset, int table)
+{
+	// if a table number is specified then search that table, otherwise just search the top table
+	if (table != -1)	
+	{		
+		if (table < tables.size() && table >= 0)		
+		{			
+			if (offset < tables.at(table)->records.size() && offset >= 0)			
+			{				return tables.at(table)->records.at(offset);			
+			}		
+		}	
+	}	
+	else 	
+	{		
+		if (offset < tables.back()->records.size() && offset >= 0)		
+		{			
+			return tables.back()->records.at(offset);		
+		}	
+	}	
+	return NULL;
+}
  
- 		for (int j = t->records.size() - 1; j >= 0; j--)
- 		{
--			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->type == type) )
-+			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) /*&& (t->records.at(j)->kind == kind)*/ )
- 				return t->records.at(j);
- 		}
- 	}
-@@ -122,7 +138,7 @@ bool SymbolTable::createTable()
- 	return true;
- }
- 
--// Always remove the top most table in the vecotr
-+// Always remove the top most table in the vector
+
+// Always creates a table at the top of the vector
+bool SymbolTable::createTable()
+{		
+	tables.push_back(new Table());
+	return true;
+}
+
+// Always remove the top most table in the vector
  bool SymbolTable::removeTable()
- {
- 	tables.pop_back();
+ {	
+	 tables.pop_back();
+	 return true;
+ }
+	
 int SymbolTable::tableSize(int t)
- 	{
- 		return tables.back()->records.size();
- 	}
-
+{	// get the size of the topmost table or a specific table
+	if (t > -1 && t < tables.size())
+		{		return tables.at(t)->records.size();	
+		} 	
+	else 	
+		{		return tables.back()->records.size();	
+	}
+}
