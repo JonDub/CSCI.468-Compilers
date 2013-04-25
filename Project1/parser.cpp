@@ -202,13 +202,14 @@ void Parser::VariableDeclaration()
 	}
 
 	int end = symbolTable->tableSize();
+	int diff = symbolTable->tableSize() - start;
 	for (int i = start; i < end; i++)
 	{
 		SymbolTable::Record* rec = symbolTable->lookupRecord(i);
 		if (rec != NULL)
 			rec->token = type; 
 	}
-	printf("ADD SP #%d SP\n",(symbolTable->tableSize()));
+	printf("ADD SP #%d SP\n",diff);
 }
 
 // precondition: (lookahead is a valid token)

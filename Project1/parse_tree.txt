@@ -1,37 +1,25 @@
 
-Opening file: C:\Temp\Test.txt
+Opening file: C:\Users\dub\My Documents\test.txt
 
 1	SystemGoal	->	Program EOF
 2	Program 	->	ProgramHeading ";" Block "."
 3	ProgramHeading 	->	"program" ProgramIdentifier
-      Matched: MP_PROGRAM = program
+      Matched: MP_PROGRAM = PROGRAM
 97	ProgramIdentifier  	->	Identifier
-      Matched: MP_IDENTIFIER = HelloWorld
+      Matched: MP_IDENTIFIER = silly
       Matched: MP_SCOLON = ;
 4	Block 	->	VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart         
 5	VariableDeclarationPart 	->	"var" VariableDeclaration ";" VariableDeclarationTail
       Matched: MP_VAR = var
 8	VariableDeclaration 	->	Identifierlist ":" Type
 103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = a
+      Matched: MP_IDENTIFIER = i
 104	IdentifierTail      	->	"," identifier IdentifierTail
       Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = b
+      Matched: MP_IDENTIFIER = j
 104	IdentifierTail      	->	"," identifier IdentifierTail
       Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = c
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = x
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = y
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = z
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = min
+      Matched: MP_IDENTIFIER = k
 105	IdentifierTail      	->	e       
       Matched: MP_COLON = :
 107	Type 	->	 "Integer"
@@ -41,6 +29,21 @@ Opening file: C:\Temp\Test.txt
 8	VariableDeclaration 	->	Identifierlist ":" Type
 103	IdentifierList      	->	identifier IdentifierTail
       Matched: MP_IDENTIFIER = f
+105	IdentifierTail      	->	e       
+      Matched: MP_COLON = :
+108	Type	->	"Float" 
+      Matched: MP_FLOAT_LIT = FLOAT
+      Matched: MP_SCOLON = ;
+6	VariableDeclarationTail 	->	VariableDeclaration ";"
+8	VariableDeclaration 	->	Identifierlist ":" Type
+103	IdentifierList      	->	identifier IdentifierTail
+      Matched: MP_IDENTIFIER = ff
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = f2
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = f3
 105	IdentifierTail      	->	e       
       Matched: MP_COLON = :
 108	Type	->	"Float" 
@@ -55,17 +58,24 @@ Opening file: C:\Temp\Test.txt
 33	Statement   	->	AssignmentStatement
 48	AssignmentStatement	->	VariableIdentifier ":=" Expression
 98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = f
+      Matched: MP_IDENTIFIER = i
       Matched: MP_ASSIGN = :=
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
-      Matched: MP_FIXED_LIT = 1.2
+      Matched: MP_FIXED_LIT = 2.3
 86	FactorTail          	->	MultiplyingOperator Factor FactorTail
 88	MultiplyingOperator  	->	"*"
       Matched: MP_TIMES = *
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 5
+87	FactorTail          	->	e             
+77	TermTail            	->	AddingOperator Term TermTail
+82	AddingOperator        	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
       Matched: MP_LPAREN = (
 67	Expression          	->	SimpleExpression OptionalRelationalPart
@@ -73,19 +83,14 @@ Opening file: C:\Temp\Test.txt
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 17
+      Matched: MP_INTEGER_LIT = 6
 87	FactorTail          	->	e             
 77	TermTail            	->	AddingOperator Term TermTail
-82	AddingOperator        	->	"+"
-      Matched: MP_PLUS = +
+83	AddingOperator        	->	"-"
+      Matched: MP_MINUS = -
 85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 19
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-88	MultiplyingOperator  	->	"*"
-      Matched: MP_TIMES = *
-95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 23
+      Matched: MP_FIXED_LIT = 7.889
 87	FactorTail          	->	e             
 78	TermTail            	->	e
 69	OptionalRelationalPart	->	e
@@ -98,5 +103,41 @@ Opening file: C:\Temp\Test.txt
 33	Statement   	->	AssignmentStatement
 48	AssignmentStatement	->	VariableIdentifier ":=" Expression
 98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = b
+      Matched: MP_IDENTIFIER = f
       Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 3
+87	FactorTail          	->	e             
+77	TermTail            	->	AddingOperator Term TermTail
+82	AddingOperator        	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 5
+87	FactorTail          	->	e             
+77	TermTail            	->	AddingOperator Term TermTail
+82	AddingOperator        	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_FIXED_LIT = 1.2
+86	FactorTail          	->	MultiplyingOperator Factor FactorTail
+88	MultiplyingOperator  	->	"*"
+      Matched: MP_TIMES = *
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 6
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+29	Statement   	->	EmptyStatement
+38	Statement   	->	ProcedureStatement 
+28	StatementTail  	->	e
+      Matched: MP_END = end
+      Matched: MP_PERIOD = .
+      Matched: MP_EOF = ÿ
