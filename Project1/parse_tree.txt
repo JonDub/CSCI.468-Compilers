@@ -1,134 +1,44 @@
 
-Opening file: C:\Temp\Test.txt
+Opening file: C:\input.txt
 
-1	SystemGoal	->	Program EOF
-2	Program 	->	ProgramHeading ";" Block "."
-3	ProgramHeading 	->	"program" ProgramIdentifier
+Unknown rule number: 0
+Unknown rule number: 1
+Unknown rule number: 2
       Matched: MP_PROGRAM = program
-97	ProgramIdentifier  	->	Identifier
-      Matched: MP_IDENTIFIER = HelloWorld
+Unknown rule number: 96
+      Matched: MP_IDENTIFIER = test1
       Matched: MP_SCOLON = ;
-4	Block 	->	VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart         
-5	VariableDeclarationPart 	->	"var" VariableDeclaration ";" VariableDeclarationTail
+Unknown rule number: 3
+Unknown rule number: 4
       Matched: MP_VAR = var
-8	VariableDeclaration 	->	Identifierlist ":" Type
-103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = a
-104	IdentifierTail      	->	"," identifier IdentifierTail
+Unknown rule number: 7
+Unknown rule number: 102
+      Matched: MP_IDENTIFIER = guy1
+Unknown rule number: 103
       Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = b
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = c
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = x
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = y
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = z
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = min
-105	IdentifierTail      	->	e       
+      Matched: MP_IDENTIFIER = guy2
       Matched: MP_COLON = :
-107	Type 	->	 "Integer"
-      Matched: MP_INTEGER_LIT = Integer
+Unknown rule number: 106
+      Matched: MP_INTEGER_LIT = integer
       Matched: MP_SCOLON = ;
-7	VariableDeclarationTail 	->	e
-11	ProcedureAndFunctionDeclarationPart	->	e 
-24	StatementPart  	->	CompoundStatement   
-25	CompoundStatement 	->	"begin" StatementSequence "end"
+Unknown rule number: 6
+Unknown rule number: 10
+Unknown rule number: 23
+Unknown rule number: 24
       Matched: MP_BEGIN = begin
-26	StatementSequence 	->	Statement StatementTail
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = a
+Unknown rule number: 25
+Unknown rule number: 32
+Unknown rule number: 47
+Unknown rule number: 97
+      Matched: MP_IDENTIFIER = guy1
       Matched: MP_ASSIGN = :=
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-95	Factor               	->	"("Expression ")"
+Unknown rule number: 66
+Unknown rule number: 80
+Unknown rule number: 94
       Matched: MP_INTEGER_LIT = 1
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
-27	StatementTail  	->	";" Statement StatementTail
+Unknown rule number: 86
+Unknown rule number: 26
       Matched: MP_SCOLON = ;
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = b
-      Matched: MP_ASSIGN = :=
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 2
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = c
-      Matched: MP_ASSIGN = :=
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = a
-87	FactorTail          	->	e             
-77	TermTail            	->	AddingOperator Term TermTail
-82	AddingOperator        	->	"+"
-      Matched: MP_PLUS = +
-85	Term                   	->	Factor FactorTail             
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = b
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
-<<<<<<< HEAD
-=======
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = boo
-      Matched: MP_ASSIGN = :=
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = true
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
-<<<<<<< HEAD
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-=======
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-29	Statement   	->	EmptyStatement
-38	Statement   	->	ProcedureStatement 
-28	StatementTail  	->	e
       Matched: MP_END = end
       Matched: MP_PERIOD = .
       Matched: MP_EOF = ÿ

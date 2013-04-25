@@ -20,7 +20,22 @@ public:
 	~Parser(void);
 
 	bool parse();
-	void setInputFile(string);	
+	void setInputFile(string);
+
+	static enum Kind { 
+		KIND_VARIABLE,
+		KIND_FUNCTION,
+		KIND_PROCEDURE
+	};
+
+	struct Record {
+		string name;
+		Kind kind;
+		Token token;
+		int offset;
+		int line;
+		int col;		
+	};
 
 private:
 	Token lookahead;	

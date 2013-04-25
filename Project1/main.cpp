@@ -19,31 +19,15 @@ int TestScanner(string);  // int TestScanner(int, char*[]);
 bool Debug(int argc, char* argv[])
 {
 	// How to use the symbol table
-	bool in,test;
-	//	SymbolTable::Record* r;	
+	bool in;
+	SymbolTable::Record* r;	
 	SymbolTable* t = new SymbolTable();
 	t->createTable();
-<<<<<<< HEAD
-<<<<<<< HEAD
-	in = t->insertRecord("A",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
-	in = t->insertRecord("b",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
-	in = t->insertRecord("Cc",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
-	in = t->insertRecord("boo",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
-	
-	
-	test=t->contains("A", SymbolTable::KIND_VARIABLE);
-=======
-=======
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 	in = t->insertRecord("A",SymbolTable::KIND_VARIABLE);
 	in = t->insertRecord("b",SymbolTable::KIND_VARIABLE);
 	in = t->insertRecord("Cc",SymbolTable::KIND_VARIABLE);
 	in = t->insertRecord("boo",SymbolTable::KIND_VARIABLE);
 	
-<<<<<<< HEAD
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-=======
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 
 	SemanticAnalyzer* sa = new SemanticAnalyzer(t);
 	SemanticRecord* sr = new SemanticRecord();
@@ -54,13 +38,13 @@ bool Debug(int argc, char* argv[])
 	//return 0;
 	
 	// test parser
-	string file = "Programs/test2.mp";
+	string file = "C:/input.txt";
 	Parser * p = new Parser(file);
 
 	//TestScanner(file);
 	//assert(p->Parse() == true);
 
-	file = "Programs/lab10_program1.mp";
+	file = "C:/input.txt";
 	p->setInputFile(file);
 	//TestScanner(file);
 	assert(p->parse() == true);
@@ -105,12 +89,11 @@ bool Debug(int argc, char* argv[])
 }
 
 // Program Driver
-
-int main (int argc, char* argv[])
+int main ( int argc, char* argv[] )
 {
 	// USE THIS BRANCH
 	//Debug(argc, &(*argv));
-	TestParser( argv[1]);
+	TestParser("C:\\input.txt");
 	//TestScanner(argc, &(*argv));
 }
 

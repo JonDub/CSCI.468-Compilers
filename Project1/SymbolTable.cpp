@@ -1,17 +1,8 @@
 #include "SymbolTable.h"
-#include "Tokens.h"
 
 
-
-
-
-
-
-SymbolTable::SymbolTable()
+SymbolTable::SymbolTable(void)
 {
-	nextOffset=0;
-	activationRecordSize=0;
-	
 }
 
 
@@ -20,24 +11,9 @@ SymbolTable::~SymbolTable(void)
 	tables.clear();
 }
 
-int SymbolTable::getNextOffset()
-{
-	int tempOffset=nextOffset;
-	nextOffset++;
-	return tempOffset;
-
-}
 
 // Insert a record into the top most table in the vector
-<<<<<<< HEAD
-<<<<<<< HEAD
-bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token)
-=======
-bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token, int row, int col)
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-=======
-bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token, int row, int col)
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
+bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token, int row, int col,int ofset)
 {
 	Record* r;
 
@@ -46,32 +22,18 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token,
 	case SymbolTable::KIND_PROCEDURE:
 	case SymbolTable::KIND_FUNCTION:
 		// add the function to the main symbol table 0
-<<<<<<< HEAD
-<<<<<<< HEAD
-		r = lookupRecord(name,kind);
-=======
 		r = lookupRecord(name, kind, 0);
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-=======
-		r = lookupRecord(name, kind, 0);
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 
 		if (r == NULL)
 		{
 			r = new Record();
 			Table* t = tables.at(0);
-			//r->col = col;
-			//r->line = row;
+			r->col = col;
+			r->line = row;
 			r->name = name;
 			r->token = token;
 			r->kind = kind;
-<<<<<<< HEAD
-<<<<<<< HEAD
-			//r->offset=nextOffset; nextOffset++;
-=======
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-=======
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
+			r->offset = ofset;//
 			t->records.push_back(r);
 		}
 		// do not put break here
@@ -81,20 +43,13 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token,
 		if (r == NULL){
 			Table* t = tables.back();
 			r = new Record();
+			r->col = col;
+			r->line = row;
 			r->name = name;
 			r->token = token;
 			r->kind = kind;
-<<<<<<< HEAD
-<<<<<<< HEAD
-			r->offset= getNextOffset();
+			r->offset = ofset;//
 			t->records.push_back(r);
-			activationRecordSize++;
-=======
-			t->records.push_back(r);
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-=======
-			t->records.push_back(r);
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 		}
 		break;
 	default:
@@ -109,15 +64,7 @@ bool SymbolTable::contains(string s, Kind k)
 }
 
 // Search the top most table in the vector, then its parent, and so on to the root table
-<<<<<<< HEAD
-<<<<<<< HEAD
-SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind,int table)
-=======
 SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table)
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-=======
-SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table)
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 {
 	// if a table number is specified then search that table, otherwise just search the top table
 	if (table > -1 && table < tables.size())
@@ -127,15 +74,7 @@ SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table
 		// search the table in reverse (start at the end of table)
 		for (int j = t->records.size() - 1; j >= 0; j--)
 		{
-<<<<<<< HEAD
-<<<<<<< HEAD
-			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) /*&& (t->records.at(j)->kind == kind)*/ )
-=======
 			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-=======
-			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 				return t->records.at(j);
 		}
 	}
@@ -145,15 +84,7 @@ SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table
 
 		for (int j = t->records.size() - 1; j >= 0; j--)
 		{
-<<<<<<< HEAD
-<<<<<<< HEAD
-			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) /*&& (t->records.at(j)->kind == kind)*/ )
-=======
 			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
-=======
-			if ((strcmp(t->records.at(j)->name.c_str(), name.c_str()) == 0 ) && (t->records.at(j)->kind == kind) )
->>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
 				return t->records.at(j);
 		}
 	}
@@ -192,7 +123,7 @@ bool SymbolTable::createTable()
 	return true;
 }
 
-// Always remove the top most table in the vector
+// Always remove the top most table in the vecotr
 bool SymbolTable::removeTable()
 {
 	tables.pop_back();
@@ -212,4 +143,3 @@ int SymbolTable::tableSize(int t)
 		return tables.back()->records.size();
 	}
 }
-
