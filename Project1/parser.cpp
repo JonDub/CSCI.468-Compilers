@@ -710,7 +710,7 @@ void Parser::WriteParameter()
 		{
 		printf("WRT ");
 	    string v = scanner->lexeme();
-		v = v.substr(1,v.length()-2);  // GEHTO WORK AROUND
+		v = v.substr(1,v.length()-2);  // Adjustment to remove ' '
 		printf("#\"%s\"\n",v.c_str());
 		Match(MP_STRING);
 
