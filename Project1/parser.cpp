@@ -645,8 +645,22 @@ void Parser::ReadStatement()
 		
 		// generate read assembly
 		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
-		Gen_Assembly("RD D9");
-		Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
+		
+		if (tempRecord->token == MP_FLOAT_LIT || tempRecord->token == MP_FIXED_LIT)
+		{
+			Gen_Assembly("RDF D9");
+			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
+		} 
+		else if (tempRecord->token == MP_STRING)
+		{
+			Gen_Assembly("RDS D9");
+			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
+		}
+		else  if (tempRecord->token == MP_INTEGER_LIT)
+		{
+			Gen_Assembly("RD D9");
+			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
+		}
 		
 		ReadParameter();
 		ReadParameterTail();
@@ -1464,7 +1478,6 @@ void Parser::Factor()
 		parseTree->LogExpansion(96);
 	
 		// check to see what type the left hand side is then act accordingly
-
 		if (caller->getType()==MP_INTEGER_LIT)
 		{
 			if (tempRecord->token==MP_INTEGER_LIT)
@@ -1508,7 +1521,7 @@ void Parser::Factor()
 		{
 			Gen_Assembly("PUSH #" + v);
 		}
-		if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
 		{
 			Gen_Assembly("PUSH #" + v);
 			Gen_Assembly("CASTSF");
@@ -1522,7 +1535,7 @@ void Parser::Factor()
 		{
 			Gen_Assembly("PUSH #" + v);
 		}
-		if (caller->getType() == MP_INTEGER_LIT)
+		else if (caller->getType() == MP_INTEGER_LIT)
 		{
 			Gen_Assembly("PUSH #" + v);
 			Gen_Assembly("CASTSI"); 
@@ -1536,7 +1549,7 @@ void Parser::Factor()
 		{
 			Gen_Assembly("PUSH #" + v);
 		}
-		if (caller->getType() == MP_INTEGER_LIT)
+		else if (caller->getType() == MP_INTEGER_LIT)
 		{
 			Gen_Assembly("PUSH #" + v);
 			Gen_Assembly("CASTSI"); 

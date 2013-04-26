@@ -84,15 +84,6 @@ Opening file: Programs/lab10_program3.mp
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
       Matched: MP_WRITELN = Writeln
       Matched: MP_LPAREN = (
-      Matched: MP_STRING = 'Enter another integer for A: '
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITELN = Writeln
-      Matched: MP_LPAREN = (
       Matched: MP_STRING = 'A = '
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,

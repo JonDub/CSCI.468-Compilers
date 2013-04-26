@@ -6,14 +6,12 @@ ADD SP #1 SP
 WRT #"Enter an integer for A: "
 RD D9
 MOV D9 0(D0)
-WRT #"Enter another integer for A: "
-WRTLN #""
 WRT #"A = "
 PUSH 0(D0)
 WRTS
 WRTLN #""
 WRT #"Enter a float for B: "
-RD D9
+RDF D9
 MOV D9 1(D0)
 WRT #"B = "
 PUSH 1(D0)
