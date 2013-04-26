@@ -91,11 +91,11 @@ private:
 	void OrdinalExpression();
 	void Expression();
 	void SimpleExpression();
-	void Term();
+	void Term(SemanticRecord*);
 	void Factor(SemanticRecord*);
 	void FactorTail(SemanticRecord*);
 	void MultiplyingOperator();
-	void TermTail();
+	void TermTail(SemanticRecord*);
 	void OptionalSign();
 	void AddingOperator();
 	void VariableIdentifier();
