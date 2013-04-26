@@ -11,7 +11,7 @@ SemanticRecord::~SemanticRecord(void)
 
 void SemanticRecord::add(string s)
 {
-	records.push_back(s);
+	//records.push_back(s);
 }
 
 string SemanticRecord::get()

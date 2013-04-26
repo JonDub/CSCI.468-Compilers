@@ -52,8 +52,8 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/lab10_program1.mp";
 	p->setInputFile(file);
 	//TestScanner(file);
-	assert(p->parse() == true);
-	return 0;
+	//assert(p->parse() == true);
+	
 
 	file = "Programs/lab10_program2.mp";
 	p->setInputFile(file);
@@ -64,6 +64,7 @@ bool Debug(int argc, char* argv[])
 	p->setInputFile(file);
 	//TestScanner(file); // added MP_WRITELN
 	assert(p->parse() == true);
+	return 0;
 
 	file = "Programs/program1.up";
 	p->setInputFile(file);
@@ -78,7 +79,7 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/program3.up";
 	p->setInputFile(file);
 	//TestScanner(file);
-	//assert(p->parse() == true);
+	assert(p->parse() == true);
 
 	file = "Programs/program4.up";
 	p->setInputFile(file);
@@ -98,8 +99,8 @@ bool Debug(int argc, char* argv[])
 int main (int argc, char* argv[])
 {
 	// USE THIS BRANCH
-	//Debug(argc, &(*argv));
-	TestParser( argv[1]);
+	Debug(argc, &(*argv));
+	//TestParser( argv[1]);
 	//TestScanner(argc, &(*argv));
 }
 

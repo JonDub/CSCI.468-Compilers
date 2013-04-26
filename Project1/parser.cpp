@@ -16,6 +16,10 @@ Parser::Parser(string fName)
 	setInputFile(fName);
 	caller = new SemanticRecord();
 	//analyzer= new SemanticAnalyzer("program.txt");
+
+	// open the ir file
+	irFilename = "uCode.pas";
+	irFile.open(irFilename, ofstream::out);
 }
 
 void Parser::setInputFile(string fName)
@@ -33,6 +37,8 @@ void Parser::setInputFile(string fName)
 
 Parser::~Parser(void)
 {
+	irFile.close();
+
 	delete scanner;
 	delete analyzer;
 	delete parseTree;
@@ -62,8 +68,13 @@ bool Parser::SystemGoal()
 	{
 	case MP_PROGRAM: //SystemGoal --> Program eof, rule #1     
 		parseTree->LogExpansion(1);
+
+		Gen_Assembly("MOV SP D0");
 		Program();
 		Match(MP_EOF);
+
+		Gen_Assembly("MOV D0 SP");
+		Gen_Assembly("HLT");
 		return true;
 	default: //everything else
 		Syntax_Error();
@@ -143,8 +154,7 @@ void Parser::VariableDeclarationPart()
 	{
 	case MP_VAR: //VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail, rule #5
 		parseTree->LogExpansion(5);
-		Match(MP_VAR);
-		
+		Match(MP_VAR);		
 		VariableDeclaration();
 		Match(MP_SCOLON);
 		VariableDeclarationTail();
@@ -188,6 +198,7 @@ void Parser::VariableDeclaration()
 	int start = symbolTable->tableSize();
 	Token type = MP_NULL;
 	caller->setKind(SemanticRecord::DECLARATION);
+
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER: // VariableDeclaration -> Identifierlist ":" Type , rule #8
@@ -209,7 +220,8 @@ void Parser::VariableDeclaration()
 		if (rec != NULL)
 			rec->token = type; 
 	}
-	printf("ADD SP #%d SP\n",diff);
+
+	Gen_Assembly("ADD SP #" + to_string(diff) + " SP");
 }
 
 // precondition: (lookahead is a valid token)
@@ -626,14 +638,23 @@ void Parser::ReadStatement()
 {
 	switch(lookahead)
 	{
-	case MP_READ:  // ReadStatement -> "read" "(" ReadParameter ReadParameterTail ")"    Rule #40
+	case MP_READ:  {// ReadStatement -> "read" "(" ReadParameter ReadParameterTail ")"    Rule #40
 		parseTree->LogExpansion(40);
 		Match(MP_READ);
 		Match(MP_LPAREN);
+		
+		// generate read assembly
+		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
+		//Gen_Assembly("RD " + to_string(tempRecord->offset) + "(D0)");
+
+		Gen_Assembly("RD D9");
+		Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
+		
 		ReadParameter();
 		ReadParameterTail();
 		Match(MP_RPAREN);
 		break;
+	}
 	default:
 		Syntax_Error();
 		break;
@@ -646,12 +667,22 @@ void Parser::ReadParameterTail()
 {
 	switch(lookahead)
 	{
-	case MP_COMMA:  // ReadParameterTail -> "," ReadParameter ReadParameterTail		Rule# 42
+	case MP_COMMA: {  // ReadParameterTail -> "," ReadParameter ReadParameterTail		Rule# 42
 		parseTree->LogExpansion(42);
 		Match(MP_COMMA);
+
+		// generate read assembly
+		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
+		//Gen_Assembly("RD " + to_string(tempRecord->offset) + "(D0)");
+
+		Gen_Assembly("RD D9");
+		Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
+		
+
 		ReadParameter();
 		ReadParameterTail();
 		break;
+	}
 	case MP_RPAREN:	// ReadParameterTail -> e 		Rule# 42
 		parseTree->LogExpansion(42);
 		break;
@@ -766,7 +797,7 @@ void Parser::AssignmentStatement()
 		VariableIdentifier();
 		Match(MP_ASSIGN);
 		Expression();
-		printf("POP %d(DO)\n", tempRecord->offset);
+		Gen_Assembly("POP " + to_string(tempRecord->offset) + "(D0)");
 		break;
 		//	DEBUG - see rule 49, need to find follow set and add rule
 	default:
@@ -1158,7 +1189,7 @@ void Parser::TermTail()
 		AddingOperator();
 		Term();
 		TermTail();
-		printf("ORS\n");
+		Gen_Assembly("ORS");
 		break;
 	case MP_PLUS:
 		parseTree->LogExpansion(77);
@@ -1166,12 +1197,12 @@ void Parser::TermTail()
 		Term();
 		TermTail();
 		if (caller->getType()==MP_INTEGER_LIT)
-			{
-				printf("ADDS\n");
+		{
+				Gen_Assembly("ADDS");
 		}
 		if (caller->getType()==MP_FLOAT_LIT)
-			{
-				printf("ADDSF\n");
+		{
+				Gen_Assembly("ADDSF");
 		}
 		break;
 	case MP_MINUS:// TermTail -> AddingOperator Term TermTail  	Rule# 77
@@ -1181,11 +1212,11 @@ void Parser::TermTail()
 		TermTail();
 		if (caller->getType()==MP_INTEGER_LIT)
 			{
-				printf("SUBS\n");
+				Gen_Assembly("SUBS");
 		}
 		if (caller->getType()==MP_FLOAT_LIT)
 			{
-				printf("SUBSF\n");
+				Gen_Assembly("SUBSF");
 		}
 		break;
 	case MP_END:
@@ -1304,11 +1335,11 @@ void Parser::FactorTail()
 		FactorTail();
 		if (caller->getType()==MP_INTEGER_LIT)
 			{
-				printf("DIVS\n");
+				Gen_Assembly("DIVS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT)
+		if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
 			{
-				printf("DIVSF\n");
+				Gen_Assembly("DIVSF");
 		}
 		break;
 	case MP_TIMES:
@@ -1318,11 +1349,11 @@ void Parser::FactorTail()
 		FactorTail();
 		if (caller->getType()==MP_INTEGER_LIT)
 			{
-				printf("MULS\n");
+				Gen_Assembly("MULS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT)
+		if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
 			{
-				printf("MULSF\n");
+				Gen_Assembly("MULSF");
 		}
 		break;
 	case MP_MOD:
@@ -1332,11 +1363,11 @@ void Parser::FactorTail()
 		FactorTail();
 		if (caller->getType()==MP_INTEGER_LIT)
 			{
-				printf("MODS\n");
+				Gen_Assembly("MODS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT)
+		if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
 			{
-				printf("MODSF\n");
+				Gen_Assembly("MODSF");
 		}
 		break;
 	case MP_AND: // FactorTail -> MultiplyingOperator Factor FactorTail  	Rule# 86
@@ -1346,11 +1377,11 @@ void Parser::FactorTail()
 		FactorTail();
 		if (caller->getType()==MP_INTEGER_LIT) // Need to look at this block not sure you can even and a float?
 			{
-				printf("ANDS\n");
+				Gen_Assembly("ANDS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT)
+		if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
 			{
-				printf("ANDS\n");
+				Gen_Assembly("ANDS");
 		}
 		break;
 	case MP_OR:
@@ -1423,21 +1454,34 @@ void Parser::Factor()
 		Match(MP_UNSIGNEDINTEGER);
 		break;
 		//////////////////////// Conflict 96, 99
-	case MP_IDENTIFIER:		// Factor -> VariableIdentifier		Rule # 93
+	case MP_IDENTIFIER:	// Factor -> VariableIdentifier		Rule # 93
 		parseTree->LogExpansion(96);
-		
+	
+		// check to see what type the left hand side is then act accordingly
+
 		if (caller->getType()==MP_INTEGER_LIT)
 		{
 			if (tempRecord->token==MP_INTEGER_LIT)
 			{
-				printf("PUSH %d(D0)\n",tempRecord->offset);
+				Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");
 			}
-			if (tempRecord->token==MP_FIXED_LIT)
+			else if (tempRecord->token==MP_FIXED_LIT || tempRecord->token == MP_FLOAT_LIT)
 			{
-				printf("CASTSF");
-				printf("PUSH %d(D0)\n",tempRecord->offset);
+				//Gen_Assembly("CASTSF");
+				Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");
 			}
-
+		} 
+		else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		{
+			if (tempRecord->token==MP_INTEGER_LIT)
+			{
+				Gen_Assembly("CASTSF");
+				Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");				
+			}
+			else if (tempRecord->token == MP_FIXED_LIT || tempRecord->token == MP_FLOAT_LIT)
+			{
+				Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");
+			}
 		}
 			
 		VariableIdentifier();
@@ -1449,33 +1493,45 @@ void Parser::Factor()
 		break;
 	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
-		if (caller->getType()==MP_INTEGER_LIT)
+
+		if (caller->getType() == MP_INTEGER_LIT)
 		{
-			printf("PUSH #%s\n",v.c_str());
+			Gen_Assembly("PUSH #" + v);
 		}
-		if (caller->getType()==MP_FLOAT_LIT)
+		if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
 		{
-			printf("PUSH #%s\n",v.c_str());
-			printf("CASTSF\n");
-			
+			Gen_Assembly("PUSH #" + v);
+			Gen_Assembly("CASTSF");
 		}
 		Match(MP_INTEGER_LIT);
-
 		break;
 	case MP_FIXED_LIT: // Factor -> FIXED_LIT  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
-		if (caller->getType()==MP_FLOAT_LIT)
+
+		if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT )
 		{
-			printf("PUSH #%s\n",v.c_str());
+			Gen_Assembly("PUSH #" + v);
 		}
-		if (caller->getType()==MP_INTEGER_LIT)
+		if (caller->getType() == MP_INTEGER_LIT)
 		{
-			printf("PUSH #%s\n",v.c_str());
-			printf("CASTSI\n"); 
-			
+			Gen_Assembly("PUSH #" + v);
+			Gen_Assembly("CASTSI"); 
 		}
 		Match(MP_FIXED_LIT);
+		break;	
+	case MP_FLOAT_LIT:
+		parseTree->LogExpansion(95);
 
+		if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT )
+		{
+			Gen_Assembly("PUSH #" + v);
+		}
+		if (caller->getType() == MP_INTEGER_LIT)
+		{
+			Gen_Assembly("PUSH #" + v);
+			Gen_Assembly("CASTSI"); 
+		}
+		Match(MP_FLOAT_LIT);
 		break;
 	case MP_LPAREN: // Factor -> "(" Expression ")"  	Rule# 95
 		parseTree->LogExpansion(95);
@@ -1643,13 +1699,8 @@ void Parser::IdentifierList()
 	{
 	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 103
 		parseTree->LogExpansion(103);
-		
-		
-			symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
-		
+		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
 		Match(MP_IDENTIFIER);	
-		
-
 		IdentifierTail();
 		break;
 	default: //everything else
@@ -1698,6 +1749,10 @@ Token Parser::Type()
 		parseTree->LogExpansion(108);
 		Match(MP_FLOAT_LIT);
 		return MP_FLOAT_LIT;
+	case MP_FIXED_LIT: // treat fixed and float the same???
+		parseTree->LogExpansion(108);
+		Match(MP_FIXED_LIT);
+		return MP_FIXED_LIT;
 	case MP_STRING:	// Type -> "String", rule #109
 		parseTree->LogExpansion(109);
 		Match(MP_STRING);
@@ -1753,4 +1808,11 @@ void Parser::Syntax_Error(Token expected)
 	cout << msg;
 	parseTree->LogMessage(msg);
 	throw -1;
+}
+
+void Parser::Gen_Assembly(string s)
+{
+	irFile << s << endl;
+	printf(s.c_str());
+	printf("\n");
 }

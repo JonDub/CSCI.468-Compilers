@@ -23,6 +23,9 @@ public:
 	void setInputFile(string);	
 
 private:
+	string irFilename;
+	std::ofstream irFile;
+
 	Token lookahead;	
 	string fileName;
 	string currentLexeme;
@@ -101,5 +104,6 @@ private:
 	
 	void Match(Token);
 	void Syntax_Error(Token = MP_NULL);
+	void Gen_Assembly(string s);
 };
 
