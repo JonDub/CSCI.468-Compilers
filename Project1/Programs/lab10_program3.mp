@@ -14,5 +14,5 @@ program Program3;
 		Read(C);
 		Writeln('C = ', C);
 		A := 3*A*A*A + 5*B*B - C;
-		Write('A = ', A, ', B = ', B,', and A = ', C);
+		Write('A = ', A, ', B = ', B,', and C = ', C);
 	end.

@@ -649,17 +649,17 @@ void Parser::ReadStatement()
 		
 		if (tempRecord->token == MP_FLOAT_LIT || tempRecord->token == MP_FIXED_LIT)
 		{
-			Gen_Assembly("RDF D9");
+			Gen_Assembly("RDF D9		; Read Var " + tempRecord->name);
 			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		} 
 		else if (tempRecord->token == MP_STRING)
 		{
-			Gen_Assembly("RDS D9");
+			Gen_Assembly("RDS D9		; Read Var " + tempRecord->name);
 			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		}
 		else  if (tempRecord->token == MP_INTEGER_LIT)
 		{
-			Gen_Assembly("RD D9");
+			Gen_Assembly("RD D9			; Read Var " + tempRecord->name);
 			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		}
 		
@@ -688,17 +688,17 @@ void Parser::ReadParameterTail()
 		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
 		if (tempRecord->token == MP_FLOAT_LIT || tempRecord->token == MP_FIXED_LIT)
 		{
-			Gen_Assembly("RDF D9");
+			Gen_Assembly("RDF D9		; Read Var " + tempRecord->name);
 			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		} 
 		else if (tempRecord->token == MP_STRING)
 		{
-			Gen_Assembly("RDS D9");
+			Gen_Assembly("RDS D9		; Read Var " + tempRecord->name);
 			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		}
 		else  if (tempRecord->token == MP_INTEGER_LIT)
 		{
-			Gen_Assembly("RD D9");
+			Gen_Assembly("RD D9		; Read Var " + tempRecord->name);
 			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		}
 

@@ -269,7 +269,7 @@ Opening file: Programs/lab10_program3.mp
 69	OptionalRelationalPart	->	e
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
-      Matched: MP_STRING = ', A = '
+      Matched: MP_STRING = ', B = '
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
 47	WriteParameter    	->	OrdinalExpression             
