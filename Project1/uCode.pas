@@ -3,12 +3,29 @@ ADD SP #1 SP
 ADD SP #1 SP
 ADD SP #1 SP
 ADD SP #1 SP
+WRT #"Enter an integer for A: "
 RD D9
 MOV D9 0(D0)
+WRT #"Enter another integer for A: "
+WRTLN #""
+WRT #"A = "
+PUSH 0(D0)
+WRTS
+WRTLN #""
+WRT #"Enter a float for B: "
 RD D9
 MOV D9 1(D0)
+WRT #"B = "
+PUSH 1(D0)
+WRTS
+WRTLN #""
+WRT #"Enter an integer for C: "
 RD D9
 MOV D9 2(D0)
+WRT #"C = "
+PUSH 2(D0)
+WRTS
+WRTLN #""
 PUSH #3
 PUSH 0(D0)
 PUSH 0(D0)
@@ -26,9 +43,15 @@ PUSH 2(D0)
 SUBS
 ADDS
 POP 0(D0)
+WRT #"A = "
 PUSH 0(D0)
+WRTS
+WRT #", A = "
 PUSH 1(D0)
+WRTS
+WRT #", and A = "
 CASTSF
 PUSH 2(D0)
+WRTS
 MOV D0 SP
 HLT

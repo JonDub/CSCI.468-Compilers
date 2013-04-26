@@ -645,8 +645,6 @@ void Parser::ReadStatement()
 		
 		// generate read assembly
 		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
-		//Gen_Assembly("RD " + to_string(tempRecord->offset) + "(D0)");
-
 		Gen_Assembly("RD D9");
 		Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		
@@ -673,8 +671,6 @@ void Parser::ReadParameterTail()
 
 		// generate read assembly
 		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
-		//Gen_Assembly("RD " + to_string(tempRecord->offset) + "(D0)");
-
 		Gen_Assembly("RD D9");
 		Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		
@@ -718,6 +714,7 @@ void Parser::WriteStatement()
 	{
 	case MP_WRITELN://added		// WriteStatement -> "writeln" "(" WriteParameter WriteParameterTail ")"		Rule# 111
 		parseTree->LogExpansion(44);
+		caller->setType(MP_WRITELN);
 		Match(MP_WRITELN);
 		Match(MP_LPAREN);
 		WriteParameter();		
@@ -726,6 +723,7 @@ void Parser::WriteStatement()
 		break;
 	case MP_WRITE: // WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")"	Rule# 44
 		parseTree->LogExpansion(44);
+		caller->setType(MP_WRITE);
 		Match(MP_WRITE);
 		Match(MP_LPAREN);
 		WriteParameter();		
@@ -752,6 +750,11 @@ void Parser::WriteParameterTail()
 		break;
 	case MP_RPAREN: // WriteParameterTail -> e		Rule# 46
 		parseTree->LogExpansion(46);
+
+		if (caller->getType() == MP_WRITELN)
+		{
+			Gen_Assembly("WRTLN #\"\"");
+		}
 		break;
 	default:
 		Syntax_Error();
@@ -767,17 +770,18 @@ void Parser::WriteParameter()
 
 	switch(lookahead)
 	{
-	case MP_PLUS:
-	case MP_MINUS:  // WriteParameter -> OrdinalExpression		Rule# 47
-	case MP_UNSIGNEDINTEGER:
-	case MP_INTEGER_LIT:
+	//case MP_PLUS:
+	//case MP_MINUS:  // WriteParameter -> OrdinalExpression		Rule# 47
+	//case MP_UNSIGNEDINTEGER:
+	//case MP_INTEGER_LIT:
 	case MP_STRING:	// added
-	case MP_IDENTIFIER: //added
-		parseTree->LogExpansion(47);
-		OrdinalExpression();
+		Gen_Assembly("WRT #\"" + scanner->lexeme().substr(1, scanner->lexeme().length()-2) + "\"");
+		Match(MP_STRING);
 		break;
 	default:
-		Syntax_Error();
+		parseTree->LogExpansion(47);
+		OrdinalExpression();
+		Gen_Assembly("WRTS");
 		break;
 	}
 }
@@ -1196,11 +1200,12 @@ void Parser::TermTail()
 		AddingOperator();
 		Term();
 		TermTail();
+		
 		if (caller->getType()==MP_INTEGER_LIT)
 		{
 				Gen_Assembly("ADDS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT)
+		if (caller->getType()==MP_FLOAT_LIT || caller->getType()== MP_FIXED_LIT)
 		{
 				Gen_Assembly("ADDSF");
 		}
@@ -1214,7 +1219,7 @@ void Parser::TermTail()
 			{
 				Gen_Assembly("SUBS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT)
+		if (caller->getType()==MP_FLOAT_LIT || caller->getType()== MP_FIXED_LIT)
 			{
 				Gen_Assembly("SUBSF");
 		}
@@ -1333,11 +1338,12 @@ void Parser::FactorTail()
 		MultiplyingOperator();
 		Factor();
 		FactorTail();
+		
 		if (caller->getType()==MP_INTEGER_LIT)
 			{
 				Gen_Assembly("DIVS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
 			{
 				Gen_Assembly("DIVSF");
 		}
@@ -1347,12 +1353,12 @@ void Parser::FactorTail()
 		MultiplyingOperator();
 		Factor();
 		FactorTail();
-		if (caller->getType()==MP_INTEGER_LIT)
-			{
+		if (caller->getType() == MP_INTEGER_LIT)
+		{
 				Gen_Assembly("MULS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
-			{
+		else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		{
 				Gen_Assembly("MULSF");
 		}
 		break;
@@ -1362,11 +1368,11 @@ void Parser::FactorTail()
 		Factor();
 		FactorTail();
 		if (caller->getType()==MP_INTEGER_LIT)
-			{
+		{
 				Gen_Assembly("MODS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
-			{
+		else if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		{
 				Gen_Assembly("MODSF");
 		}
 		break;
@@ -1376,11 +1382,11 @@ void Parser::FactorTail()
 		Factor();
 		FactorTail();
 		if (caller->getType()==MP_INTEGER_LIT) // Need to look at this block not sure you can even and a float?
-			{
+		{
 				Gen_Assembly("ANDS");
 		}
-		if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
-			{
+		else if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		{
 				Gen_Assembly("ANDS");
 		}
 		break;
@@ -1482,6 +1488,10 @@ void Parser::Factor()
 			{
 				Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");
 			}
+		}
+		else if (caller->getType() == MP_WRITE || caller->getType() == MP_WRITELN)
+		{
+			Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");
 		}
 			
 		VariableIdentifier();

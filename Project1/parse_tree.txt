@@ -65,17 +65,7 @@ Opening file: Programs/lab10_program3.mp
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
       Matched: MP_WRITE = Write
       Matched: MP_LPAREN = (
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
       Matched: MP_STRING = 'Enter an integer for A: '
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
 46	WriteParameterTail 	->	e
       Matched: MP_RPAREN = )
 27	StatementTail  	->	";" Statement StatementTail
@@ -94,17 +84,16 @@ Opening file: Programs/lab10_program3.mp
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
       Matched: MP_WRITELN = Writeln
       Matched: MP_LPAREN = (
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
+      Matched: MP_STRING = 'Enter another integer for A: '
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = Writeln
+      Matched: MP_LPAREN = (
       Matched: MP_STRING = 'A = '
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
 47	WriteParameter    	->	OrdinalExpression             
@@ -127,17 +116,7 @@ Opening file: Programs/lab10_program3.mp
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
       Matched: MP_WRITE = Write
       Matched: MP_LPAREN = (
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
       Matched: MP_STRING = 'Enter a float for B: '
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
 46	WriteParameterTail 	->	e
       Matched: MP_RPAREN = )
 27	StatementTail  	->	";" Statement StatementTail
@@ -156,17 +135,7 @@ Opening file: Programs/lab10_program3.mp
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
       Matched: MP_WRITELN = Writeln
       Matched: MP_LPAREN = (
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
       Matched: MP_STRING = 'B = '
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
 47	WriteParameter    	->	OrdinalExpression             
@@ -189,17 +158,7 @@ Opening file: Programs/lab10_program3.mp
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
       Matched: MP_WRITE = Write
       Matched: MP_LPAREN = (
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
       Matched: MP_STRING = 'Enter an integer for C: '
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
 46	WriteParameterTail 	->	e
       Matched: MP_RPAREN = )
 27	StatementTail  	->	";" Statement StatementTail
@@ -218,17 +177,7 @@ Opening file: Programs/lab10_program3.mp
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
       Matched: MP_WRITELN = Writeln
       Matched: MP_LPAREN = (
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
       Matched: MP_STRING = 'C = '
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
 47	WriteParameter    	->	OrdinalExpression             
@@ -312,17 +261,7 @@ Opening file: Programs/lab10_program3.mp
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
       Matched: MP_WRITE = Write
       Matched: MP_LPAREN = (
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
       Matched: MP_STRING = 'A = '
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
 47	WriteParameter    	->	OrdinalExpression             
@@ -339,17 +278,7 @@ Opening file: Programs/lab10_program3.mp
 69	OptionalRelationalPart	->	e
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
       Matched: MP_STRING = ', A = '
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
 47	WriteParameter    	->	OrdinalExpression             
@@ -366,17 +295,7 @@ Opening file: Programs/lab10_program3.mp
 69	OptionalRelationalPart	->	e
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
-47	WriteParameter    	->	OrdinalExpression             
-102	OrdinalExpression   	->	Expression             
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-114	Factor	->	StringLiteral
       Matched: MP_STRING = ', and A = '
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
 47	WriteParameter    	->	OrdinalExpression             

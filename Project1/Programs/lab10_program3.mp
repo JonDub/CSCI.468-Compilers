@@ -6,6 +6,7 @@ program Program3;
 	begin
 		Write('Enter an integer for A: ');
 		Read(A);
+		Writeln('Enter another integer for A: ');
 		Writeln ('A = ', A);
 		Write('Enter a float for B: ');
 		Read(B);
