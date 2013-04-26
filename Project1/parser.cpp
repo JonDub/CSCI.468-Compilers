@@ -63,16 +63,17 @@ bool Parser::parse()
 // postcondition: (method applies rules correctly)
 bool Parser::SystemGoal()
 {
-
 	switch(lookahead)
 	{
 	case MP_PROGRAM: //SystemGoal --> Program eof, rule #1     
 		parseTree->LogExpansion(1);
 
+		// generate begin assembly
 		Gen_Assembly("MOV SP D0");
 		Program();
 		Match(MP_EOF);
 
+		// generate end assembly
 		Gen_Assembly("MOV D0 SP");
 		Gen_Assembly("HLT");
 		return true;
@@ -212,6 +213,7 @@ void Parser::VariableDeclaration()
 		break;
 	}
 
+	// update records in symbol table with data type
 	int end = symbolTable->tableSize();
 	int diff = symbolTable->tableSize() - start;
 	for (int i = start; i < end; i++)
@@ -221,6 +223,7 @@ void Parser::VariableDeclaration()
 			rec->token = type; 
 	}
 
+	//add differencing offset for variable
 	Gen_Assembly("ADD SP #" + to_string(diff) + " SP");
 }
 
@@ -609,8 +612,6 @@ void Parser::Statement()
 		Syntax_Error();
 		break;
 	}
-
-	//delete record;
 }
 
 // precondition: (lookahead is a valid token)
@@ -643,7 +644,7 @@ void Parser::ReadStatement()
 		Match(MP_READ);
 		Match(MP_LPAREN);
 		
-		// generate read assembly
+		// generate read assembly based on the variables data type
 		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
 		
 		if (tempRecord->token == MP_FLOAT_LIT || tempRecord->token == MP_FIXED_LIT)
@@ -683,11 +684,23 @@ void Parser::ReadParameterTail()
 		parseTree->LogExpansion(42);
 		Match(MP_COMMA);
 
-		// generate read assembly
+		// generate read assembly based on data type
 		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
-		Gen_Assembly("RD D9");
-		Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
-		
+		if (tempRecord->token == MP_FLOAT_LIT || tempRecord->token == MP_FIXED_LIT)
+		{
+			Gen_Assembly("RDF D9");
+			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
+		} 
+		else if (tempRecord->token == MP_STRING)
+		{
+			Gen_Assembly("RDS D9");
+			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
+		}
+		else  if (tempRecord->token == MP_INTEGER_LIT)
+		{
+			Gen_Assembly("RD D9");
+			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
+		}
 
 		ReadParameter();
 		ReadParameterTail();
@@ -1608,7 +1621,7 @@ void Parser::VariableIdentifier()
 		{
 			symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
 		}
-		if (caller->getKind()==SemanticRecord::ASSIGNMENT) // We are at the start of an assignment statement get the variables type and add it to the caller semantic record
+		else if (caller->getKind()==SemanticRecord::ASSIGNMENT) // We are at the start of an assignment statement get the variables type and add it to the caller semantic record
 		{
 			SymbolTable::Record* rec=symbolTable->lookupRecord(v, SymbolTable::KIND_VARIABLE, 0);
 			
@@ -1632,9 +1645,7 @@ void Parser::ProcedureIdentifier()
 	case MP_IDENTIFIER: // ProcedureIdentifier -> Identifier 	Rule# 99
 		parseTree->LogExpansion(99);
 
-		// create table for new procedure, create new scope table for that procedure
-
-		
+		// create table for new procedure, create new scope table for that procedure		
 		symbolTable->createTable();
 		Match(MP_IDENTIFIER);
 		break;
@@ -1654,9 +1665,7 @@ void Parser::FunctionIdentifier()
 		parseTree->LogExpansion(100);
 
 		// add the function to the symbol table
-
 		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_FUNCTION, scanner->token()/*, scanner->line(), scanner->column()*/);
-
 		symbolTable->createTable();
 
 		Match(MP_IDENTIFIER);
@@ -1722,6 +1731,8 @@ void Parser::IdentifierList()
 	{
 	case MP_IDENTIFIER: // IdentifierList -> Identifier IdentifierTail Rule# 103
 		parseTree->LogExpansion(103);
+
+		// add new record into symbol table
 		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
 		Match(MP_IDENTIFIER);	
 		IdentifierTail();
@@ -1742,8 +1753,8 @@ void Parser::IdentifierTail()
 		parseTree->LogExpansion(104);
 		Match(MP_COMMA);
 
+		// add new record into symbol table
 		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
-
 		Match(MP_IDENTIFIER);		
 		IdentifierTail();
 		break;
@@ -1766,7 +1777,6 @@ Token Parser::Type()
 	case MP_INTEGER_LIT: //Type -> "Integer", rule #107
 		parseTree->LogExpansion(107);
 		Match(MP_INTEGER_LIT);
-		// insert into symbol table here
 		return MP_INTEGER_LIT;
 	case MP_FLOAT_LIT: //Type -> "Float", rule #108
 		parseTree->LogExpansion(108);

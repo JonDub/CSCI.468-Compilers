@@ -13,6 +13,8 @@ WRTLN #""
 WRT #"Enter a float for B: "
 RDF D9
 MOV D9 1(D0)
+RD D9
+MOV D9 0(D0)
 WRT #"B = "
 PUSH 1(D0)
 WRTS

@@ -8,7 +8,7 @@ program Program3;
 		Read(A);
 		Writeln ('A = ', A);
 		Write('Enter a float for B: ');
-		Read(B);
+		Read(B, A);
 		Writeln('B = ', B);
 		Write('Enter an integer for C: ');
 		Read(C);
