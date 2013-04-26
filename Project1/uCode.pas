@@ -39,18 +39,3 @@ POP -2(SP)
 MULSF
 PUSH 1(D0)	; B
 MULSF
-SUBS
-PUSH 2(D0)	; C
-ADDS
-POP 0(D0)
-WRT #"A = "
-PUSH 0(D0)	; A
-WRTS
-WRT #", B = "
-PUSH 1(D0)	; B
-WRTS
-WRT #", and C = "
-PUSH 2(D0)	; C
-WRTS
-MOV D0 SP
-HLT

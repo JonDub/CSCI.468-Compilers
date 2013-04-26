@@ -1189,7 +1189,7 @@ void Parser::RelationalOperator()
 void Parser::SimpleExpression()
 {
 	string v = scanner->lexeme();
-	SemanticRecord* rec = new SemanticRecord();
+	SemanticRecord* currRec = new SemanticRecord();
 
 	switch(lookahead)
 	{
@@ -1202,13 +1202,15 @@ void Parser::SimpleExpression()
 	case MP_STRING: // added
 		parseTree->LogExpansion(76);
 		OptionalSign();
-		Term(rec);
-		TermTail(rec);
+		Term(currRec);
+		TermTail(currRec);
 		break;		
 	default: //everything else
 		Syntax_Error();
 		break;
 	}
+
+	delete currRec;
 }
 
 // precondition: (lookahead is a valid token)
@@ -1585,6 +1587,7 @@ void Parser::FactorTail(SemanticRecord* prevRec)
 		break;
 	}
 
+	prevRec = currRec;
 	delete currRec;
 }
 
