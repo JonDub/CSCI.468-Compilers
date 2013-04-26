@@ -817,8 +817,7 @@ void Parser::WriteParameter()
 // postcondition: (method applies rules correctly)
 void Parser::AssignmentStatement()
 {
-	string v = scanner->lexeme();
-	SymbolTable::Record* tempRecord = symbolTable->lookupRecord(v,SymbolTable::KIND_VARIABLE,0);
+	SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
 	switch (lookahead)
 	{
 	case MP_IDENTIFIER: // AssignmentStatement -> VariableIdentifier ":=" Expression		Rule# 48
@@ -828,6 +827,8 @@ void Parser::AssignmentStatement()
 		VariableIdentifier();
 		Match(MP_ASSIGN);
 		Expression();
+
+		// pop top value back into variable
 		Gen_Assembly("POP " + to_string(tempRecord->offset) + "(D0)");
 		break;
 		//	DEBUG - see rule 49, need to find follow set and add rule
@@ -1221,14 +1222,14 @@ void Parser::TermTail(SemanticRecord* prevRec)
 	case MP_OR:
 		parseTree->LogExpansion(77);
 		AddingOperator();
-		Term(prevRec);
-		TermTail(prevRec);
+		Term(currRec);
+		TermTail(currRec);
 		Gen_Assembly("ORS");
 		break;
 	case MP_PLUS:
 		parseTree->LogExpansion(77);
 		AddingOperator();
-		Term(prevRec);
+		Term(currRec);
 
 		
 		// check the -1(SP) and -2(SP) to see if they are the same types
@@ -1244,7 +1245,7 @@ void Parser::TermTail(SemanticRecord* prevRec)
 				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
 				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
 				Gen_Assembly("CASTSF");
-				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("POP -2(SP)	; Cast done");
 				Gen_Assembly("SUBSF");
 			}
 		}
@@ -1260,26 +1261,17 @@ void Parser::TermTail(SemanticRecord* prevRec)
 				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
 				Gen_Assembly("PUSH -2(SP)	; Casting from float to int");
 				Gen_Assembly("CASTSI");
-				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("POP -2(SP)	; Cast done");
 				Gen_Assembly("SUBSF");
 			}
 		}
 
-		TermTail(prevRec);
-		
-		/*if (caller->getType()==MP_INTEGER_LIT)
-		{
-				Gen_Assembly("ADDS");
-		}
-		if (caller->getType()==MP_FLOAT_LIT || caller->getType()== MP_FIXED_LIT)
-		{
-				Gen_Assembly("ADDSF");
-		}*/
+		TermTail(currRec);
 		break;
 	case MP_MINUS:// TermTail -> AddingOperator Term TermTail  	Rule# 77
 		parseTree->LogExpansion(77);
 		AddingOperator();
-		Term(prevRec);
+		Term(currRec);
 
 		
 		// check the -1(SP) and -2(SP) to see if they are the same types
@@ -1295,7 +1287,7 @@ void Parser::TermTail(SemanticRecord* prevRec)
 				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
 				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
 				Gen_Assembly("CASTSF");
-				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("POP -2(SP)	; Cast done");
 				Gen_Assembly("ADDSF");
 			}
 		}
@@ -1311,23 +1303,12 @@ void Parser::TermTail(SemanticRecord* prevRec)
 				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
 				Gen_Assembly("PUSH -2(SP)	; Casting from float to int");
 				Gen_Assembly("CASTSI");
-				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("POP -2(SP)	; Cast done");
 				Gen_Assembly("ADDSF");
 			}
 		}
 
-
-
-		TermTail(prevRec);
-
-		/*if (caller->getType()==MP_INTEGER_LIT)
-			{
-				Gen_Assembly("SUBS");
-		}
-		if (caller->getType()==MP_FLOAT_LIT || caller->getType()== MP_FIXED_LIT)
-			{
-				Gen_Assembly("SUBSF");
-		}*/
+		TermTail(currRec);
 		break;
 	case MP_END:
 	case MP_SCOLON: // TermTail -> {e} 		Rule# 78
@@ -1412,8 +1393,7 @@ void Parser::AddingOperator()
 // postcondition: (method applies rules correctly)
 void Parser::Term(SemanticRecord* prevRec)
 {
-	string v = scanner->lexeme();
-	SemanticRecord* rec = new SemanticRecord();
+	SemanticRecord* currRec = new SemanticRecord();
 
 	switch(lookahead)
 	{
@@ -1425,8 +1405,8 @@ void Parser::Term(SemanticRecord* prevRec)
 	case MP_STRING: //added
 	case MP_LPAREN:
 		parseTree->LogExpansion(85);
-		Factor(rec);
-		FactorTail(rec);
+		Factor(prevRec);
+		FactorTail(prevRec);
 		//TermTail();		// DEBUG - this is not in the grammar
 		break;
 	default: //everything else
@@ -1434,49 +1414,74 @@ void Parser::Term(SemanticRecord* prevRec)
 		break;
 	}
 	
-	delete rec;
+	delete currRec;
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::FactorTail(SemanticRecord* rec)
+void Parser::FactorTail(SemanticRecord* prevRec)
 {
-	SemanticRecord* r = new SemanticRecord();
+	SemanticRecord* currRec = new SemanticRecord();
 
 	switch(lookahead)
 	{
 	case MP_DIV:
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
-		Factor(rec);
+		Factor(currRec);
 		
-		// check in between factor and factor tail
-		if (caller->getType()==MP_INTEGER_LIT)
+
+		// check previous and check next to see if we need to cast
+		// rec is previous record, r, is the current record
+		if (prevRec->getType() == MP_INTEGER_LIT)
+		{
+			if (currRec->getType() == MP_INTEGER_LIT)
 			{
 				Gen_Assembly("DIVS");
+			}
+			else if (currRec->getType() == MP_FLOAT_LIT || currRec->getType() == MP_FIXED_LIT)
+			{
+				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
+				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
+				Gen_Assembly("CASTSF");
+				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("DIVSF");
+			}
+				
 		}
-		else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		else if (prevRec->getType() == MP_FLOAT_LIT || prevRec->getType() == MP_FIXED_LIT)
+		{
+			if (currRec->getType() == MP_FLOAT_LIT || currRec->getType() == MP_FIXED_LIT)
 			{
 				Gen_Assembly("DIVSF");
-		}
+			}
+			else if (currRec->getType() == MP_INTEGER_LIT)
+			{
+				// now we have to push -2(D0) and cast, then move back to -2(SP)
+				Gen_Assembly("PUSH -2(SP)	; Casting from float to int");
+				Gen_Assembly("CASTSI");
+				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("DIVS");
+			}
+		} 
 		
-		FactorTail(rec);
+		FactorTail(currRec);
 		break;
 	case MP_TIMES:
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
 
-		Factor(r);
+		Factor(currRec);
 
 		// check previous and check next to see if we need to cast
 		// rec is previous record, r, is the current record
-		if (rec->getType() == MP_INTEGER_LIT)
+		if (prevRec->getType() == MP_INTEGER_LIT)
 		{
-			if (r->getType() == MP_INTEGER_LIT)
+			if (currRec->getType() == MP_INTEGER_LIT)
 			{
 				Gen_Assembly("MULS");
 			}
-			else if (r->getType() == MP_FLOAT_LIT || r->getType() == MP_FIXED_LIT)
+			else if (currRec->getType() == MP_FLOAT_LIT || currRec->getType() == MP_FIXED_LIT)
 			{
 				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
 				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
@@ -1486,13 +1491,13 @@ void Parser::FactorTail(SemanticRecord* rec)
 			}
 				
 		}
-		else if (rec->getType() == MP_FLOAT_LIT || rec->getType() == MP_FIXED_LIT)
+		else if (prevRec->getType() == MP_FLOAT_LIT || prevRec->getType() == MP_FIXED_LIT)
 		{
-			if (r->getType() == MP_FLOAT_LIT || r->getType() == MP_FIXED_LIT)
+			if (currRec->getType() == MP_FLOAT_LIT || currRec->getType() == MP_FIXED_LIT)
 			{
 				Gen_Assembly("MULSF");
 			}
-			else if (r->getType() == MP_INTEGER_LIT)
+			else if (currRec->getType() == MP_INTEGER_LIT)
 			{
 				// now we have to push -2(D0) and cast, then move back to -2(SP)
 				Gen_Assembly("PUSH -2(SP)	; Casting from float to int");
@@ -1502,41 +1507,56 @@ void Parser::FactorTail(SemanticRecord* rec)
 			}
 		} 
 
-		
-		FactorTail(r);
-
+		FactorTail(currRec);
 		break;
 	case MP_MOD:
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
-		Factor(rec);
-		
-		if (caller->getType()==MP_INTEGER_LIT)
+		Factor(currRec);
+
+		// check previous and check next to see if we need to cast
+		// rec is previous record, r, is the current record
+		if (prevRec->getType() == MP_INTEGER_LIT)
 		{
+			if (currRec->getType() == MP_INTEGER_LIT)
+			{
 				Gen_Assembly("MODS");
+			}
+			else if (currRec->getType() == MP_FLOAT_LIT || currRec->getType() == MP_FIXED_LIT)
+			{
+				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
+				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
+				Gen_Assembly("CASTSF");
+				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("MULSF");
+			}
+				
 		}
-		else if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		else if (prevRec->getType() == MP_FLOAT_LIT || prevRec->getType() == MP_FIXED_LIT)
 		{
-				Gen_Assembly("MODSF");
-		}
-		
-		FactorTail(rec);
+			// cannot mod floats/fixed
+			Syntax_Error();
+		} 
+				
+		FactorTail(currRec);
 		break;
 	case MP_AND: // FactorTail -> MultiplyingOperator Factor FactorTail  	Rule# 86
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
-		Factor(rec);
+		Factor(currRec);
 		
-		if (caller->getType()==MP_INTEGER_LIT) // Need to look at this block not sure you can even and a float?
-		{
-				Gen_Assembly("ANDS");
-		}
-		else if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
-		{
-				Gen_Assembly("ANDS");
-		}
+		Gen_Assembly("ANDS");
+
+		//if (caller->getType()==MP_INTEGER_LIT) // Need to look at this block not sure you can even and a float?
+		//{
+		//		Gen_Assembly("ANDS");
+		//}
+		//else if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		//{
+		//		Gen_Assembly("ANDS");
+		//}
 		
-		FactorTail(rec);
+		FactorTail(currRec);
 		break;
 	case MP_OR:
 	case MP_MINUS:
@@ -1565,7 +1585,7 @@ void Parser::FactorTail(SemanticRecord* rec)
 		break;
 	}
 
-	delete r;
+	delete currRec;
 }
 
 // precondition: (lookahead is a valid token)
@@ -1600,10 +1620,6 @@ void Parser::MultiplyingOperator()
 // postcondition: (method applies rules correctly)
 void Parser::Factor(SemanticRecord* prevRec)
 {
-	// look factor in the symbol table
-	string v = scanner->lexeme();
-	SymbolTable::Record* tempRecord = symbolTable->lookupRecord(v,SymbolTable::KIND_VARIABLE,0);
-
 	switch(lookahead)
 	{
 	case MP_UNSIGNEDINTEGER: // Factor -> UnsignedInteger  	Rule# 92
@@ -1611,45 +1627,18 @@ void Parser::Factor(SemanticRecord* prevRec)
 		Match(MP_UNSIGNEDINTEGER);
 		break;
 		//////////////////////// Conflict 96, 99
-	case MP_IDENTIFIER:	// Factor -> VariableIdentifier		Rule # 93
+	case MP_IDENTIFIER:	{// Factor -> VariableIdentifier		Rule # 93
+		// lookup factor in symbol table
+		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(),SymbolTable::KIND_VARIABLE,0);
 		parseTree->LogExpansion(96);
 	
 		// set type of record to the factor type
 		prevRec->setType(tempRecord->token);
 		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
 
-		//check to see what type the left hand side is then act accordingly
-		//if (caller->getType()==MP_INTEGER_LIT)
-		//{
-		//	if (tempRecord->token==MP_INTEGER_LIT)
-		//	{
-		//		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
-		//	}
-		//	else if (tempRecord->token==MP_FIXED_LIT || tempRecord->token == MP_FLOAT_LIT)
-		//	{
-		//		//Gen_Assembly("CASTSF");
-		//		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
-		//	}
-		//} 
-		//else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
-		//{
-		//	if (tempRecord->token==MP_INTEGER_LIT)
-		//	{
-		//		Gen_Assembly("CASTSF");
-		//		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);				
-		//	}
-		//	else if (tempRecord->token == MP_FIXED_LIT || tempRecord->token == MP_FLOAT_LIT)
-		//	{
-		//		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
-		//	}
-		//}
-		//else if (caller->getType() == MP_WRITE || caller->getType() == MP_WRITELN)
-		//{
-		//	Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
-		//}
-		//	
 		VariableIdentifier();
 		break;
+	}
 	case MP_NOT: // "not" Factor  	Rule# 94
 		parseTree->LogExpansion(94);
 		Match(MP_NOT);
@@ -1659,52 +1648,24 @@ void Parser::Factor(SemanticRecord* prevRec)
 		parseTree->LogExpansion(95);
 
 		prevRec->setType(MP_INTEGER_LIT);
-		Gen_Assembly("PUSH #" + v);
-		/*
-		if (caller->getType() == MP_INTEGER_LIT)
-		{
-			Gen_Assembly("PUSH #" + v);
-		}
-		else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
-		{
-			Gen_Assembly("PUSH #" + v);
-			Gen_Assembly("CASTSF");
-		}*/
+		Gen_Assembly("PUSH #" + scanner->lexeme());
+		
 		Match(MP_INTEGER_LIT);
 		break;
 	case MP_FIXED_LIT: // Factor -> FIXED_LIT  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
 
 		prevRec->setType(MP_FIXED_LIT);
-		Gen_Assembly("PUSH #" + v);
-		/*
-		if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT )
-		{
-			Gen_Assembly("PUSH #" + v);
-		}
-		else if (caller->getType() == MP_INTEGER_LIT)
-		{
-			Gen_Assembly("CASTSI"); 
-			Gen_Assembly("PUSH #" + v);
-		}*/
+		Gen_Assembly("PUSH #" + scanner->lexeme());
+	
 		Match(MP_FIXED_LIT);
 		break;	
 	case MP_FLOAT_LIT:
 		parseTree->LogExpansion(95);
 
 		prevRec->setType(MP_FLOAT_LIT);
-		Gen_Assembly("PUSH #" + v);
+		Gen_Assembly("PUSH #" + scanner->lexeme());
 
-		/*if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT )
-		{
-			Gen_Assembly("PUSH #" + v);
-		}
-		else if (caller->getType() == MP_INTEGER_LIT)
-		{
-			Gen_Assembly("CASTSI"); 
-			Gen_Assembly("PUSH #" + v);
-			
-		}*/
 		Match(MP_FLOAT_LIT);
 		break;
 	case MP_LPAREN: // Factor -> "(" Expression ")"  	Rule# 95
