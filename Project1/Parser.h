@@ -92,8 +92,8 @@ private:
 	void Expression();
 	void SimpleExpression();
 	void Term();
-	void Factor();
-	void FactorTail();
+	void Factor(SemanticRecord*);
+	void FactorTail(SemanticRecord*);
 	void MultiplyingOperator();
 	void TermTail();
 	void OptionalSign();

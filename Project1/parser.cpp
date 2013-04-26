@@ -1333,6 +1333,7 @@ void Parser::AddingOperator()
 void Parser::Term()
 {
 	string v = scanner->lexeme();
+	SemanticRecord* rec = new SemanticRecord();
 
 	switch(lookahead)
 	{
@@ -1344,28 +1345,32 @@ void Parser::Term()
 	case MP_STRING: //added
 	case MP_LPAREN:
 		parseTree->LogExpansion(85);
-		Factor();
-		FactorTail();
+		Factor(rec);
+		FactorTail(rec);
 		//TermTail();		// DEBUG - this is not in the grammar
 		break;
 	default: //everything else
 		Syntax_Error();
 		break;
 	}
+	
+	delete rec;
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::FactorTail()
+void Parser::FactorTail(SemanticRecord* rec)
 {
+	SemanticRecord* r = new SemanticRecord();
+
 	switch(lookahead)
 	{
 	case MP_DIV:
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
-		Factor();
-		FactorTail();
+		Factor(rec);
 		
+		// check in between factor and factor tail
 		if (caller->getType()==MP_INTEGER_LIT)
 			{
 				Gen_Assembly("DIVS");
@@ -1374,26 +1379,58 @@ void Parser::FactorTail()
 			{
 				Gen_Assembly("DIVSF");
 		}
+		
+		FactorTail(rec);
 		break;
 	case MP_TIMES:
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
-		Factor();
-		FactorTail();
-		if (caller->getType() == MP_INTEGER_LIT)
+
+		Factor(r);
+
+		// check previous and check next to see if we need to cast
+		// rec is previous record, r, is the current record
+		if (rec->getType() == MP_INTEGER_LIT)
 		{
+			if (r->getType() == MP_INTEGER_LIT)
+			{
 				Gen_Assembly("MULS");
-		}
-		else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
-		{
+			}
+			else if (r->getType() == MP_FLOAT_LIT || r->getType() == MP_FIXED_LIT)
+			{
+				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
+				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
+				Gen_Assembly("CASTSF");
+				Gen_Assembly("POP -2(SP)");
 				Gen_Assembly("MULSF");
+			}
+				
 		}
+		else if (rec->getType() == MP_FLOAT_LIT || rec->getType() == MP_FIXED_LIT)
+		{
+			if (r->getType() == MP_FLOAT_LIT || r->getType() == MP_FIXED_LIT)
+			{
+				Gen_Assembly("MULSF");
+			}
+			else if (r->getType() == MP_INTEGER_LIT)
+			{
+				// now we have to push -2(D0) and cast, then move back to -2(SP)
+				Gen_Assembly("PUSH -2(SP)	; Casting from float to int");
+				Gen_Assembly("CASTSI");
+				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("MULS");
+			}
+		} 
+
+		
+		FactorTail(r);
+
 		break;
 	case MP_MOD:
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
-		Factor();
-		FactorTail();
+		Factor(rec);
+		
 		if (caller->getType()==MP_INTEGER_LIT)
 		{
 				Gen_Assembly("MODS");
@@ -1402,12 +1439,14 @@ void Parser::FactorTail()
 		{
 				Gen_Assembly("MODSF");
 		}
+		
+		FactorTail(rec);
 		break;
 	case MP_AND: // FactorTail -> MultiplyingOperator Factor FactorTail  	Rule# 86
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
-		Factor();
-		FactorTail();
+		Factor(rec);
+		
 		if (caller->getType()==MP_INTEGER_LIT) // Need to look at this block not sure you can even and a float?
 		{
 				Gen_Assembly("ANDS");
@@ -1416,6 +1455,8 @@ void Parser::FactorTail()
 		{
 				Gen_Assembly("ANDS");
 		}
+		
+		FactorTail(rec);
 		break;
 	case MP_OR:
 	case MP_MINUS:
@@ -1443,6 +1484,8 @@ void Parser::FactorTail()
 		Syntax_Error();
 		break;
 	}
+
+	delete r;
 }
 
 // precondition: (lookahead is a valid token)
@@ -1475,8 +1518,9 @@ void Parser::MultiplyingOperator()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Factor()
+void Parser::Factor(SemanticRecord* rec)
 {
+	// look factor in the symbol table
 	string v = scanner->lexeme();
 	SymbolTable::Record* tempRecord = symbolTable->lookupRecord(v,SymbolTable::KIND_VARIABLE,0);
 
@@ -1490,46 +1534,53 @@ void Parser::Factor()
 	case MP_IDENTIFIER:	// Factor -> VariableIdentifier		Rule # 93
 		parseTree->LogExpansion(96);
 	
-		// check to see what type the left hand side is then act accordingly
-		if (caller->getType()==MP_INTEGER_LIT)
-		{
-			if (tempRecord->token==MP_INTEGER_LIT)
-			{
-				Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");
-			}
-			else if (tempRecord->token==MP_FIXED_LIT || tempRecord->token == MP_FLOAT_LIT)
-			{
-				//Gen_Assembly("CASTSF");
-				Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");
-			}
-		} 
-		else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
-		{
-			if (tempRecord->token==MP_INTEGER_LIT)
-			{
-				Gen_Assembly("CASTSF");
-				Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");				
-			}
-			else if (tempRecord->token == MP_FIXED_LIT || tempRecord->token == MP_FLOAT_LIT)
-			{
-				Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");
-			}
-		}
-		else if (caller->getType() == MP_WRITE || caller->getType() == MP_WRITELN)
-		{
-			Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)");
-		}
-			
+		// set type of record to the factor type
+		rec->setType(tempRecord->token);
+		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
+
+		//check to see what type the left hand side is then act accordingly
+		//if (caller->getType()==MP_INTEGER_LIT)
+		//{
+		//	if (tempRecord->token==MP_INTEGER_LIT)
+		//	{
+		//		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
+		//	}
+		//	else if (tempRecord->token==MP_FIXED_LIT || tempRecord->token == MP_FLOAT_LIT)
+		//	{
+		//		//Gen_Assembly("CASTSF");
+		//		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
+		//	}
+		//} 
+		//else if (caller->getType() == MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
+		//{
+		//	if (tempRecord->token==MP_INTEGER_LIT)
+		//	{
+		//		Gen_Assembly("CASTSF");
+		//		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);				
+		//	}
+		//	else if (tempRecord->token == MP_FIXED_LIT || tempRecord->token == MP_FLOAT_LIT)
+		//	{
+		//		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
+		//	}
+		//}
+		//else if (caller->getType() == MP_WRITE || caller->getType() == MP_WRITELN)
+		//{
+		//	Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
+		//}
+		//	
 		VariableIdentifier();
 		break;
 	case MP_NOT: // "not" Factor  	Rule# 94
 		parseTree->LogExpansion(94);
 		Match(MP_NOT);
-		Factor();
+		Factor(rec);
 		break;
 	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
 
+		rec->setType(MP_INTEGER_LIT);
+		Gen_Assembly("PUSH #" + v);
+		/*
 		if (caller->getType() == MP_INTEGER_LIT)
 		{
 			Gen_Assembly("PUSH #" + v);
@@ -1538,7 +1589,7 @@ void Parser::Factor()
 		{
 			Gen_Assembly("PUSH #" + v);
 			Gen_Assembly("CASTSF");
-		}
+		}*/
 		Match(MP_INTEGER_LIT);
 		break;
 	case MP_FIXED_LIT: // Factor -> FIXED_LIT  	Rule# 95		// DEBUG - conflict
@@ -1550,8 +1601,8 @@ void Parser::Factor()
 		}
 		else if (caller->getType() == MP_INTEGER_LIT)
 		{
-			Gen_Assembly("PUSH #" + v);
 			Gen_Assembly("CASTSI"); 
+			Gen_Assembly("PUSH #" + v);
 		}
 		Match(MP_FIXED_LIT);
 		break;	
@@ -1564,8 +1615,9 @@ void Parser::Factor()
 		}
 		else if (caller->getType() == MP_INTEGER_LIT)
 		{
-			Gen_Assembly("PUSH #" + v);
 			Gen_Assembly("CASTSI"); 
+			Gen_Assembly("PUSH #" + v);
+			
 		}
 		Match(MP_FLOAT_LIT);
 		break;

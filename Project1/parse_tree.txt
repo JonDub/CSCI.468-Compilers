@@ -119,10 +119,6 @@ Opening file: Programs/lab10_program3.mp
 43	ReadParameter  	->	VariableIdentifier             
       Matched: MP_IDENTIFIER = B
 42	ReadParameterTail 	->	e
-      Matched: MP_COMMA = ,
-43	ReadParameter  	->	VariableIdentifier             
-      Matched: MP_IDENTIFIER = A
-42	ReadParameterTail 	->	e
       Matched: MP_RPAREN = )
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
