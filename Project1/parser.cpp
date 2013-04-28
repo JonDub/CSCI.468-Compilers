@@ -1188,7 +1188,7 @@ void Parser::RelationalOperator()
 // postcondition: (method applies rules correctly)
 void Parser::SimpleExpression()
 {
-	string v = scanner->lexeme();
+	string v = scanner->getLexeme();
 	SemanticRecord* termRec = new SemanticRecord();
 	SemanticRecord* termTailRec = new SemanticRecord();
 	SemanticRecord* resultRec = new SemanticRecord();
@@ -1669,7 +1669,7 @@ void Parser::Factor(SemanticRecord* termTailRec)
 
 
 		termTailRec->setType(MP_INTEGER_LIT);
-		Gen_Assembly("PUSH #" + scanner->lexeme());
+		Gen_Assembly("PUSH #" + scanner->getLexeme());
 		if (negativeFlag==true) {Gen_Assembly("NEG -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
 
 		Match(MP_INTEGER_LIT);
@@ -1679,7 +1679,7 @@ void Parser::Factor(SemanticRecord* termTailRec)
 
 
 		termTailRec->setType(MP_FIXED_LIT);
-		Gen_Assembly("PUSH #" + scanner->lexeme());
+		Gen_Assembly("PUSH #" + scanner->getLexeme());
 		if (negativeFlag==true) {Gen_Assembly("NEGF -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
 
 		Match(MP_FIXED_LIT);
@@ -1689,7 +1689,7 @@ void Parser::Factor(SemanticRecord* termTailRec)
 
 
 		termTailRec->setType(MP_FLOAT_LIT);
-		Gen_Assembly("PUSH #" + scanner->lexeme());
+		Gen_Assembly("PUSH #" + scanner->getLexeme());
 		if (negativeFlag==true) {Gen_Assembly("NEGF -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
 
 		Match(MP_FLOAT_LIT);
