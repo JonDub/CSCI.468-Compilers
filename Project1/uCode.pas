@@ -1,8 +1,8 @@
 MOV SP D0
-<<<<<<< HEAD
 ADD SP #2 SP
-=======
-ADD SP #7 SP
-ADD SP #1 SP
-PUSH #3.2
->>>>>>> 1c5b3df35375737b7285c438a84c9daadadb8a88
+PUSH #10
+POP 0(D0)
+PUSH #1
+POP 1(D0)
+MOV D0 SP
+HLT

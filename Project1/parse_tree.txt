@@ -1,27 +1,18 @@
 
-<<<<<<< HEAD
 Opening file: Programs/input.mp
-=======
-Opening file: C:\Temp\Test.txt
->>>>>>> 1c5b3df35375737b7285c438a84c9daadadb8a88
 
 1	SystemGoal	->	Program EOF
 2	Program 	->	ProgramHeading ";" Block "."
 3	ProgramHeading 	->	"program" ProgramIdentifier
       Matched: MP_PROGRAM = program
 97	ProgramIdentifier  	->	Identifier
-<<<<<<< HEAD
       Matched: MP_IDENTIFIER = test1
-=======
-      Matched: MP_IDENTIFIER = HelloWorld
->>>>>>> 1c5b3df35375737b7285c438a84c9daadadb8a88
       Matched: MP_SCOLON = ;
 4	Block 	->	VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart         
 5	VariableDeclarationPart 	->	"var" VariableDeclaration ";" VariableDeclarationTail
       Matched: MP_VAR = var
 8	VariableDeclaration 	->	Identifierlist ":" Type
 103	IdentifierList      	->	identifier IdentifierTail
-<<<<<<< HEAD
       Matched: MP_IDENTIFIER = guy1
 104	IdentifierTail      	->	"," identifier IdentifierTail
       Matched: MP_COMMA = ,
@@ -30,40 +21,6 @@ Opening file: C:\Temp\Test.txt
       Matched: MP_COLON = :
 107	Type 	->	 "Integer"
       Matched: MP_INTEGER_LIT = integer
-=======
-      Matched: MP_IDENTIFIER = a
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = b
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = c
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = x
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = y
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = z
-104	IdentifierTail      	->	"," identifier IdentifierTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = min
-105	IdentifierTail      	->	e       
-      Matched: MP_COLON = :
-107	Type 	->	 "Integer"
-      Matched: MP_INTEGER_LIT = Integer
-      Matched: MP_SCOLON = ;
-6	VariableDeclarationTail 	->	VariableDeclaration ";"
-8	VariableDeclaration 	->	Identifierlist ":" Type
-103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = f
-105	IdentifierTail      	->	e       
-      Matched: MP_COLON = :
-108	Type	->	"Float" 
-      Matched: MP_FLOAT_LIT = float
->>>>>>> 1c5b3df35375737b7285c438a84c9daadadb8a88
       Matched: MP_SCOLON = ;
 7	VariableDeclarationTail 	->	e
 11	ProcedureAndFunctionDeclarationPart	->	e 
@@ -74,19 +31,38 @@ Opening file: C:\Temp\Test.txt
 33	Statement   	->	AssignmentStatement
 48	AssignmentStatement	->	VariableIdentifier ":=" Expression
 98	VariableIdentifier 	->	Identifier
-<<<<<<< HEAD
       Matched: MP_IDENTIFIER = guy1
-      Matched: MP_ASSIGN = :=
-=======
-      Matched: MP_IDENTIFIER = f
       Matched: MP_ASSIGN = :=
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
-      Matched: MP_FIXED_LIT = 3.2
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-88	MultiplyingOperator  	->	"*"
-      Matched: MP_TIMES = *
->>>>>>> 1c5b3df35375737b7285c438a84c9daadadb8a88
+      Matched: MP_INTEGER_LIT = 10
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = guy2
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 1
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+29	Statement   	->	EmptyStatement
+38	Statement   	->	ProcedureStatement 
+28	StatementTail  	->	e
+      Matched: MP_END = end
+      Matched: MP_PERIOD = .
+      Matched: MP_EOF = ÿ

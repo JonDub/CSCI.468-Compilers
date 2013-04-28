@@ -44,7 +44,7 @@ bool Debug(int argc, char* argv[])
 	Parser * p = new Parser(file);
 
 	TestScanner(file);
-	//TestParser(file);
+	TestParser(file);
 	assert(p->parse() == true);
 	
 	//file = "Programs/lab10_program1.mp";
