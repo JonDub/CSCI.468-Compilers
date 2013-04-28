@@ -1,5 +1,6 @@
 #include "Scanner.h"
 
+
 Scanner::Scanner()
 {
 	/*
@@ -134,7 +135,7 @@ Token Scanner::getToken()
 	return _token; 
 };
 
-string Scanner::lexeme()
+string Scanner::getLexeme()
 {
 	/*
 		Returns the last lexeme that was filled in
@@ -147,7 +148,7 @@ Token Scanner::token()
 		return _token;
 }
 
-unsigned int Scanner::line()
+unsigned int Scanner::getLineNumber()
 {
 	/*
 		Returns the current line number
@@ -155,7 +156,7 @@ unsigned int Scanner::line()
 	return lines;
 };
 
-unsigned int Scanner::column()
+unsigned int Scanner::getColumnNumber()
 {
 	/*
 		Returns the current column counter from the start of the lexeme. 

@@ -12,6 +12,7 @@
 #include "SymbolTable.h"
 using namespace std;
 
+
 class Parser
 {
 public:

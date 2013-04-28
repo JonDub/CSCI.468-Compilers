@@ -74,7 +74,7 @@
     <ClInclude Include="Scanner.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="mp.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="ParseTree.cpp" />
     <ClCompile Include="Scanner.cpp" />

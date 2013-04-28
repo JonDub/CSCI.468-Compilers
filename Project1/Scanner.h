@@ -14,10 +14,10 @@ public:
 
 	bool openFile(string);
 	Token getToken(); // retrieves the next token
-	string lexeme();	// returns the current lexeme
+	string getLexeme();	// returns the current lexeme
 	Token token();	// returns the current token
-	unsigned int line(); // returns the current line counter
-	unsigned int column();	// returns the current column counter
+	unsigned int getLineNumber(); // returns the current line counter
+	unsigned int getColumnNumber();	// returns the current column counter
 	bool hasToken();
 
 	string _lexeme; // only for debugging

@@ -44,7 +44,7 @@ Parser::~Parser(void)
 	delete parseTree;
 	delete symbolTable;
 }
-
+ 
 bool Parser::parse()
 {
 	try
@@ -645,7 +645,7 @@ void Parser::ReadStatement()
 		Match(MP_LPAREN);
 		
 		// generate read assembly based on the variables data type
-		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
+		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 		
 		if (tempRecord->token == MP_FLOAT_LIT || tempRecord->token == MP_FIXED_LIT)
 		{
@@ -685,7 +685,7 @@ void Parser::ReadParameterTail()
 		Match(MP_COMMA);
 
 		// generate read assembly based on data type
-		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
+		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 		if (tempRecord->token == MP_FLOAT_LIT || tempRecord->token == MP_FIXED_LIT)
 		{
 			Gen_Assembly("RDF D9		; Read Var " + tempRecord->name);
@@ -735,7 +735,7 @@ void Parser::ReadParameter()
 // postcondition: (method applies rules correctly)
 void Parser::WriteStatement()
 {
-	string v = scanner->lexeme();
+	string v = scanner->getLexeme();
 
 	switch(lookahead)
 	{
@@ -793,7 +793,7 @@ void Parser::WriteParameterTail()
 // postcondition: (method applies rules correctly)
 void Parser::WriteParameter()
 {
-	string v = scanner->lexeme();
+	string v = scanner->getLexeme();
 
 	switch(lookahead)
 	{
@@ -802,7 +802,7 @@ void Parser::WriteParameter()
 	//case MP_UNSIGNEDINTEGER:
 	//case MP_INTEGER_LIT:
 	case MP_STRING:	// added
-		Gen_Assembly("WRT #\"" + scanner->lexeme().substr(1, scanner->lexeme().length()-2) + "\"");
+		Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
 		Match(MP_STRING);
 		break;
 	default:
@@ -817,7 +817,7 @@ void Parser::WriteParameter()
 // postcondition: (method applies rules correctly)
 void Parser::AssignmentStatement()
 {
-	SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, 0);
+	SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 	switch (lookahead)
 	{
 	case MP_IDENTIFIER: // AssignmentStatement -> VariableIdentifier ":=" Expression		Rule# 48
@@ -1188,7 +1188,7 @@ void Parser::RelationalOperator()
 // postcondition: (method applies rules correctly)
 void Parser::SimpleExpression()
 {
-	string v = scanner->lexeme();
+	string v = scanner->getLexeme();
 	SemanticRecord* currRec = new SemanticRecord();
 
 	switch(lookahead)
@@ -1632,7 +1632,7 @@ void Parser::Factor(SemanticRecord* prevRec)
 		//////////////////////// Conflict 96, 99
 	case MP_IDENTIFIER:	{// Factor -> VariableIdentifier		Rule # 93
 		// lookup factor in symbol table
-		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->lexeme(),SymbolTable::KIND_VARIABLE,0);
+		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->getLexeme(),SymbolTable::KIND_VARIABLE,0);
 		parseTree->LogExpansion(96);
 	
 		// set type of record to the factor type
@@ -1651,7 +1651,7 @@ void Parser::Factor(SemanticRecord* prevRec)
 		parseTree->LogExpansion(95);
 
 		prevRec->setType(MP_INTEGER_LIT);
-		Gen_Assembly("PUSH #" + scanner->lexeme());
+		Gen_Assembly("PUSH #" + scanner->getLexeme());
 		
 		Match(MP_INTEGER_LIT);
 		break;
@@ -1659,7 +1659,7 @@ void Parser::Factor(SemanticRecord* prevRec)
 		parseTree->LogExpansion(95);
 
 		prevRec->setType(MP_FIXED_LIT);
-		Gen_Assembly("PUSH #" + scanner->lexeme());
+		Gen_Assembly("PUSH #" + scanner->getLexeme());
 	
 		Match(MP_FIXED_LIT);
 		break;	
@@ -1667,7 +1667,7 @@ void Parser::Factor(SemanticRecord* prevRec)
 		parseTree->LogExpansion(95);
 
 		prevRec->setType(MP_FLOAT_LIT);
-		Gen_Assembly("PUSH #" + scanner->lexeme());
+		Gen_Assembly("PUSH #" + scanner->getLexeme());
 
 		Match(MP_FLOAT_LIT);
 		break;
@@ -1710,7 +1710,7 @@ void Parser::ProgramIdentifier()
 // postcondition: (method applies rules correctly)
 void Parser::VariableIdentifier()
 {
-	string v = scanner->lexeme();
+	string v = scanner->getLexeme();
 
 	switch(lookahead)
 	{
@@ -1721,7 +1721,7 @@ void Parser::VariableIdentifier()
 
 		if (caller->getKind()==SemanticRecord::DECLARATION) // We are declaring variables so add them to the symbol table
 		{
-			symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+			symbolTable->insertRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->getLineNumber(), scanner->getColumnNumber()*/);
 		}
 		else if (caller->getKind()==SemanticRecord::ASSIGNMENT) // We are at the start of an assignment statement get the variables type and add it to the caller semantic record
 		{
@@ -1767,7 +1767,7 @@ void Parser::FunctionIdentifier()
 		parseTree->LogExpansion(100);
 
 		// add the function to the symbol table
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_FUNCTION, scanner->token()/*, scanner->line(), scanner->column()*/);
+		symbolTable->insertRecord(scanner->getLexeme(), SymbolTable::KIND_FUNCTION, scanner->token()/*, scanner->getLineNumber(), scanner->getColumnNumber()*/);
 		symbolTable->createTable();
 
 		Match(MP_IDENTIFIER);
@@ -1835,7 +1835,7 @@ void Parser::IdentifierList()
 		parseTree->LogExpansion(103);
 
 		// add new record into symbol table
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+		symbolTable->insertRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->getLineNumber(), scanner->getColumnNumber()*/);
 		Match(MP_IDENTIFIER);	
 		IdentifierTail();
 		break;
@@ -1856,7 +1856,7 @@ void Parser::IdentifierTail()
 		Match(MP_COMMA);
 
 		// add new record into symbol table
-		symbolTable->insertRecord(scanner->lexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->line(), scanner->column()*/);
+		symbolTable->insertRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->getLineNumber(), scanner->getColumnNumber()*/);
 		Match(MP_IDENTIFIER);		
 		IdentifierTail();
 		break;
@@ -1924,8 +1924,8 @@ void Parser::Match(Token token)
 	// gets the next lookahead
 	if (token == lookahead)
 	{
-		parseTree->LogMessage("      Matched: " + EnumToString(token) + " = " + scanner->lexeme());
-		currentLexeme = scanner->lexeme();
+		parseTree->LogMessage("      Matched: " + EnumToString(token) + " = " + scanner->getLexeme());
+		currentLexeme = scanner->getLexeme();
 		currentToken = scanner->token();
 		lookahead = scanner->getToken();
 	}
@@ -1937,9 +1937,9 @@ void Parser::Syntax_Error(Token expected)
 {
 	//stops everything and gives a meaningful error message 
 	string msg = "";
-	msg.append("\nFile: " + fileName + ": \nSyntax error found on line " + to_string(scanner->line()) + ", column " + to_string(scanner->column()) + 
+	msg.append("\nFile: " + fileName + ": \nSyntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + 
 		".\n    Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + ".\n    Next token: " + EnumToString(scanner->getToken())
-		+ "\n    Next Lexeme: " + scanner->lexeme());
+		+ "\n    Next Lexeme: " + scanner->getLexeme());
 	cout << msg;
 	parseTree->LogMessage(msg);
 	throw -1;

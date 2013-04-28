@@ -1,0 +1,24 @@
+Token          Line #  Column #  Lexeme                                       
+MP_PROGRAM     1       1         program
+MP_IDENTIFIER  1       9         test1
+MP_SCOLON      1       14        ;
+MP_VAR         2       1         var
+MP_IDENTIFIER  2       5         guy1
+MP_COMMA       2       9         ,
+MP_IDENTIFIER  2       10        guy2
+MP_COLON       2       14        :
+MP_INTEGER_LIT 2       16        integer
+MP_SCOLON      2       23        ;
+MP_BEGIN       4       1         begin
+MP_IDENTIFIER  5       1         guy1
+MP_ASSIGN      5       6         :=
+MP_INTEGER_LIT 5       9         1
+MP_SCOLON      5       10        ;
+MP_IDENTIFIER  6       1         guy2
+MP_ASSIGN      6       6         :=
+MP_INTEGER_LIT 6       9         1
+MP_SCOLON      6       10        ;
+MP_END         8       1         end
+MP_PERIOD      8       4         .
+MP_EOF         8       5         ÿ                                            
+
