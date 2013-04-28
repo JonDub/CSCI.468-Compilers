@@ -35,9 +35,10 @@ private:
 	SemanticAnalyzer* analyzer;
 	SymbolTable* symbolTable;
 	SemanticRecord* caller;
-	string operation; // probably a better way
-	string operationSide; // ditto
-	string currentRightHandSide;
+	//string operation; // probably a better way
+	//string operationSide; // ditto
+	//string currentRightHandSide;
+	bool negativeFlag;
 	bool SystemGoal();
 	void Program();
 	void ProgramHeading();
@@ -91,11 +92,11 @@ private:
 	void OrdinalExpression();
 	void Expression();
 	void SimpleExpression();
-	void Term(SemanticRecord*);
-	void Factor(SemanticRecord*);
-	void FactorTail(SemanticRecord*);
+	void Term(SemanticRecord* &);
+	void Factor(SemanticRecord* );
+	void FactorTail(SemanticRecord* );
 	void MultiplyingOperator();
-	void TermTail(SemanticRecord*);
+	void TermTail(SemanticRecord* &);
 	void OptionalSign();
 	void AddingOperator();
 	void VariableIdentifier();
