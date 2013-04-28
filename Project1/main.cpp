@@ -99,8 +99,8 @@ bool Debug(int argc, char* argv[])
 int main (int argc, char* argv[])
 {
 	// USE THIS BRANCH
-	Debug(argc, &(*argv));
-	//TestParser( argv[1]);
+	//Debug(argc, &(*argv));
+	TestParser( argv[1]);
 	//TestScanner(argc, &(*argv));
 }
 
@@ -109,7 +109,7 @@ int TestParser(string argv) // int TestParser(int argc, char* argv[])
 	// name of the file to parse through
 	std::string fName = argv;
 
-	// create our parser and start getting shit done
+	// create our parser and start getting things done
 	Parser* parser = new Parser(fName);
 
 	if (parser->parse())
