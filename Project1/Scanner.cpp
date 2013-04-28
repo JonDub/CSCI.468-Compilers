@@ -10,6 +10,7 @@ Scanner::Scanner()
 	lines = 0;
 	cols = 0;
 
+	// Is this still a hash map?
 	// initialize the hash map of all our tokens
 	// to retrieve values from hash map --> Token t = tokens["read"];
 	tokens["and"]		= MP_AND;
@@ -577,6 +578,12 @@ Token Scanner::handleSymbol()
 				_lexeme.push_back(next);
 				state = 12;
 			}
+			else if(next == '/')
+			{
+				next = get();
+				_lexeme.push_back(next);
+				state = 13;
+			}
 			else
 			{
 				//error=true;
@@ -638,6 +645,11 @@ Token Scanner::handleSymbol()
 		case 9: //symbol is times
 			accept = true;
 			_token = MP_TIMES;
+			done = true;
+			break;
+		case 13: //symbol is / (float divide)
+			accept = true;
+			_token = MP_DIVF;
 			done = true;
 			break;
 
