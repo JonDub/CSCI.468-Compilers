@@ -1188,16 +1188,10 @@ void Parser::RelationalOperator()
 // postcondition: (method applies rules correctly)
 void Parser::SimpleExpression()
 {
-<<<<<<< HEAD
-	string v = scanner->getLexeme();
-	SemanticRecord* currRec = new SemanticRecord();
-
-=======
 	string v = scanner->lexeme();
 	SemanticRecord* termRec = new SemanticRecord();
 	SemanticRecord* termTailRec = new SemanticRecord();
 	SemanticRecord* resultRec = new SemanticRecord();
->>>>>>> 1c5b3df35375737b7285c438a84c9daadadb8a88
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER:
@@ -1673,43 +1667,31 @@ void Parser::Factor(SemanticRecord* termTailRec)
 	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
 
-<<<<<<< HEAD
-		prevRec->setType(MP_INTEGER_LIT);
-		Gen_Assembly("PUSH #" + scanner->getLexeme());
-		
-=======
+
 		termTailRec->setType(MP_INTEGER_LIT);
 		Gen_Assembly("PUSH #" + scanner->lexeme());
 		if (negativeFlag==true) {Gen_Assembly("NEG -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
->>>>>>> 1c5b3df35375737b7285c438a84c9daadadb8a88
+
 		Match(MP_INTEGER_LIT);
 		break;
 	case MP_FIXED_LIT: // Factor -> FIXED_LIT  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
 
-<<<<<<< HEAD
-		prevRec->setType(MP_FIXED_LIT);
-		Gen_Assembly("PUSH #" + scanner->getLexeme());
-	
-=======
+
 		termTailRec->setType(MP_FIXED_LIT);
 		Gen_Assembly("PUSH #" + scanner->lexeme());
 		if (negativeFlag==true) {Gen_Assembly("NEGF -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
->>>>>>> 1c5b3df35375737b7285c438a84c9daadadb8a88
+
 		Match(MP_FIXED_LIT);
 		break;	
 	case MP_FLOAT_LIT:
 		parseTree->LogExpansion(95);
 
-<<<<<<< HEAD
-		prevRec->setType(MP_FLOAT_LIT);
-		Gen_Assembly("PUSH #" + scanner->getLexeme());
 
-=======
 		termTailRec->setType(MP_FLOAT_LIT);
 		Gen_Assembly("PUSH #" + scanner->lexeme());
 		if (negativeFlag==true) {Gen_Assembly("NEGF -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
->>>>>>> 1c5b3df35375737b7285c438a84c9daadadb8a88
+
 		Match(MP_FLOAT_LIT);
 		break;
 	case MP_LPAREN: // Factor -> "(" Expression ")"  	Rule# 95
