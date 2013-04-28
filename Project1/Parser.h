@@ -36,10 +36,14 @@ private:
 	SemanticAnalyzer* analyzer;
 	SymbolTable* symbolTable;
 	SemanticRecord* caller;
+	int labelCount;	
 	//string operation; // probably a better way
 	//string operationSide; // ditto
 	//string currentRightHandSide;
+	
 	bool negativeFlag;
+
+	string LabelMaker();
 	bool SystemGoal();
 	void Program();
 	void ProgramHeading();
@@ -58,7 +62,7 @@ private:
 	void ProcedureHeading();
 	void OptionalFormalParameterList();
 	void OptionalActualParameterList();
-	void OptionalRelationalPart();
+	void OptionalRelationalPart(SemanticRecord* &);
 	void RelationalOperator();
 	void FormalParameterSectionTail();
 	void FormalParameterSection();
@@ -68,8 +72,8 @@ private:
 	void VariableParameterSection();
 	void StatementPart();
 	void ControlVariable();
-	void StepValue();
-	void FinalValue();
+	Token StepValue();
+	void FinalValue(SemanticRecord* &);
 	void CompoundStatement();
 	void StatementSequence();
 	void StatementTail();
@@ -78,24 +82,24 @@ private:
 	void IdentifierList();	
 	void IdentifierTail();
 	void ReadStatement();
-	void WriteStatement();
-	void WriteParameter();
-	void WriteParameterTail();
+	void WriteStatement(SemanticRecord* &);
+	void WriteParameter(SemanticRecord* &);
+	void WriteParameterTail(SemanticRecord* &);
 	void BooleanExpression();
 	void OptionalElsePart();
-	void AssignmentStatement();
-	void IfStatement();
+	void AssignmentStatement(SemanticRecord* &);
+	void IfStatement(SemanticRecord* &);
 	void WhileStatement();
 	void RepeatStatement();
-	void ForStatement();
+	void ForStatement(SemanticRecord* &);
 	void ProcedureStatement();
-	void InitialValue();
-	void OrdinalExpression();
-	void Expression();
-	void SimpleExpression();
+	void InitialValue(SemanticRecord* &);
+	void OrdinalExpression(SemanticRecord* &);
+	void Expression(SemanticRecord* &);
+	void SimpleExpression(SemanticRecord* &);
 	void Term(SemanticRecord* &);
-	void Factor(SemanticRecord* );
-	void FactorTail(SemanticRecord* );
+	void Factor(SemanticRecord* &);
+	void FactorTail(SemanticRecord* &);
 	void MultiplyingOperator();
 	void TermTail(SemanticRecord* &);
 	void OptionalSign();

@@ -16,7 +16,7 @@ Parser::Parser(string fName)
 	setInputFile(fName);
 	caller = new SemanticRecord();
 	//analyzer= new SemanticAnalyzer("program.txt");
-
+	labelCount=0;
 	// open the ir file
 	irFilename = "uCode.pas";
 	irFile.open(irFilename, ofstream::out);
@@ -559,8 +559,8 @@ void Parser::StatementTail()
 // postcondition: (method applies rules correctly)
 void Parser::Statement()
 {
-	//record = new SemanticRecord(); // create new semantic record here
-
+	
+	SemanticRecord* expressionRec = new SemanticRecord();
 	switch(lookahead)
 	{	
 	case MP_END: //Statement -> EmptyStatement, rule #29
@@ -582,15 +582,15 @@ void Parser::Statement()
 	case MP_WRITE: //Statement -> WriteStatement, rule #32
 	case MP_WRITELN://added
 		parseTree->LogExpansion(32);
-		WriteStatement();
+		WriteStatement(expressionRec);
 		break;
 	case MP_IDENTIFIER: //Statement -> AssignmentStatement, rule #33 //Unless should be a procedure or function
 		parseTree->LogExpansion(33);
-		AssignmentStatement();
+		AssignmentStatement(expressionRec);
 		break;
 	case MP_IF: //Statement -> IfStatement, rule #34
 		parseTree->LogExpansion(34);
-		IfStatement();
+		IfStatement(expressionRec);
 		break;
 	case MP_WHILE: //Statement -> WhileStatement, rule #35
 		parseTree->LogExpansion(35);
@@ -602,7 +602,7 @@ void Parser::Statement()
 		break;
 	case MP_FOR: //Statement -> ForStatement, rule #37
 		parseTree->LogExpansion(37);
-		ForStatement();
+		ForStatement(expressionRec);
 		break;
 		//case MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #38			// DEBUG - this case block is commented out but has a rule for it
 		//	parseTree->LogExpansion(38);
@@ -733,7 +733,7 @@ void Parser::ReadParameter()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::WriteStatement()
+void Parser::WriteStatement(SemanticRecord* &expressionRec)
 {
 	string v = scanner->getLexeme();
 
@@ -744,8 +744,8 @@ void Parser::WriteStatement()
 		caller->setType(MP_WRITELN);
 		Match(MP_WRITELN);
 		Match(MP_LPAREN);
-		WriteParameter();		
-		WriteParameterTail();
+		WriteParameter(expressionRec);		
+		WriteParameterTail(expressionRec);
 		Match(MP_RPAREN);
 		break;
 	case MP_WRITE: // WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")"	Rule# 44
@@ -753,8 +753,8 @@ void Parser::WriteStatement()
 		caller->setType(MP_WRITE);
 		Match(MP_WRITE);
 		Match(MP_LPAREN);
-		WriteParameter();		
-		WriteParameterTail();
+		WriteParameter(expressionRec);		
+		WriteParameterTail(expressionRec);
 		Match(MP_RPAREN);
 		break;
 	default:
@@ -765,15 +765,15 @@ void Parser::WriteStatement()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::WriteParameterTail()
+void Parser::WriteParameterTail(SemanticRecord* &expressionRec)
 {
 	switch(lookahead)
 	{
 	case MP_COMMA:  // WriteParameterTail -> "," WriteParameter		Rule# 45
 		parseTree->LogExpansion(45);
 		Match(MP_COMMA);
-		WriteParameter();
-		WriteParameterTail();	// DEBUG - this was not here but in the cfg
+		WriteParameter(expressionRec);
+		WriteParameterTail(expressionRec);	// DEBUG - this was not here but in the cfg
 		break;
 	case MP_RPAREN: // WriteParameterTail -> e		Rule# 46
 		parseTree->LogExpansion(46);
@@ -791,7 +791,7 @@ void Parser::WriteParameterTail()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::WriteParameter()
+void Parser::WriteParameter(SemanticRecord* &expressionRec)
 {
 	string v = scanner->getLexeme();
 
@@ -808,7 +808,7 @@ void Parser::WriteParameter()
 		break;
 	default:
 		parseTree->LogExpansion(47);
-		OrdinalExpression();
+		OrdinalExpression(expressionRec);
 		Gen_Assembly("WRTS");
 		break;
 	}
@@ -816,9 +816,11 @@ void Parser::WriteParameter()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::AssignmentStatement()
+void Parser::AssignmentStatement(SemanticRecord* &expressionRec)
 {
-	SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
+	SymbolTable::Record* assignmentRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
+	
+	
 	switch (lookahead)
 	{
 	case MP_IDENTIFIER: // AssignmentStatement -> VariableIdentifier ":=" Expression		Rule# 48
@@ -827,10 +829,26 @@ void Parser::AssignmentStatement()
 		caller->setKind(SemanticRecord::ASSIGNMENT);
 		VariableIdentifier();
 		Match(MP_ASSIGN);
-		Expression();
+		Expression(expressionRec);
 
 		// pop top value back into variable
-		Gen_Assembly("POP " + to_string(tempRecord->offset) + "(D0)");
+		if (expressionRec->getType()==assignmentRecord->token)
+		{
+			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
+		}
+		else
+			if (assignmentRecord->token==MP_FLOAT_LIT)
+			{
+				Gen_Assembly("CASTF ; expression result does not match assignemnt variable type cast to float");
+				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
+			}
+		else
+			if (assignmentRecord->token==MP_INTEGER_LIT)
+			{
+				Gen_Assembly("CASTI ; expression result does not match assignemnt variable type cast to integer");
+				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
+			}
+
 		break;
 		//	DEBUG - see rule 49, need to find follow set and add rule
 	default:
@@ -841,17 +859,27 @@ void Parser::AssignmentStatement()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::IfStatement()
+void Parser::IfStatement(SemanticRecord* &expressionRec)
 {
+	string ifFalseLabel;
+	
+	
 	switch (lookahead)
 	{
 	case MP_IF: // IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart		Rule# 50
 		parseTree->LogExpansion(50);
+		
+		caller->setKind(SemanticRecord::SIMPLE_PARAMETER);
 		Match(MP_IF);
+		ifFalseLabel=LabelMaker();
 		BooleanExpression();
+		// The Result of booleanExpression should be the top of the stack
+		Gen_Assembly("BRFS "+ifFalseLabel);
 		Match(MP_THEN);
-		Statement();		
+		Statement();
+		Gen_Assembly(ifFalseLabel);
 		OptionalElsePart();
+		
 		break;
 	default:
 		break;
@@ -862,6 +890,7 @@ void Parser::IfStatement()
 // postcondition: (method applies rules correctly)
 void Parser::OptionalElsePart()
 {
+	
 	switch (lookahead)
 	{
 	case MP_ELSE: // OptionalElsePart -> "else" Statement		Rule# 51
@@ -920,22 +949,87 @@ void Parser::WhileStatement()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::ForStatement()
+void Parser::ForStatement(SemanticRecord* &expressionRec)
 {
+	
 	switch(lookahead)
 	{
 	case MP_FOR: // "for" ControlVariable ":=" InitialValue StepValue FinalValue "do" Statement		Rule# 55
+		{
+		string forTestLabel;
+		string forFalseLabel;
+		Token stepType;
 		parseTree->LogExpansion(55);
 		Match(MP_FOR);
+		// I think we can only have int lits here so commented this bit 
+		//caller->setKind(SemanticRecord::ASSIGNMENT);
+		//SymbolTable::Record* assignmentRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 		ControlVariable();
+		
 		Match(MP_ASSIGN);
-		InitialValue();
-		StepValue();
-		FinalValue();
+		InitialValue(expressionRec);
+			// pop top value back into variable, these are included since as far as I can tell there is no explixit requirement that the controls be int's
+	/*	if (expressionRec->getType()==assignmentRecord->token)
+		{
+			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
+		}
+		else
+			if (assignmentRecord->token==MP_FLOAT_LIT)
+			{
+				Gen_Assembly("CASTF ; expression result does not match assignemnt variable type cast to float");
+				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
+			}
+		else
+			if (assignmentRecord->token==MP_INTEGER_LIT)
+			{
+				Gen_Assembly("CASTI ; expression result does not match assignemnt variable type cast to integer");
+				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
+			}*/
+		stepType=StepValue();
+		FinalValue(expressionRec);
+		
+		
 		Match(MP_DO);
+		forTestLabel=LabelMaker();
+		forFalseLabel=LabelMaker();
+		Gen_Assembly(forTestLabel);
+		
+			//Test for condition
+			if (stepType==MP_TO)
+			{Gen_Assembly("BGT -2(SP) -1(SP) "+ forFalseLabel);}
+			else 
+			{Gen_Assembly("BLT -2(SP) -1(SP) "+ forFalseLabel);}
+		
+
 		Statement();
+		
+			if (stepType==MP_TO)
+			{
+				//increment the control variable
+				Gen_Assembly("PUSH #1");
+				Gen_Assembly("PUSH -2(SP)");
+				Gen_Assembly("ADDS");
+				Gen_Assembly("POP -2(SP)");
+				
+			}
+			else 
+			{
+				//decrement the control variable
+				Gen_Assembly("PUSH #1");
+				Gen_Assembly("NEGS");
+				Gen_Assembly("PUSH -2(SP)");
+				Gen_Assembly("ADDS");
+				Gen_Assembly("POP -2(SP)");
+				
+			}
+		// return to start of for loop
+		Gen_Assembly("BR "+ forTestLabel);
+		// Place loop exit label
+		Gen_Assembly(forFalseLabel);
 		break;
+		}
 	default:
+	
 		Syntax_Error();
 		break;
 	}
@@ -959,7 +1053,7 @@ void Parser::ControlVariable()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::InitialValue()
+void Parser::InitialValue(SemanticRecord* &expressionRec)
 {
 	switch(lookahead)
 	{	
@@ -968,7 +1062,7 @@ void Parser::InitialValue()
 	case MP_INTEGER_LIT:
 	case MP_UNSIGNEDINTEGER:
 		parseTree->LogExpansion(57);
-		OrdinalExpression();
+		OrdinalExpression(expressionRec);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -978,27 +1072,31 @@ void Parser::InitialValue()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::StepValue()
+Token Parser::StepValue()
 {
+	Token stepType;
 	switch(lookahead)
 	{
 	case MP_TO: // StepValue -> "to"		Rule# 58
 		parseTree->LogExpansion(58);
 		Match(MP_TO);
+		stepType=MP_TO;
 		break;
 	case MP_DOWNTO: // StepValue -> "downto" 	 Rule# 59
 		parseTree->LogExpansion(59);
 		Match(MP_DOWNTO);
+		stepType=MP_DOWNTO;
 		break;
 	default:
 		Syntax_Error();
 		break;
 	}
+	return stepType;
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::FinalValue()
+void Parser::FinalValue(SemanticRecord* &expressionRec)
 {
 	switch(lookahead)
 	{
@@ -1007,7 +1105,7 @@ void Parser::FinalValue()
 	case MP_INTEGER_LIT:
 	case MP_UNSIGNEDINTEGER:
 		parseTree->LogExpansion(60);
-		OrdinalExpression();
+		OrdinalExpression(expressionRec);
 		break;
 	default:
 		Syntax_Error();
@@ -1085,7 +1183,7 @@ void Parser::ActualParameter()
 	case MP_PLUS:
 	case MP_MINUS: // ActualParameter -> OrdinalExpression 	Rule# 66
 		parseTree->LogExpansion(66);
-		OrdinalExpression();
+//		OrdinalExpression();
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1095,8 +1193,9 @@ void Parser::ActualParameter()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Expression()
+void Parser::Expression(SemanticRecord* &expressionRec)
 {
+
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER:
@@ -1107,8 +1206,8 @@ void Parser::Expression()
 	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	Rule# 67
 	case MP_STRING: // added for strings
 		parseTree->LogExpansion(67);
-		SimpleExpression();
-		OptionalRelationalPart();
+		SimpleExpression(expressionRec);
+		OptionalRelationalPart(expressionRec);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1118,19 +1217,45 @@ void Parser::Expression()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::OptionalRelationalPart()
+void Parser::OptionalRelationalPart(SemanticRecord* &expressionRec)
 {
 	switch(lookahead)
 	{
 	case MP_EQUAL:
+		parseTree->LogExpansion(68);
+		RelationalOperator();
+		SimpleExpression(expressionRec);
+		Gen_Assembly("CMPEQS");  // This is only the int part
+		break;
 	case MP_LTHAN:
+		parseTree->LogExpansion(68);
+		RelationalOperator();
+		SimpleExpression(expressionRec);
+		Gen_Assembly("CMPLTS");  // This is only the int part
+		break;
 	case MP_GTHAN:
+		parseTree->LogExpansion(68);
+		RelationalOperator();
+		SimpleExpression(expressionRec);
+		Gen_Assembly("CMPGTS");  // This is only the int part
+		break;
 	case MP_LEQUAL:
+		parseTree->LogExpansion(68);
+		RelationalOperator();
+		SimpleExpression(expressionRec);
+		Gen_Assembly("CMPLES");  // This is only the int part
+		break;
 	case MP_GEQUAL:
+		parseTree->LogExpansion(68);
+		RelationalOperator();
+		SimpleExpression(expressionRec);
+		Gen_Assembly("CMPGES");  // This is only the int part
+		break;
 	case MP_NEQUAL: // OptionalRelationalPart -> RelationalOperator SimpleExpression	Rule #68
 		parseTree->LogExpansion(68);
 		RelationalOperator();
-		SimpleExpression();
+		SimpleExpression(expressionRec);
+		Gen_Assembly("CMPNES");  // This is only the int part
 		break;
 	case MP_SCOLON:
 	case MP_END:
@@ -1187,7 +1312,7 @@ void Parser::RelationalOperator()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::SimpleExpression()
+void Parser::SimpleExpression(SemanticRecord* &expressionRec)
 {
 	string v = scanner->getLexeme();
 	SemanticRecord* termRec = new SemanticRecord();
@@ -1196,6 +1321,7 @@ void Parser::SimpleExpression()
 	switch(lookahead)
 	{
 	case MP_IDENTIFIER:
+
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
 	case MP_FIXED_LIT:
@@ -1206,15 +1332,17 @@ void Parser::SimpleExpression()
 		parseTree->LogExpansion(76);
 		OptionalSign();
 		Term(termRec);
+
 		termTailRec=termRec;
 		TermTail(termTailRec);
+		expressionRec=termTailRec;
 		break;		
 	default: //everything else
 		Syntax_Error();
 		break;
 	}
 
-	delete termRec;
+	
 }
 
 // precondition: (lookahead is a valid token)
@@ -1222,7 +1350,7 @@ void Parser::SimpleExpression()
 void Parser::TermTail(SemanticRecord* &termTailRec)
 {
 	SemanticRecord* termRec = new SemanticRecord();
-	
+	SemanticRecord* resultRec = new SemanticRecord();
 	switch(lookahead)
 	{	
 	case MP_OR:
@@ -1349,7 +1477,7 @@ void Parser::TermTail(SemanticRecord* &termTailRec)
 		break;
 	}
 
-	delete termRec;
+	
 	
 }
 
@@ -1410,9 +1538,9 @@ void Parser::AddingOperator()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Term(SemanticRecord* &termTailRec)
+void Parser::Term(SemanticRecord* &termRec)
 {
-	SemanticRecord* termRec = new SemanticRecord();
+	//SemanticRecord* termRec = new SemanticRecord();
 
 	switch(lookahead)
 	{
@@ -1424,8 +1552,8 @@ void Parser::Term(SemanticRecord* &termTailRec)
 	case MP_STRING: //added
 	case MP_LPAREN:
 		parseTree->LogExpansion(85);
-		Factor(termTailRec);
-		FactorTail(termTailRec);
+		Factor(termRec);
+		FactorTail(termRec);
 		//TermTail();		// DEBUG - this is not in the grammar
 		break;
 	default: //everything else
@@ -1433,12 +1561,12 @@ void Parser::Term(SemanticRecord* &termTailRec)
 		break;
 	}
 	
-	delete termRec;
+	
 }
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::FactorTail(SemanticRecord* termTailRec)
+void Parser::FactorTail(SemanticRecord* &termTailRec)
 {
 	SemanticRecord* termRec = new SemanticRecord();
 
@@ -1605,8 +1733,8 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 		break;
 	}
 
-	termTailRec = termRec;
-	delete termRec;
+	
+	
 }
 
 // precondition: (lookahead is a valid token)
@@ -1639,7 +1767,7 @@ void Parser::MultiplyingOperator()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Factor(SemanticRecord* termTailRec)
+void Parser::Factor(SemanticRecord* &termTailRec)
 {
 	switch(lookahead)
 	{
@@ -1698,7 +1826,7 @@ void Parser::Factor(SemanticRecord* termTailRec)
 	case MP_LPAREN: // Factor -> "(" Expression ")"  	Rule# 95
 		parseTree->LogExpansion(95);
 		Match(MP_LPAREN);
-		Expression();
+		Expression(termTailRec);
 		Match(MP_RPAREN);
 		break;
 		//////////////////////// Conflict 96, 99
@@ -1748,6 +1876,13 @@ void Parser::VariableIdentifier()
 			symbolTable->insertRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, scanner->token()/*, scanner->getLineNumber(), scanner->getColumnNumber()*/);
 		}
 		else if (caller->getKind()==SemanticRecord::ASSIGNMENT) // We are at the start of an assignment statement get the variables type and add it to the caller semantic record
+		{
+			SymbolTable::Record* rec=symbolTable->lookupRecord(v, SymbolTable::KIND_VARIABLE, 0);
+			
+			caller->setType(rec->token);
+		}
+		// This is only being set up for control statements so far
+		else if (caller->getKind()==SemanticRecord::SIMPLE_PARAMETER) // variable in control statement
 		{
 			SymbolTable::Record* rec=symbolTable->lookupRecord(v, SymbolTable::KIND_VARIABLE, 0);
 			
@@ -1806,6 +1941,7 @@ void Parser::FunctionIdentifier()
 // postcondition: (method applies rules correctly)
 void Parser::BooleanExpression()
 {	
+	SemanticRecord* expressionRec = new SemanticRecord();
 	switch(lookahead)
 	{
 	case MP_LPAREN:
@@ -1817,7 +1953,7 @@ void Parser::BooleanExpression()
 	case MP_NOT:
 	case MP_IDENTIFIER: // BooleanExpression -> Expression 	Rule# 101
 		parseTree->LogExpansion(101);
-		Expression();
+		Expression(expressionRec);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1827,7 +1963,7 @@ void Parser::BooleanExpression()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::OrdinalExpression()
+void Parser::OrdinalExpression(SemanticRecord* &expressionRec)
 {
 	switch(lookahead)
 	{
@@ -1841,7 +1977,7 @@ void Parser::OrdinalExpression()
 	case MP_PLUS: // OrdinalExpression -> Expression	Rule# 102
 	case MP_STRING: // added
 		parseTree->LogExpansion(102);
-		Expression();
+		Expression(expressionRec);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1974,4 +2110,17 @@ void Parser::Gen_Assembly(string s)
 	irFile << s << endl;
 	printf(s.c_str());
 	printf("\n");
+}
+
+string Parser::LabelMaker()
+{
+	string newLabel;
+	labelCount++;
+	char tempBuffer [33];
+	itoa(labelCount-1, tempBuffer,10);
+	newLabel= "L";
+	newLabel.append(tempBuffer) ;
+	
+	return (newLabel);
+
 }

@@ -13,7 +13,7 @@ public:
 		PROCEDURE_CALL,
 		PROGRAM,
 		VARIABLE,
-		PARAMETER
+		SIMPLE_PARAMETER
 	};
 
 	//static enum RecordType {
