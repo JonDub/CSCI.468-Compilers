@@ -802,7 +802,8 @@ void Parser::WriteParameter()
 	//case MP_UNSIGNEDINTEGER:
 	//case MP_INTEGER_LIT:
 	case MP_STRING:	// added
-		Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
+		Gen_Assembly("WRT #\"" + scanner->getLexeme() + "\"");
+		//Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
 		Match(MP_STRING);
 		break;
 	default:

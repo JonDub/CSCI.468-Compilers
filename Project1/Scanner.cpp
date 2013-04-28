@@ -324,7 +324,7 @@ Token Scanner::handleString()
 			if (next == '\'') // comment start
 			{
 				next = get();
-				_lexeme.push_back(next);
+				//_lexeme.push_back(next);
 				_token = MP_STRING;
 				state = 1;
 			} 
@@ -340,7 +340,7 @@ Token Scanner::handleString()
 			if (next == '\'') // closing ' for string
 			{
 				next = get();
-				_lexeme.push_back(next);
+				//_lexeme.push_back(next);
 				_token = MP_STRING;
 				state = 2;
 			} 
