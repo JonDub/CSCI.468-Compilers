@@ -1,0 +1,7 @@
+program test1;
+var guy1,guy2: integer;
+
+begin
+guy1 := 1;
+guy2 := 2;
+end.

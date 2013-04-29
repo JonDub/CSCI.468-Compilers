@@ -17,6 +17,7 @@ enum Token
 	MP_COMMA,
 	MP_COMMENT,
 	MP_DIV,
+	MP_DIVF,
 	MP_DO,
 	MP_DOWNTO,
 	MP_ELSE,
@@ -24,6 +25,7 @@ enum Token
 	MP_EOF,
 	MP_EQUAL,
 	MP_ERROR,
+	MP_FALSE,
 	MP_FIXED_LIT,
 	MP_FLOAT_LIT,
 	MP_FOR,
@@ -57,6 +59,7 @@ enum Token
 	MP_STRING,
 	MP_THEN,
 	MP_TIMES,
+	MP_TRUE,
 	MP_TO,
 	MP_UNTIL,
 	MP_UNSIGNEDINTEGER,
@@ -82,6 +85,7 @@ static std::string EnumToString(Token t)
 	case MP_COMMA: return "MP_COMMA";
 	case MP_COMMENT: return "MP_COMMENT";
 	case MP_DIV: return "MP_DIV";
+	case MP_DIVF: return "MP_DIVF";
 	case MP_DO: return "MP_DO";
 	case MP_DOWNTO: return "MP_DOWNTO";
 	case MP_ELSE: return "MP_ELSE";
@@ -89,6 +93,7 @@ static std::string EnumToString(Token t)
 	case MP_EOF: return "MP_EOF";
 	case MP_EQUAL: return "MP_EQUAL";
 	case MP_ERROR: return "MP_ERROR";
+	case MP_FALSE: return "MP_FALSE";
 	case MP_FIXED_LIT: return "MP_FIXED_LIT";
 	case MP_FLOAT_LIT: return "MP_FLOAT_LIT";
 	case MP_FOR: return "MP_FOR";
@@ -123,6 +128,7 @@ static std::string EnumToString(Token t)
 	case MP_THEN: return "MP_THEN";
 	case MP_TIMES: return "MP_TIMES";
 	case MP_TO: return "MP_TO";
+	case MP_TRUE: return "MP_TRUE";
 	case MP_UNTIL: return "MP_UNTIL";
 	case MP_VAR: return "MP_VAR";
 	case MP_WHILE: return "MP_WHILE";

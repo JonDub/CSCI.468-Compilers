@@ -1,5 +1,6 @@
 #include "Scanner.h"
 
+
 Scanner::Scanner()
 {
 	/*
@@ -9,6 +10,7 @@ Scanner::Scanner()
 	lines = 0;
 	cols = 0;
 
+	// Is this still a hash map?
 	// initialize the hash map of all our tokens
 	// to retrieve values from hash map --> Token t = tokens["read"];
 	tokens["and"]		= MP_AND;
@@ -43,6 +45,8 @@ Scanner::Scanner()
 	tokens["while"]		= MP_WHILE;
 	tokens["write"]		= MP_WRITE;
 	tokens["writeln"]	= MP_WRITELN;
+	tokens["true"]		= MP_TRUE;
+	tokens["false"]		= MP_FALSE;
 }
 
 Scanner::~Scanner(void)
@@ -134,7 +138,7 @@ Token Scanner::getToken()
 	return _token; 
 };
 
-string Scanner::lexeme()
+string Scanner::getLexeme()
 {
 	/*
 		Returns the last lexeme that was filled in
@@ -147,7 +151,7 @@ Token Scanner::token()
 		return _token;
 }
 
-unsigned int Scanner::line()
+unsigned int Scanner::getLineNumber()
 {
 	/*
 		Returns the current line number
@@ -155,7 +159,7 @@ unsigned int Scanner::line()
 	return lines;
 };
 
-unsigned int Scanner::column()
+unsigned int Scanner::getColumnNumber()
 {
 	/*
 		Returns the current column counter from the start of the lexeme. 
@@ -323,7 +327,7 @@ Token Scanner::handleString()
 			if (next == '\'') // comment start
 			{
 				next = get();
-				_lexeme.push_back(next);
+				//_lexeme.push_back(next);
 				_token = MP_STRING;
 				state = 1;
 			} 
@@ -339,7 +343,7 @@ Token Scanner::handleString()
 			if (next == '\'') // closing ' for string
 			{
 				next = get();
-				_lexeme.push_back(next);
+				//_lexeme.push_back(next);
 				_token = MP_STRING;
 				state = 2;
 			} 
@@ -576,6 +580,12 @@ Token Scanner::handleSymbol()
 				_lexeme.push_back(next);
 				state = 12;
 			}
+			else if(next == '/')
+			{
+				next = get();
+				_lexeme.push_back(next);
+				state = 13;
+			}
 			else
 			{
 				//error=true;
@@ -637,6 +647,11 @@ Token Scanner::handleSymbol()
 		case 9: //symbol is times
 			accept = true;
 			_token = MP_TIMES;
+			done = true;
+			break;
+		case 13: //symbol is / (float divide)
+			accept = true;
+			_token = MP_DIVF;
 			done = true;
 			break;
 

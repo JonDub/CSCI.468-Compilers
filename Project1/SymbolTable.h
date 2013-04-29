@@ -25,6 +25,7 @@ public:
 		MODE_REFERENCE
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	struct Record {
 		string name;
@@ -43,10 +44,23 @@ public:
 		int offset;
 			
 	};
+=======
+
+	};
+	struct Record {
+		string name; //Might want to change this actually be lexeme to match Rocky's Pattern
+		Kind kind;
+		Token token; //Might want to change this actually be type to match Rocky's Pattern
+		Mode mode;
+		int offset;
+			
+	};
+>>>>>>> origin/SarahParserFollowChange
 	// Get nextOffset value and increment it
 	int getNextOffset();
 	
 	// Insert a record into the top most table in the vector
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	bool insertRecord(string name, Kind kind, Token token); // insert a Var type
@@ -66,6 +80,15 @@ public:
 	// Returns a pointer to the record of information, returns a NULL pointer otherwise
 	Record* lookupRecord(string name, Kind kind, int table = -1);	
 >>>>>>> ade8d45438b09c021693e5aed9b3eafddbde03e5
+=======
+	bool insertRecord(string name, Kind kind, Token token); // insert a Var type
+	bool insertRecord(string name, Kind kind, Token token, Mode mode);
+
+	// Returns a pointer to the record of information, returns a NULL pointer otherwise
+	Record* lookupRecord(string name,Kind kind,int table = -1);	
+	
+	// Returns a pointer to the record of information, returns a NULL pointer otherwise version used to modify records externally, not very good encapsulation
+>>>>>>> origin/SarahParserFollowChange
 	Record* lookupRecord(int offset, int table = -1);
 
 	// Check to see if record is in table or not

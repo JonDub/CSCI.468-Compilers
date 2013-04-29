@@ -11,7 +11,11 @@ SemanticRecord::~SemanticRecord(void)
 
 void SemanticRecord::add(string s)
 {
+<<<<<<< HEAD
 	records.push_back(s);
+=======
+	//records.push_back(s);
+>>>>>>> origin/SarahParserFollowChange
 }
 
 string SemanticRecord::get()

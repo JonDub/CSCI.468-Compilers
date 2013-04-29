@@ -12,6 +12,7 @@
 #include "SymbolTable.h"
 using namespace std;
 
+
 class Parser
 {
 public:
@@ -23,6 +24,9 @@ public:
 	void setInputFile(string);	
 
 private:
+	string irFilename;
+	std::ofstream irFile;
+
 	Token lookahead;	
 	string fileName;
 	string currentLexeme;
@@ -31,8 +35,19 @@ private:
 	ParseTree* parseTree;
 	SemanticAnalyzer* analyzer;
 	SymbolTable* symbolTable;
+<<<<<<< HEAD
 	SemanticRecord* record;
+=======
+	SemanticRecord* caller;
+	int labelCount;	
+	//string operation; // probably a better way
+	//string operationSide; // ditto
+	//string currentRightHandSide;
+>>>>>>> origin/SarahParserFollowChange
 	
+	bool negativeFlag;
+
+	string LabelMaker();
 	bool SystemGoal();
 	void Program();
 	void ProgramHeading();
@@ -51,7 +66,7 @@ private:
 	void ProcedureHeading();
 	void OptionalFormalParameterList();
 	void OptionalActualParameterList();
-	void OptionalRelationalPart();
+	void OptionalRelationalPart(SemanticRecord* &);
 	void RelationalOperator();
 	void FormalParameterSectionTail();
 	void FormalParameterSection();
@@ -61,8 +76,8 @@ private:
 	void VariableParameterSection();
 	void StatementPart();
 	void ControlVariable();
-	void StepValue();
-	void FinalValue();
+	Token StepValue();
+	void FinalValue(SemanticRecord* &);
 	void CompoundStatement();
 	void StatementSequence();
 	void StatementTail();
@@ -71,26 +86,26 @@ private:
 	void IdentifierList();	
 	void IdentifierTail();
 	void ReadStatement();
-	void WriteStatement();
-	void WriteParameter();
-	void WriteParameterTail();
+	void WriteStatement(SemanticRecord* &);
+	void WriteParameter(SemanticRecord* &);
+	void WriteParameterTail(SemanticRecord* &);
 	void BooleanExpression();
 	void OptionalElsePart();
-	void AssignmentStatement();
-	void IfStatement();
+	void AssignmentStatement(SemanticRecord* &);
+	void IfStatement(SemanticRecord* &);
 	void WhileStatement();
 	void RepeatStatement();
-	void ForStatement();
+	void ForStatement(SemanticRecord* &);
 	void ProcedureStatement();
-	void InitialValue();
-	void OrdinalExpression();
-	void Expression();
-	void SimpleExpression();
-	void Term();
-	void Factor();
-	void FactorTail();
+	void InitialValue(SemanticRecord* &);
+	void OrdinalExpression(SemanticRecord* &);
+	void Expression(SemanticRecord* &);
+	void SimpleExpression(SemanticRecord* &);
+	void Term(SemanticRecord* &);
+	void Factor(SemanticRecord* &);
+	void FactorTail(SemanticRecord* &);
 	void MultiplyingOperator();
-	void TermTail();
+	void TermTail(SemanticRecord* &);
 	void OptionalSign();
 	void AddingOperator();
 	void VariableIdentifier();
@@ -99,5 +114,6 @@ private:
 	
 	void Match(Token);
 	void Syntax_Error(Token = MP_NULL);
+	void Gen_Assembly(string s);
 };
 

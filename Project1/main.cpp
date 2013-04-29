@@ -20,6 +20,7 @@ bool Debug(int argc, char* argv[])
 {
 	// How to use the symbol table
 	bool in,test;
+<<<<<<< HEAD
 	//	SymbolTable::Record* r;	
 	SymbolTable* t = new SymbolTable();
 	t->createTable();
@@ -51,6 +52,28 @@ bool Debug(int argc, char* argv[])
 	sr->add("A");
 	sr->add("1");
 
+=======
+	SymbolTable::Record* r;	
+	SymbolTable* t = new SymbolTable();
+	t->createTable();
+
+	in = t->insertRecord("A",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
+	in = t->insertRecord("b",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
+	in = t->insertRecord("Cc",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
+	in = t->insertRecord("boo",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
+	
+	
+	test=t->contains("A", SymbolTable::KIND_VARIABLE);
+
+
+
+	SemanticAnalyzer* sa = new SemanticAnalyzer(t);
+	SemanticRecord* sr = new SemanticRecord();
+
+	sr->add("A");
+	sr->add("1");
+
+>>>>>>> origin/SarahParserFollowChange
 	//return 0;
 	
 	// test parser
@@ -63,8 +86,13 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/lab10_program1.mp";
 	p->setInputFile(file);
 	//TestScanner(file);
+<<<<<<< HEAD
 	assert(p->parse() == true);
 	return 0;
+=======
+	//assert(p->parse() == true);
+	
+>>>>>>> origin/SarahParserFollowChange
 
 	file = "Programs/lab10_program2.mp";
 	p->setInputFile(file);
@@ -75,6 +103,10 @@ bool Debug(int argc, char* argv[])
 	p->setInputFile(file);
 	//TestScanner(file); // added MP_WRITELN
 	assert(p->parse() == true);
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> origin/SarahParserFollowChange
 
 	file = "Programs/program1.up";
 	p->setInputFile(file);
@@ -89,7 +121,7 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/program3.up";
 	p->setInputFile(file);
 	//TestScanner(file);
-	//assert(p->parse() == true);
+	assert(p->parse() == true);
 
 	file = "Programs/program4.up";
 	p->setInputFile(file);
@@ -119,7 +151,7 @@ int TestParser(string argv) // int TestParser(int argc, char* argv[])
 	// name of the file to parse through
 	std::string fName = argv;
 
-	// create our parser and start getting shit done
+	// create our parser and start getting things done
 	Parser* parser = new Parser(fName);
 
 	if (parser->parse())
