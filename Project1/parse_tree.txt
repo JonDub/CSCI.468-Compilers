@@ -52,25 +52,62 @@ Opening file: C:\Temp\Test.txt
 25	CompoundStatement 	->	"begin" StatementSequence "end"
       Matched: MP_BEGIN = begin
 26	StatementSequence 	->	Statement StatementTail
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
-98	VariableIdentifier 	->	Identifier
+37	Statement   	->	ForStatement
+55	ForStatement    	->	"for" ControlVariable ":=" InitialValue StepValue FinalValue "do" Statement
+      Matched: MP_FOR = for
+56	ControlVariable 	->	VariableIdentifier
       Matched: MP_IDENTIFIER = a
       Matched: MP_ASSIGN = :=
+57	InitialValue   	->	OrdinalExpression
+102	OrdinalExpression   	->	Expression             
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
       Matched: MP_INTEGER_LIT = 10
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-89	MultiplyingOperator  	->	"div"
-      Matched: MP_DIV = DIV
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+58	StepValue      	->	"to"
+      Matched: MP_TO = to
+60	FinalValue    	->	OrdinalExpression             
+102	OrdinalExpression   	->	Expression             
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
-      Matched: MP_LPAREN = (
-
-File: C:\Temp\Test.txt: 
-Syntax error found on line 8, column 14.
-    Expected MP_NULL but found MP_LPAREN.
-    Next token: MP_INTEGER_LIT
-    Next Lexeme: (
+      Matched: MP_INTEGER_LIT = 30
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+      Matched: MP_DO = do
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = y
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = y
+86	FactorTail          	->	MultiplyingOperator Factor FactorTail
+88	MultiplyingOperator  	->	"*"
+      Matched: MP_TIMES = *
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 3
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+29	Statement   	->	EmptyStatement
+38	Statement   	->	ProcedureStatement 
+28	StatementTail  	->	e
+      Matched: MP_END = end
+      Matched: MP_PERIOD = .
+      Matched: MP_EOF = ÿ

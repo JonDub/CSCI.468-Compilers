@@ -916,12 +916,19 @@ void Parser::RepeatStatement()
 	switch(lookahead)
 	{
 	case MP_REPEAT: // RepeatStatement -> "repeat" StatementSequence "until" BooleanExpression		Rule# 53
+		{
+		string startRepeatLabel;
 		parseTree->LogExpansion(53);
 		Match(MP_REPEAT);
+		startRepeatLabel=LabelMaker();
+		Gen_Assembly(startRepeatLabel);
 		StatementSequence();
 		Match(MP_UNTIL);
 		BooleanExpression();
+		//BooleanExpression result should be on the top of the stack
+		Gen_Assembly(startRepeatLabel);
 		break;
+		}
 	default:
 		Syntax_Error();
 		break;
