@@ -44,8 +44,8 @@ bool Debug(int argc, char* argv[])
 	Parser * p = new Parser(file);
 
 	TestScanner(file);
-	//TestParser(file);
-	//assert(p->parse() == true);
+	TestParser(file);
+	assert(p->parse() == true);
 	
 	//file = "Programs/lab10_program1.mp";
 	//p->setInputFile(file);
@@ -96,8 +96,8 @@ bool Debug(int argc, char* argv[])
 int main (int argc, char* argv[])
 {
 	// USE THIS BRANCH
-	//Debug(argc, &(*argv));
-	TestParser( argv[1]);
+	Debug(argc, &(*argv));
+	//TestParser( argv[1]);
 	//TestScanner(argc, &(*argv));
 }
 

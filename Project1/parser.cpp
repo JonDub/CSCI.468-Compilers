@@ -126,18 +126,17 @@ void Parser::ProgramHeading()
 // postcondition: (method applies rules correctly)
 void Parser::Block()
 {
-
 	switch (lookahead)
 	{
-	case MP_VAR: // Rule# 4		Block -> VariableDeclarationPart 
+	case MP_VAR: // Rule# 4		Block -> VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart 
 		parseTree->LogExpansion(4);
 		VariableDeclarationPart();
 		ProcedureAndFunctionDeclarationPart();
 		StatementPart();
 		break;
-	case MP_PROCEDURE: /// this is not strictly with the grammer but a procedure should not have to declare local variables //DEBUG - was commented out
-	case MP_FUNCTION:
-	case MP_BEGIN:
+	case MP_PROCEDURE: // Block -> ProcedureAndFunctionDeclarationPart when VariableDeclarationPart -> e
+	case MP_FUNCTION: // Block -> ProcedureAndFunctionDeclarationPart when VariableDeclarationPart -> e
+	case MP_BEGIN: // Block -> StatementPart when ProcedureAndFunctionDeclarationPart and VariableDeclarationPart -> e
 		ProcedureAndFunctionDeclarationPart();
 		StatementPart();
 		break;		
@@ -160,8 +159,11 @@ void Parser::VariableDeclarationPart()
 		Match(MP_SCOLON);
 		VariableDeclarationTail();
 		break;	
-		//case :       // VariableDeclarationPart -> e		Rule# 108		// DEBUG - this rule is not in parser
-		// break;
+	case MP_PROCEDURE:       // VariableDeclarationPart -> e		Rule# 106	
+	case MP_FUNCTION:       // VariableDeclarationPart -> e		Rule# 106
+	case MP_BEGIN:       // VariableDeclarationPart -> e		Rule# 106
+		parseTree->LogExpansion(106);
+		break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -189,7 +191,6 @@ void Parser::VariableDeclarationTail()
 		Syntax_Error();
 		break;
 	}
-
 }
 
 // precondition: (lookahead is a valid token)
@@ -356,8 +357,14 @@ void Parser::OptionalFormalParameterList()
 		FormalParameterSectionTail();
 		Match(MP_RPAREN);
 		break;
+	case MP_INTEGER_LIT:
+	case MP_FLOAT_LIT:
+	case MP_FIXED_LIT:
+	case MP_REAL:
+	case MP_STRING:
+	case MP_BOOLEAN:
 	case MP_SCOLON: //OptionalFormalParameterList -> e, rule #17
-	case MP_COLON: //OptionalFormalParameterList -> e, rule #17
+	//case MP_COLON: //OptionalFormalParameterList -> e, rule #17
 		parseTree->LogExpansion(17);
 		break;
 	default: //everything else
@@ -507,7 +514,7 @@ void Parser::StatementSequence()
 
 	switch(lookahead)
 	{
-	case MP_SCOLON: //StatementSequence -> Statement StatementTail, rule #26 {e}
+	//case MP_SCOLON: //StatementSequence -> Statement StatementTail, rule #26 {e}
 	case MP_END:  //StatementSequence -> Statement StatementTail, rule #26 {e}
 	case MP_BEGIN: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_READ: //StatementSequence -> Statement StatementTail, rule #26
@@ -543,12 +550,12 @@ void Parser::StatementTail()
 		StatementTail();
 		break;
 	case MP_END://StatementTail -> e , rule #28
-	case MP_UNTIL:   // This may not be correct repeat until statements may should be bracketed in begin end?
+	//case MP_UNTIL:   // This may not be correct repeat until statements may should be bracketed in begin end?
 		parseTree->LogExpansion(28);
 		break;
-	case MP_RETURN:
-		Match(MP_RETURN);
-		break;
+	//case MP_RETURN:
+	//	Match(MP_RETURN);
+	//	break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -559,14 +566,13 @@ void Parser::StatementTail()
 // postcondition: (method applies rules correctly)
 void Parser::Statement()
 {
-	
 	SemanticRecord* expressionRec = new SemanticRecord();
 	switch(lookahead)
 	{	
 	case MP_END: //Statement -> EmptyStatement, rule #29
 	case MP_SCOLON: //Statement -> EmptyStatement, rule #29
-	case MP_UNTIL:
-	case MP_ELSE:
+	//case MP_UNTIL:
+	//case MP_ELSE:
 		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(29);
 		EmptyStatement();
@@ -622,8 +628,8 @@ void Parser::EmptyStatement()
 	{
 	case MP_SCOLON:
 	case MP_END:  // EmptyStatement -> e Rule #38 
-	case MP_UNTIL:
-	case MP_ELSE:
+	//case MP_UNTIL:
+	//case MP_ELSE:
 		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(38);
 		break;
@@ -797,11 +803,18 @@ void Parser::WriteParameter(SemanticRecord* &expressionRec)
 
 	switch(lookahead)
 	{
-	//case MP_PLUS:
-	//case MP_MINUS:  // WriteParameter -> OrdinalExpression		Rule# 47
-	//case MP_UNSIGNEDINTEGER:
-	//case MP_INTEGER_LIT:
-	case MP_STRING:	// added
+	case MP_PLUS:				// WriteParameter -> OrdinalExpression		Rule# 47, when OrdinalExpression starts with an OptionalSign
+	case MP_MINUS:				// WriteParameter -> OrdinalExpression		Rule# 47, when OrdinalExpression starts with an OptionalSign
+	case MP_INTEGER_LIT:		// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> UnsignedInteger))
+	case MP_UNSIGNEDINTEGER:	// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> UnsignedInteger))
+	case MP_IDENTIFIER:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> VariableIdentifier | FunctionIdentifier))
+	case MP_NOT:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "not" factor))
+	case MP_LPAREN:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "(" expression ")"))
+	case MP_FLOAT_LIT:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> unsignedFloat))
+	case MP_FIXED_LIT:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> unsignedFloat))
+	case MP_STRING:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> stringLiteral))
+	case MP_TRUE:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "true"))
+	case MP_FALSE:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "false"))
 		Gen_Assembly("WRT #\"" + scanner->getLexeme() + "\"");
 		//Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
 		Match(MP_STRING);
@@ -819,7 +832,6 @@ void Parser::WriteParameter(SemanticRecord* &expressionRec)
 void Parser::AssignmentStatement(SemanticRecord* &expressionRec)
 {
 	SymbolTable::Record* assignmentRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
-	
 	
 	switch (lookahead)
 	{
@@ -890,7 +902,6 @@ void Parser::IfStatement(SemanticRecord* &expressionRec)
 // postcondition: (method applies rules correctly)
 void Parser::OptionalElsePart()
 {
-	
 	switch (lookahead)
 	{
 	case MP_ELSE: // OptionalElsePart -> "else" Statement		Rule# 51
@@ -1057,10 +1068,18 @@ void Parser::InitialValue(SemanticRecord* &expressionRec)
 {
 	switch(lookahead)
 	{	
-	case MP_MINUS:
-	case MP_PLUS: // InitialValue -> OrdinalExpression		Rule# 57
+	case MP_PLUS:				// InitialValue -> OrdinalExpression		Rule# 57
+	case MP_MINUS:				// See WriteParameter for explaination of cases
 	case MP_INTEGER_LIT:
 	case MP_UNSIGNEDINTEGER:
+	case MP_IDENTIFIER:
+	case MP_NOT:
+	case MP_LPAREN:
+	case MP_FLOAT_LIT:	
+	case MP_FIXED_LIT:
+	case MP_STRING:
+	case MP_TRUE:
+	case MP_FALSE:
 		parseTree->LogExpansion(57);
 		OrdinalExpression(expressionRec);
 		break;
@@ -1100,10 +1119,18 @@ void Parser::FinalValue(SemanticRecord* &expressionRec)
 {
 	switch(lookahead)
 	{
-	case MP_PLUS:
-	case MP_MINUS: // FinalValue -> OrdinalExpression	Rule# 60
+	case MP_PLUS:				// FinalValue -> OrdinalExpression		Rule# 60
+	case MP_MINUS:				// See WriteParameter for explaination of cases
 	case MP_INTEGER_LIT:
 	case MP_UNSIGNEDINTEGER:
+	case MP_IDENTIFIER:
+	case MP_NOT:
+	case MP_LPAREN:
+	case MP_FLOAT_LIT:	
+	case MP_FIXED_LIT:
+	case MP_STRING:
+	case MP_TRUE:
+	case MP_FALSE:
 		parseTree->LogExpansion(60);
 		OrdinalExpression(expressionRec);
 		break;
@@ -1144,7 +1171,7 @@ void Parser::OptionalActualParameterList()
 		Match(MP_RPAREN);
 		break;
 	case MP_END:
-	case MP_IDENTIFIER: // OptionalActualParameterList -> e		Rule # 63
+	case MP_SCOLON: // OptionalActualParameterList -> e		Rule # 63
 		parseTree->LogExpansion(63);
 		break;
 	default: //everything else
@@ -1180,10 +1207,20 @@ void Parser::ActualParameter()
 {
 	switch(lookahead)
 	{
-	case MP_PLUS:
-	case MP_MINUS: // ActualParameter -> OrdinalExpression 	Rule# 66
+	case MP_PLUS:				// ActualParameter -> OrdinalExpression 	Rule# 66
+	case MP_MINUS:				// See WriteParameter for explaination of cases
+	case MP_INTEGER_LIT:
+	case MP_UNSIGNEDINTEGER:
+	case MP_IDENTIFIER:
+	case MP_NOT:
+	case MP_LPAREN:
+	case MP_FLOAT_LIT:	
+	case MP_FIXED_LIT:
+	case MP_STRING:
+	case MP_TRUE:
+	case MP_FALSE: 
 		parseTree->LogExpansion(66);
-//		OrdinalExpression();
+		//OrdinalExpression(expressionRec);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1195,16 +1232,20 @@ void Parser::ActualParameter()
 // postcondition: (method applies rules correctly)
 void Parser::Expression(SemanticRecord* &expressionRec)
 {
-
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER:
+	case MP_PLUS:				// Expression -> SimpleExpression OptionalRelationalPart 	Rule# 67
+	case MP_MINUS:				// See WriteParameter for explaination of cases
 	case MP_INTEGER_LIT:
 	case MP_UNSIGNEDINTEGER:
+	case MP_IDENTIFIER:
+	case MP_NOT:
+	case MP_LPAREN:
+	case MP_FLOAT_LIT:	
 	case MP_FIXED_LIT:
-	case MP_MINUS:
-	case MP_PLUS: // Expression -> SimpleExpression OptionalRelationalPart 	Rule# 67
-	case MP_STRING: // added for strings
+	case MP_STRING:
+	case MP_TRUE:
+	case MP_FALSE: 
 		parseTree->LogExpansion(67);
 		SimpleExpression(expressionRec);
 		OptionalRelationalPart(expressionRec);
@@ -1259,13 +1300,13 @@ void Parser::OptionalRelationalPart(SemanticRecord* &expressionRec)
 		break;
 	case MP_SCOLON:
 	case MP_END:
-	case MP_THEN:
-	case MP_ELSE:
+	//case MP_THEN:
+	//case MP_ELSE:
 	case MP_RPAREN:
-	case MP_TO:
-	case MP_DOWNTO:
-	case MP_DO: // OptionalRelationalPart -> e		Rule #69
-	case MP_COMMA: //added
+	//case MP_TO:
+	//case MP_DOWNTO:
+	//case MP_DO: // OptionalRelationalPart -> e		Rule #69
+	//case MP_COMMA: //added
 		parseTree->LogExpansion(69);
 		break;
 	default: //everything else
@@ -1320,14 +1361,18 @@ void Parser::SimpleExpression(SemanticRecord* &expressionRec)
 	SemanticRecord* resultRec = new SemanticRecord();
 	switch(lookahead)
 	{
-	case MP_IDENTIFIER:
-
-	case MP_UNSIGNEDINTEGER:
+	case MP_PLUS:				// SimpleExpression -> Optional Sign Term TermTail	Rule# 76
+	case MP_MINUS:				// See WriteParameter for explaination of cases
 	case MP_INTEGER_LIT:
+	case MP_UNSIGNEDINTEGER:
+	case MP_IDENTIFIER:
+	case MP_NOT:
+	case MP_LPAREN:
+	case MP_FLOAT_LIT:	
 	case MP_FIXED_LIT:
-	case MP_MINUS:
-	case MP_PLUS: // SimpleExpression -> OptionalSign Term TermTail  +,-		Rule# 76
-	case MP_STRING: // added
+	case MP_STRING:
+	case MP_TRUE:
+	case MP_FALSE: 
     
 		parseTree->LogExpansion(76);
 		OptionalSign();
@@ -1452,24 +1497,21 @@ void Parser::TermTail(SemanticRecord* &termTailRec)
 
 		TermTail(termTailRec);
 		break;
-	case MP_RPAREN:
-
-
+	case MP_RPAREN: // TermTail -> {e} 		Rule# 78
 	case MP_END:
-	case MP_SCOLON: // TermTail -> {e} 		Rule# 78
+	case MP_SCOLON: 
 	case MP_EQUAL:
 	case MP_LTHAN:
 	case MP_GTHAN:
 	case MP_GEQUAL:
 	case MP_LEQUAL:
-	case MP_DO:
-	case MP_THEN:
-	
-	case MP_LPAREN:
-	case MP_TO:
-	case MP_DOWNTO:
-	case MP_ELSE:
-	case MP_COMMA: //added
+	//case MP_DO:
+	//case MP_THEN:
+	//case MP_LPAREN:
+	//case MP_TO:
+	//case MP_DOWNTO:
+	//case MP_ELSE:
+	//case MP_COMMA: //added
 		parseTree->LogExpansion(78);
 		break;
 	default: //everything else
@@ -1477,8 +1519,6 @@ void Parser::TermTail(SemanticRecord* &termTailRec)
 		break;
 	}
 
-	
-	
 }
 
 // precondition: (lookahead is a valid token)
@@ -1501,8 +1541,11 @@ void Parser::OptionalSign()
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
 	case MP_FIXED_LIT:
-	case MP_RPAREN:
+	case MP_FLOAT_LIT:
+	//case MP_RPAREN:
 	case MP_LPAREN: // OptionalSign -> {e}	Rule #81
+	case MP_TRUE:
+	case MP_FALSE:
 	case MP_STRING: //added
 		parseTree->LogExpansion(81);
 		break;
@@ -1547,6 +1590,9 @@ void Parser::Term(SemanticRecord* &termRec)
 	case MP_UNSIGNEDINTEGER:
 	case MP_INTEGER_LIT:
 	case MP_FIXED_LIT:
+	case MP_FLOAT_LIT:
+	case MP_TRUE:
+	case MP_FALSE:
 	case MP_NOT:
 	case MP_IDENTIFIER: // Term -> Factor FactorTail  	Rule# 85
 	case MP_STRING: //added
@@ -1560,8 +1606,6 @@ void Parser::Term(SemanticRecord* &termRec)
 		Syntax_Error();
 		break;
 	}
-	
-	
 }
 
 // precondition: (lookahead is a valid token)
@@ -1572,12 +1616,12 @@ void Parser::FactorTail(SemanticRecord* &termTailRec)
 
 	switch(lookahead)
 	{
+	// ADD CASE MP_DIVF
 	case MP_DIV:
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
 		Factor(termRec);
 		
-
 		// check previous and check next to see if we need to cast
 		// rec is previous record, r, is the current record
 		if (termTailRec->getType() == MP_INTEGER_LIT)
@@ -1715,17 +1759,17 @@ void Parser::FactorTail(SemanticRecord* &termTailRec)
 	case MP_GTHAN:
 	case MP_LTHAN:
 	case MP_RPAREN:
-	case MP_LPAREN:
+	//case MP_LPAREN:
 	case MP_SCOLON:
 	case MP_END:
-	case MP_DO:
-	case MP_THEN:
-	case MP_ELSE:
-	case MP_TO:
-	case MP_DOWNTO:
+	//case MP_DO:
+	//case MP_THEN:
+	//case MP_ELSE:
+	//case MP_TO:
+	//case MP_DOWNTO:
 	case MP_NEQUAL: // FactorTail -> {e}	Rule# 87
-	case MP_STRING: //added
-	case MP_COMMA: //added
+	//case MP_STRING: //added
+	//case MP_COMMA: //added
 		parseTree->LogExpansion(87);
 		break;
 	default: //everything else
@@ -1733,8 +1777,6 @@ void Parser::FactorTail(SemanticRecord* &termTailRec)
 		break;
 	}
 
-	
-	
 }
 
 // precondition: (lookahead is a valid token)
@@ -1759,6 +1801,10 @@ void Parser::MultiplyingOperator()
 		parseTree->LogExpansion(91);
 		Match(MP_AND);
 		break;
+	case MP_DIVF: // MultiplyingOperator -> "/"  	Rule# 112
+		parseTree->LogExpansion(112);
+		Match(MP_DIVF);
+		break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -1776,6 +1822,14 @@ void Parser::Factor(SemanticRecord* &termTailRec)
 		Match(MP_UNSIGNEDINTEGER);
 		break;
 		//////////////////////// Conflict 96, 99
+	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95		// DEBUG - conflict
+		parseTree->LogExpansion(95);
+		termTailRec->setType(MP_INTEGER_LIT);
+		Gen_Assembly("PUSH #" + scanner->getLexeme());
+		if (negativeFlag==true) {Gen_Assembly("NEG -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
+
+		Match(MP_INTEGER_LIT);
+		break;
 	case MP_IDENTIFIER:	{// Factor -> VariableIdentifier		Rule # 93
 		// lookup factor in symbol table
 		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->getLexeme(),SymbolTable::KIND_VARIABLE,0);
@@ -1793,16 +1847,7 @@ void Parser::Factor(SemanticRecord* &termTailRec)
 		Match(MP_NOT);
 		Factor(termTailRec);
 		break;
-	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95		// DEBUG - conflict
-		parseTree->LogExpansion(95);
-
-
-		termTailRec->setType(MP_INTEGER_LIT);
-		Gen_Assembly("PUSH #" + scanner->getLexeme());
-		if (negativeFlag==true) {Gen_Assembly("NEG -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
-
-		Match(MP_INTEGER_LIT);
-		break;
+	
 	case MP_FIXED_LIT: // Factor -> FIXED_LIT  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
 
@@ -1830,9 +1875,17 @@ void Parser::Factor(SemanticRecord* &termTailRec)
 		Match(MP_RPAREN);
 		break;
 		//////////////////////// Conflict 96, 99
-	case MP_STRING:	//added
+	case MP_STRING: // Factor -> String Literal Rule # 114
 		parseTree->LogExpansion(114);
 		Match(MP_STRING);
+		break;
+	case MP_TRUE: // Factor -> "true" Rule # 115
+		parseTree->LogExpansion(115);
+		Match(MP_TRUE);
+		break;
+	case MP_FALSE: // Factor -> "false" Rule # 116
+		parseTree->LogExpansion(116);
+		Match(MP_FALSE);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1944,14 +1997,18 @@ void Parser::BooleanExpression()
 	SemanticRecord* expressionRec = new SemanticRecord();
 	switch(lookahead)
 	{
-	case MP_LPAREN:
-	case MP_RPAREN:
-	case MP_PLUS:
-	case MP_MINUS:
-	case MP_UNSIGNEDINTEGER:
+	case MP_PLUS:				// BooleanExpression -> Expression Expression (-> SimpleExpression OptionalRelationalPart)	Rule# 101
+	case MP_MINUS:				// See WriteParameter for explaination of cases
 	case MP_INTEGER_LIT:
+	case MP_UNSIGNEDINTEGER:
+	case MP_IDENTIFIER:
 	case MP_NOT:
-	case MP_IDENTIFIER: // BooleanExpression -> Expression 	Rule# 101
+	case MP_LPAREN:
+	case MP_FLOAT_LIT:	
+	case MP_FIXED_LIT:
+	case MP_STRING:
+	case MP_TRUE:
+	case MP_FALSE:  
 		parseTree->LogExpansion(101);
 		Expression(expressionRec);
 		break;
@@ -1967,15 +2024,18 @@ void Parser::OrdinalExpression(SemanticRecord* &expressionRec)
 {
 	switch(lookahead)
 	{
-	case MP_MINUS:
+	case MP_PLUS:				// OrdinalExpression -> Expression Expression (-> SimpleExpression OptionalRelationalPart)	Rule# 102
+	case MP_MINUS:				// See WriteParameter for explaination of cases
+	case MP_INTEGER_LIT:
+	case MP_UNSIGNEDINTEGER:
 	case MP_IDENTIFIER:
 	case MP_NOT:
-	case MP_UNSIGNEDINTEGER:
-	case MP_INTEGER_LIT:
-		//case MP_RPAREN:
 	case MP_LPAREN:
-	case MP_PLUS: // OrdinalExpression -> Expression	Rule# 102
-	case MP_STRING: // added
+	case MP_FLOAT_LIT:	
+	case MP_FIXED_LIT:
+	case MP_STRING:
+	case MP_TRUE:
+	case MP_FALSE: 
 		parseTree->LogExpansion(102);
 		Expression(expressionRec);
 		break;
@@ -2044,7 +2104,7 @@ Token Parser::Type()
 		parseTree->LogExpansion(108);
 		Match(MP_FLOAT_LIT);
 		return MP_FLOAT_LIT;
-	case MP_FIXED_LIT: // treat fixed and float the same???
+	case MP_FIXED_LIT: //Type -> "Float", rule #108
 		parseTree->LogExpansion(108);
 		Match(MP_FIXED_LIT);
 		return MP_FIXED_LIT;
