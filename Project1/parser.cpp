@@ -562,7 +562,7 @@ void Parser::Statement()
 	{	
 	case MP_END: //Statement -> EmptyStatement, rule #29
 	case MP_SCOLON: //Statement -> EmptyStatement, rule #29
-		//case MP_UNTIL:
+	case MP_UNTIL:	// uncommented for repeat...until
 		//case MP_ELSE:
 		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(29);
@@ -619,7 +619,7 @@ void Parser::EmptyStatement()
 	{
 	case MP_SCOLON:
 	case MP_END:  // EmptyStatement -> e Rule #38 
-		//case MP_UNTIL:
+	case MP_UNTIL:	//uncommented for repeat...until
 		//case MP_ELSE:
 		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(38);

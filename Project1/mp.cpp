@@ -19,7 +19,7 @@ int TestScanner(string);  // int TestScanner(int, char*[]);
 bool Debug(int argc, char* argv[])
 {	
 	// test parser
-	string file = "C:\\Users\\dub\\Dropbox\\CSCI 468 Test Programs\\group 7\\b\\control.up";
+	string file = "C:\\Users\\dub\\Dropbox\\CSCI 468 Test Programs\\group 7\\b\\program1.up";
 	Parser * p = new Parser(file);
 
 	//TestScanner(file);
