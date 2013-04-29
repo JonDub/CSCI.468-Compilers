@@ -6,21 +6,17 @@ ADD SP #3 SP	; space for 3 variables of type MP_BOOLEAN
 ADD SP #1 SP	; space for 1 variables of type MP_STRING
 PUSH #5		; Integer litaral
 NEG -1(SP) -1(SP)		; optional sign negative
-CASTSI			; result does not match assignemnt variable type cast to integer
 POP 0(D0)
 PUSH #87		; Integer litaral
 NEG -1(SP) -1(SP)		; optional sign negative
-CASTSI			; result does not match assignemnt variable type cast to integer
 POP 2(D0)
 PUSH 0(D0)	; Identifier a
 PUSH 2(D0)	; Identifier c
 ADDS
-CASTSI			; result does not match assignemnt variable type cast to integer
 POP 1(D0)
 PUSH 0(D0)	; Identifier a
 PUSH 1(D0)	; Identifier b
-CASTSF			; righthandside result is an int left hand side is a float so cast
-CMPLTSF
+CMPLTS
 BRFS L1		; branch if false
 WRT #"A is less than B\n"
 PUSH #1			; boolean true

@@ -836,6 +836,7 @@ void Parser::AssignmentStatement(SemanticRecord* expressionRec)
 		caller->setKind(SemanticRecord::ASSIGNMENT);
 		VariableIdentifier();
 		Match(MP_ASSIGN);
+		expressionRec->setType(caller->getType()); // DEBUG - added to fix casting issue
 		Expression(expressionRec);
 
 		// pop top value back into variable
@@ -1301,8 +1302,8 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CASTSI			; righthandside result is a float, left hand side is an int so cast");
 				Gen_Assembly("CMPEQS");
 			}
-		}
-		else
+		} 
+		else if (expressionRec->getType()==MP_FIXED_LIT || expressionRec->getType() == MP_FLOAT_LIT )
 		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
 			{
@@ -1313,6 +1314,11 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CASTSF			;righthandside result is an int, left hand side is a float so cast");
 				Gen_Assembly("CMPEQSF");
 			}
+		}
+		else 
+		{
+			// should not get here.
+			Gen_Assembly("; ERROR in operation " + EnumToString(lookahead));
 		}
 		break;
 	case MP_LTHAN:
@@ -1332,7 +1338,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPLTS");
 			}
 		}
-		else
+		else if (expressionRec->getType()==MP_FIXED_LIT || expressionRec->getType() == MP_FLOAT_LIT)
 		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
 			{
@@ -1343,6 +1349,11 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CASTSF			; righthandside result is an int left hand side is a float so cast");
 				Gen_Assembly("CMPLTSF");
 			}
+		}
+		else 
+		{
+			// should not get here.
+			Gen_Assembly("; ERROR in operation " + EnumToString(lookahead));
 		}
 		break;
 	case MP_GTHAN:
@@ -1362,7 +1373,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPGTS");
 			}
 		}
-		else
+		else if (expressionRec->getType()==MP_FLOAT_LIT || expressionRec->getType() == MP_FIXED_LIT)
 		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
 			{
@@ -1374,6 +1385,12 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPGTSF");
 			}
 		}
+		else 
+		{
+			// should not get here.
+			Gen_Assembly("; ERROR in operation " + EnumToString(lookahead));
+		}
+
 		break;
 	case MP_LEQUAL:
 		parseTree->LogExpansion(68);
@@ -1392,7 +1409,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPLES");
 			}
 		}
-		else
+		else if (expressionRec->getType()==MP_FIXED_LIT || expressionRec->getType() == MP_FLOAT_LIT )
 		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
 			{
@@ -1404,6 +1421,12 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPLESF");
 			}
 		}
+		else 
+		{
+			// should not get here.
+			Gen_Assembly("; ERROR in operation " + EnumToString(lookahead));
+		}
+
 		break;
 	case MP_GEQUAL:
 		parseTree->LogExpansion(68);
@@ -1420,7 +1443,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPGES");
 			}
 		}
-		else
+		else if (expressionRec->getType()==MP_FLOAT_LIT || expressionRec->getType() == MP_FIXED_LIT)
 		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
 				Gen_Assembly("CMPGESF");  
@@ -1430,6 +1453,12 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPGESF");
 			}
 		}
+		else 
+		{
+			// should not get here.
+			Gen_Assembly("; ERROR in operation " + EnumToString(lookahead));
+		}
+
 		break; // needed or not? stuart
 	case MP_NEQUAL: // OptionalRelationalPart -> RelationalOperator SimpleExpression	Rule #68
 		parseTree->LogExpansion(68);
@@ -1448,7 +1477,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPNES");
 			}
 		}
-		else
+		else if (expressionRec->getType()==MP_FIXED_LIT || expressionRec->getType() == MP_FLOAT_LIT)
 		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
 			{
@@ -1460,7 +1489,13 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPNESF");
 			}
 		}
-			break;
+		else 
+		{
+			// should not get here.
+			Gen_Assembly("; ERROR in operation " + EnumToString(lookahead));
+		}
+
+		break;
 	case MP_SCOLON:
 	case MP_END:
 	case MP_THEN:
@@ -1542,7 +1577,9 @@ void Parser::SimpleExpression(SemanticRecord* expressionRec)
 
 		termTailRec=termRec;
 		TermTail(termTailRec);
-		expressionRec=termTailRec;
+		expressionRec->setType(termTailRec->getType());//here
+
+
 		break;		
 	default: //everything else
 		Syntax_Error();
