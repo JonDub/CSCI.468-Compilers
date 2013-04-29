@@ -807,7 +807,6 @@ void Parser::WriteParameter(SemanticRecord* &expressionRec)
 	case MP_MINUS:				// WriteParameter -> OrdinalExpression		Rule# 47, when OrdinalExpression starts with an OptionalSign
 	case MP_INTEGER_LIT:		// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> UnsignedInteger))
 	case MP_UNSIGNEDINTEGER:	// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> UnsignedInteger))
-	case MP_IDENTIFIER:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> VariableIdentifier | FunctionIdentifier))
 	case MP_NOT:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "not" factor))
 	case MP_LPAREN:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "(" expression ")"))
 	case MP_FLOAT_LIT:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> unsignedFloat))
@@ -819,6 +818,14 @@ void Parser::WriteParameter(SemanticRecord* &expressionRec)
 		//Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
 		Match(MP_STRING);
 		break;
+	case MP_IDENTIFIER:{			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> VariableIdentifier | FunctionIdentifier))
+		// lookup identifier from the symbol table and make assembly for it	
+		SymbolTable::Record* r = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE);
+
+		Gen_Assembly("WRT " + to_string(r->offset) + "(D0)");
+		Match(MP_IDENTIFIER);
+		break;
+	}
 	default:
 		parseTree->LogExpansion(47);
 		OrdinalExpression(expressionRec);

@@ -1,34 +1,56 @@
 MOV SP D0
-ADD SP #7 SP
 ADD SP #1 SP
 ADD SP #1 SP
-PUSH #9
-POP 0(D0)
-PUSH #0
-CASTF ;result does not match assignemnt variable type cast to float
-POP 7(D0)
-PUSH #10
-POP 1(D0)
-PUSH 1(D0)	; b
-PUSH 0(D0)	; a
-CMPGTS
-BRFS L0
-PUSH 0(D0)	; a
+ADD SP #1 SP
+ADD SP #1 SP
+WRT #"Enter an integer for A: "
+RD D9			; Read Var A
+MOV D9 0(D0)
+WRT #"A = "
+WRT 0(D0)
+WRTLN #""
+WRT #"Enter a float for B: "
+RDF D9		; Read Var B
+MOV D9 1(D0)
+WRT #"B = "
+WRT 1(D0)
+WRTLN #""
+WRT #"Enter an integer for C: "
+RD D9			; Read Var C
+MOV D9 2(D0)
+WRT #"C = "
+WRT 2(D0)
+WRTLN #""
 PUSH #3
-PUSH #1
-ADDS
+PUSH 0(D0)	; A
+MULS
+PUSH 0(D0)	; A
+MULS
+PUSH 0(D0)	; A
+MULS
+PUSH #5
+PUSH 1(D0)	; B
+PUSH -2(SP)	; Casting from int to float
+CASTSF
+POP -2(SP)
+MULSF
+PUSH 1(D0)	; B
+MULSF
+PUSH -2(SP)	; Casting from int to float
+CASTSF
+POP -2(SP)	; Cast done
+ADDSF
+PUSH 2(D0)	; C
+PUSH -2(SP)	; Casting from float to int
+CASTSI
+POP -2(SP)	; Cast done
+SUBSF
 POP 0(D0)
-L0
-PUSH #9
-PUSH #6
-CMPLTS
-BRFS L1
-PUSH 1(D0)	; b
-PUSH 0(D0)	; a
-ADDS
-POP 1(D0)
-L1
-PUSH #1
-POP 5(D0)
+WRT #"A = "
+WRT 0(D0)
+WRT #", B = "
+WRT 1(D0)
+WRT #", and C = "
+WRT 2(D0)
 MOV D0 SP
 HLT
