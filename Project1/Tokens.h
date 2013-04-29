@@ -17,6 +17,7 @@ enum Token
 	MP_COMMA,
 	MP_COMMENT,
 	MP_DIV,
+	MP_DIVF,
 	MP_DO,
 	MP_DOWNTO,
 	MP_ELSE,
@@ -82,6 +83,7 @@ static std::string EnumToString(Token t)
 	case MP_COMMA: return "MP_COMMA";
 	case MP_COMMENT: return "MP_COMMENT";
 	case MP_DIV: return "MP_DIV";
+	case MP_DIVF: return "MP_DIVF";
 	case MP_DO: return "MP_DO";
 	case MP_DOWNTO: return "MP_DOWNTO";
 	case MP_ELSE: return "MP_ELSE";
