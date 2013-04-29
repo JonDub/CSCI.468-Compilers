@@ -41,10 +41,10 @@ CASTSF
 POP -2(SP)	; Cast done
 ADDSF
 PUSH 2(D0)	; C
-PUSH -2(SP)	; Casting from float to int
+PUSH -2(SP)	; Casting from int to float
 CASTSI
 POP -2(SP)	; Cast done
-SUBSF
+SUBS
 POP 0(D0)
 WRT #"A = "
 WRT 0(D0)

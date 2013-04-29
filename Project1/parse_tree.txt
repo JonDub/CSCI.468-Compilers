@@ -1,5 +1,5 @@
 
-Opening file: C:\Users\dub\Documents\GitHub\CSCI.468-Compilers\Project1\Programs\lab10_program3.mp
+Opening file: Programs/lab10_program3.mp
 
 1	SystemGoal	->	Program EOF
 2	Program 	->	ProgramHeading ";" Block "."

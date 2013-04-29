@@ -821,7 +821,6 @@ void Parser::WriteParameter(SemanticRecord* &expressionRec)
 	case MP_IDENTIFIER:{			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> VariableIdentifier | FunctionIdentifier))
 		// lookup identifier from the symbol table and make assembly for it	
 		SymbolTable::Record* r = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE);
-
 		Gen_Assembly("WRT " + to_string(r->offset) + "(D0)");
 		Match(MP_IDENTIFIER);
 		break;
@@ -1569,12 +1568,11 @@ void Parser::TermTail(SemanticRecord* &termTailRec)
 
 		TermTail(termTailRec);
 		break;
-	case MP_MINUS:// TermTail -> AddingOperator Term TermTail  	Rule# 77
+	case MP_MINUS: {// TermTail -> AddingOperator Term TermTail  	Rule# 77
 		parseTree->LogExpansion(77);
 		AddingOperator();
 		Term(termRec);
 
-		
 		// check the -1(SP) and -2(SP) to see if they are the same types
 		if (termTailRec->getType() == MP_INTEGER_LIT)
 		{
@@ -1590,7 +1588,7 @@ void Parser::TermTail(SemanticRecord* &termTailRec)
 				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
 				Gen_Assembly("CASTSF");
 				Gen_Assembly("POP -2(SP)	; Cast done");
-				Gen_Assembly("SUBSF");
+				Gen_Assembly("SUBSF			;1593");
 				termTailRec->setType(MP_FLOAT_LIT);
 			}
 		}
@@ -1599,22 +1597,23 @@ void Parser::TermTail(SemanticRecord* &termTailRec)
 			if (termRec->getType() == MP_FIXED_LIT || termRec->getType() == MP_FLOAT_LIT)
 			{
 				// same types
-				Gen_Assembly("SUBSF");
+				Gen_Assembly("SUBSF			;1603");
 				termTailRec->setType(MP_FLOAT_LIT);
 			} 
 			else if (termRec->getType() == MP_INTEGER_LIT)
 			{
 				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
-				Gen_Assembly("PUSH -2(SP)	; Casting from float to int");
+				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
 				Gen_Assembly("CASTSI");
 				Gen_Assembly("POP -2(SP)	; Cast done");
-				Gen_Assembly("SUBSF");
+				Gen_Assembly("SUBS");
 				termTailRec->setType(MP_INTEGER_LIT);
 			}
 		}
 
 		TermTail(termTailRec);
 		break;
+	}
 	case MP_RPAREN: // TermTail -> {e} 		Rule# 78
 	case MP_END:
 	case MP_SCOLON: 
@@ -2354,8 +2353,8 @@ void Parser::Syntax_Error(Token expected)
 void Parser::Gen_Assembly(string s)
 {
 	irFile << s << endl;
-	printf(s.c_str());
-	printf("\n");
+	//printf(s.c_str());
+	//printf("\n");
 }
 
 string Parser::LabelMaker()
