@@ -54,7 +54,7 @@ Opening file: Programs/lab10_program3.mp
 26	StatementSequence 	->	Statement StatementTail
 32	Statement   	->	WriteStatement
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITE = Write
+      Matched: MP_WRITELN = Writeln
       Matched: MP_LPAREN = (
       Matched: MP_STRING = Enter an integer for A: 
 46	WriteParameterTail 	->	e
@@ -208,7 +208,7 @@ Opening file: Programs/lab10_program3.mp
       Matched: MP_SCOLON = ;
 32	Statement   	->	WriteStatement
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITE = Write
+      Matched: MP_WRITELN = Writeln
       Matched: MP_LPAREN = (
       Matched: MP_STRING = A = 
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
@@ -226,6 +226,34 @@ Opening file: Programs/lab10_program3.mp
 45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
       Matched: MP_COMMA = ,
       Matched: MP_IDENTIFIER = C
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = boo
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+115	Factor	->	"True"
+      Matched: MP_TRUE = true
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+      Matched: MP_STRING =  boo = 
+45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = boo
 46	WriteParameterTail 	->	e
       Matched: MP_RPAREN = )
 27	StatementTail  	->	";" Statement StatementTail

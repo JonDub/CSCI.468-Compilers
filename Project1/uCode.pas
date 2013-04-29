@@ -4,6 +4,7 @@ ADD SP #1 SP
 ADD SP #1 SP
 ADD SP #1 SP
 WRT #"Enter an integer for A: "
+WRTLN #""
 RD D9			; Read Var A
 MOV D9 0(D0)
 WRT #"A = "
@@ -52,5 +53,11 @@ WRT #", B = "
 WRT 1(D0)
 WRT #", and C = "
 WRT 2(D0)
+WRTLN #""
+PUSH #1			; boolean true
+POP 3(D0)		; boolean assign
+WRT #" boo = "
+WRT 3(D0)
+WRTLN #""
 MOV D0 SP
 HLT
