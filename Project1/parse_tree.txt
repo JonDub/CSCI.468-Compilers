@@ -1,32 +1,35 @@
 
-Opening file: C:\Users\dub\Dropbox\CSCI 468 Test Programs\group 7\b\program1.up
+Opening file: Programs/testsuite-spring2013/C/C_2writeTest.txt
 
 1	SystemGoal	->	Program EOF
 2	Program 	->	ProgramHeading ";" Block "."
 3	ProgramHeading 	->	"program" ProgramIdentifier
       Matched: MP_PROGRAM = program
 97	ProgramIdentifier  	->	Identifier
-      Matched: MP_IDENTIFIER = Program1
+      Matched: MP_IDENTIFIER = writelnTest
       Matched: MP_SCOLON = ;
 4	Block 	->	VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart         
 5	VariableDeclarationPart 	->	"var" VariableDeclaration ";" VariableDeclarationTail
       Matched: MP_VAR = var
 8	VariableDeclaration 	->	Identifierlist ":" Type
 103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = Apples
+      Matched: MP_IDENTIFIER = a
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = b
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = c
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = d
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = e
 105	IdentifierTail      	->	e       
       Matched: MP_COLON = :
 107	Type 	->	 "Integer"
-      Matched: MP_INTEGER_LIT = Integer
-      Matched: MP_SCOLON = ;
-6	VariableDeclarationTail 	->	VariableDeclaration ";"
-8	VariableDeclaration 	->	Identifierlist ":" Type
-103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = Cost
-105	IdentifierTail      	->	e       
-      Matched: MP_COLON = :
-107	Type 	->	 "Integer"
-      Matched: MP_INTEGER_LIT = Integer
+      Matched: MP_INTEGER_LIT = integer
       Matched: MP_SCOLON = ;
 7	VariableDeclarationTail 	->	e
 11	ProcedureAndFunctionDeclarationPart	->	e 
@@ -36,111 +39,43 @@ Opening file: C:\Users\dub\Dropbox\CSCI 468 Test Programs\group 7\b\program1.up
 26	StatementSequence 	->	Statement StatementTail
 31	Statement   	->	ReadStatement
 40	ReadStatement  	->	"read" "(" ReadParameter ReadParameterTail ")"
-      Matched: MP_READ = Read
+      Matched: MP_READ = read
       Matched: MP_LPAREN = (
 43	ReadParameter  	->	VariableIdentifier             
-      Matched: MP_IDENTIFIER = Apples
+      Matched: MP_IDENTIFIER = a
 42	ReadParameterTail 	->	e
       Matched: MP_RPAREN = )
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
-34	Statement   	->	IfStatement
-50	IfStatement 	->	"if" BooleanExpression "then" Statement OptionalElsePart
-      Matched: MP_IF = if
-101	BooleanExpression   	->	Expression
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = Apples
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-68	OptionalRelationalPart	->	RelationalOperator SimpleExpression
-72	RelationalOperator	->	">"
-      Matched: MP_GTHAN = >
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 0
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-      Matched: MP_THEN = then
-30	Statement   	->	CompoundStatement
-25	CompoundStatement 	->	"begin" StatementSequence "end"
-      Matched: MP_BEGIN = begin
-26	StatementSequence 	->	Statement StatementTail
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = Cost
-      Matched: MP_ASSIGN = :=
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = Apples
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-88	MultiplyingOperator  	->	"*"
-      Matched: MP_TIMES = *
-95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 5
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
+31	Statement   	->	ReadStatement
+40	ReadStatement  	->	"read" "(" ReadParameter ReadParameterTail ")"
+      Matched: MP_READ = read
+      Matched: MP_LPAREN = (
+43	ReadParameter  	->	VariableIdentifier             
+      Matched: MP_IDENTIFIER = b
+42	ReadParameterTail 	->	e
+      Matched: MP_COMMA = ,
+43	ReadParameter  	->	VariableIdentifier             
+      Matched: MP_IDENTIFIER = c
+42	ReadParameterTail 	->	e
+      Matched: MP_COMMA = ,
+43	ReadParameter  	->	VariableIdentifier             
+      Matched: MP_IDENTIFIER = d
+42	ReadParameterTail 	->	e
+      Matched: MP_COMMA = ,
+43	ReadParameter  	->	VariableIdentifier             
+      Matched: MP_IDENTIFIER = e
+42	ReadParameterTail 	->	e
+      Matched: MP_RPAREN = )
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
 32	Statement   	->	WriteStatement
 44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITE = Write
+      Matched: MP_WRITELN = writeln
       Matched: MP_LPAREN = (
-      Matched: MP_IDENTIFIER = Cost
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-28	StatementTail  	->	e
-      Matched: MP_END = end
-51	OptionalElsePart  	->	"else" Statement
-      Matched: MP_ELSE = else
-30	Statement   	->	CompoundStatement
-25	CompoundStatement 	->	"begin" StatementSequence "end"
-      Matched: MP_BEGIN = begin
-26	StatementSequence 	->	Statement StatementTail
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = Cost
-      Matched: MP_ASSIGN = :=
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = Apples
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-88	MultiplyingOperator  	->	"*"
-      Matched: MP_TIMES = *
-95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 7
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITE = Write
-      Matched: MP_LPAREN = (
-      Matched: MP_IDENTIFIER = Cost
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-28	StatementTail  	->	e
-      Matched: MP_END = end
-28	StatementTail  	->	e
-      Matched: MP_END = end
-      Matched: MP_PERIOD = .
-      Matched: MP_EOF = ÿ
+
+File: Programs/testsuite-spring2013/C/C_2writeTest.txt: 
+Syntax error found on line 22, column 22.
+    Expected MP_STRING but found MP_INTEGER_LIT.
+    Next token: MP_RPAREN
+    Next Lexeme: 100

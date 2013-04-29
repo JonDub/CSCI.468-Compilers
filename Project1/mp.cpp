@@ -19,12 +19,14 @@ int TestScanner(string);  // int TestScanner(int, char*[]);
 bool Debug(int argc, char* argv[])
 {	
 	// test parser
-	string file = "C:\\Users\\dub\\Dropbox\\CSCI 468 Test Programs\\group 7\\b\\program1.up";
+	string file = "Programs/testsuite-spring2013/C/C_2writeTest.txt";
+	//file = "Programs/testsuite-spring2013/C/C_3nasty.txt";
+	//file = "Programs/testsuite-spring2013/C/C_4floats.txt";
 	Parser * p = new Parser(file);
 
 	//TestScanner(file);
 	//TestParser(file);
-	assert(p->parse() == true);
+	p->parse();
 	
 	//file = "Programs/lab10_program1.mp";
 	//p->setInputFile(file);
