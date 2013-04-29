@@ -4,7 +4,7 @@ program Program3;
 		C : integer;
 		boo : boolean;
 	begin
-		Writeln('Enter an integer for A: ');
+		Write('Enter an integer for A: ');
 		Read(A);
 		Writeln ('A = ', A);
 		Write('Enter a float for B: ');
@@ -15,6 +15,4 @@ program Program3;
 		Writeln('C = ', C);
 		A := 3*A*A*A + 5*B*B - C;
 		Writeln('A = ', A, ', B = ', B,', and C = ', C);
-		boo := true;
-		writeln(' boo = ', boo);
 	end.

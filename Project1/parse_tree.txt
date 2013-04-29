@@ -1,50 +1,32 @@
 
-Opening file: Programs/lab10_program3.mp
+Opening file: C:\Users\dub\Dropbox\CSCI 468 Test Programs\group 7\b\booleanExp.up
 
 1	SystemGoal	->	Program EOF
 2	Program 	->	ProgramHeading ";" Block "."
 3	ProgramHeading 	->	"program" ProgramIdentifier
       Matched: MP_PROGRAM = program
 97	ProgramIdentifier  	->	Identifier
-      Matched: MP_IDENTIFIER = Program3
+      Matched: MP_IDENTIFIER = booleanExp
       Matched: MP_SCOLON = ;
 4	Block 	->	VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart         
 5	VariableDeclarationPart 	->	"var" VariableDeclaration ";" VariableDeclarationTail
       Matched: MP_VAR = var
 8	VariableDeclaration 	->	Identifierlist ":" Type
 103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = A
-105	IdentifierTail      	->	e       
-      Matched: MP_COLON = :
-107	Type 	->	 "Integer"
-      Matched: MP_INTEGER_LIT = integer
-      Matched: MP_SCOLON = ;
-6	VariableDeclarationTail 	->	VariableDeclaration ";"
-8	VariableDeclaration 	->	Identifierlist ":" Type
-103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = B
-105	IdentifierTail      	->	e       
-      Matched: MP_COLON = :
-108	Type	->	"Float" 
-      Matched: MP_FLOAT_LIT = float
-      Matched: MP_SCOLON = ;
-6	VariableDeclarationTail 	->	VariableDeclaration ";"
-8	VariableDeclaration 	->	Identifierlist ":" Type
-103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = C
-105	IdentifierTail      	->	e       
-      Matched: MP_COLON = :
-107	Type 	->	 "Integer"
-      Matched: MP_INTEGER_LIT = integer
-      Matched: MP_SCOLON = ;
-6	VariableDeclarationTail 	->	VariableDeclaration ";"
-8	VariableDeclaration 	->	Identifierlist ":" Type
-103	IdentifierList      	->	identifier IdentifierTail
-      Matched: MP_IDENTIFIER = boo
+      Matched: MP_IDENTIFIER = test
 105	IdentifierTail      	->	e       
       Matched: MP_COLON = :
 110	Type	->	"Boolean"
       Matched: MP_BOOLEAN = boolean
+      Matched: MP_SCOLON = ;
+6	VariableDeclarationTail 	->	VariableDeclaration ";"
+8	VariableDeclaration 	->	Identifierlist ":" Type
+103	IdentifierList      	->	identifier IdentifierTail
+      Matched: MP_IDENTIFIER = test2
+105	IdentifierTail      	->	e       
+      Matched: MP_COLON = :
+107	Type 	->	 "Integer"
+      Matched: MP_INTEGER_LIT = integer
       Matched: MP_SCOLON = ;
 7	VariableDeclarationTail 	->	e
 11	ProcedureAndFunctionDeclarationPart	->	e 
@@ -52,188 +34,10 @@ Opening file: Programs/lab10_program3.mp
 25	CompoundStatement 	->	"begin" StatementSequence "end"
       Matched: MP_BEGIN = begin
 26	StatementSequence 	->	Statement StatementTail
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITELN = Writeln
-      Matched: MP_LPAREN = (
-      Matched: MP_STRING = Enter an integer for A: 
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-31	Statement   	->	ReadStatement
-40	ReadStatement  	->	"read" "(" ReadParameter ReadParameterTail ")"
-      Matched: MP_READ = Read
-      Matched: MP_LPAREN = (
-43	ReadParameter  	->	VariableIdentifier             
-      Matched: MP_IDENTIFIER = A
-42	ReadParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITELN = Writeln
-      Matched: MP_LPAREN = (
-      Matched: MP_STRING = A = 
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = A
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITE = Write
-      Matched: MP_LPAREN = (
-      Matched: MP_STRING = Enter a float for B: 
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-31	Statement   	->	ReadStatement
-40	ReadStatement  	->	"read" "(" ReadParameter ReadParameterTail ")"
-      Matched: MP_READ = Read
-      Matched: MP_LPAREN = (
-43	ReadParameter  	->	VariableIdentifier             
-      Matched: MP_IDENTIFIER = B
-42	ReadParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITELN = Writeln
-      Matched: MP_LPAREN = (
-      Matched: MP_STRING = B = 
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = B
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITE = Write
-      Matched: MP_LPAREN = (
-      Matched: MP_STRING = Enter an integer for C: 
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-31	Statement   	->	ReadStatement
-40	ReadStatement  	->	"read" "(" ReadParameter ReadParameterTail ")"
-      Matched: MP_READ = Read
-      Matched: MP_LPAREN = (
-43	ReadParameter  	->	VariableIdentifier             
-      Matched: MP_IDENTIFIER = C
-42	ReadParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITELN = Writeln
-      Matched: MP_LPAREN = (
-      Matched: MP_STRING = C = 
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = C
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
 33	Statement   	->	AssignmentStatement
 48	AssignmentStatement	->	VariableIdentifier ":=" Expression
 98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = A
-      Matched: MP_ASSIGN = :=
-67	Expression          	->	SimpleExpression OptionalRelationalPart
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
-85	Term                   	->	Factor FactorTail             
-95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 3
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-88	MultiplyingOperator  	->	"*"
-      Matched: MP_TIMES = *
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = A
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-88	MultiplyingOperator  	->	"*"
-      Matched: MP_TIMES = *
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = A
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-88	MultiplyingOperator  	->	"*"
-      Matched: MP_TIMES = *
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = A
-87	FactorTail          	->	e             
-77	TermTail            	->	AddingOperator Term TermTail
-82	AddingOperator        	->	"+"
-      Matched: MP_PLUS = +
-85	Term                   	->	Factor FactorTail             
-95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 5
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-88	MultiplyingOperator  	->	"*"
-      Matched: MP_TIMES = *
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = B
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-88	MultiplyingOperator  	->	"*"
-      Matched: MP_TIMES = *
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = B
-87	FactorTail          	->	e             
-77	TermTail            	->	AddingOperator Term TermTail
-83	AddingOperator        	->	"-"
-      Matched: MP_MINUS = -
-85	Term                   	->	Factor FactorTail             
-96	Factor               	->	FunctionIdentifier OptionalActualParameterList
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = C
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITELN = Writeln
-      Matched: MP_LPAREN = (
-      Matched: MP_STRING = A = 
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = A
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-      Matched: MP_STRING = , B = 
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = B
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-      Matched: MP_STRING = , and C = 
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = C
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
-98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = boo
+      Matched: MP_IDENTIFIER = test
       Matched: MP_ASSIGN = :=
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
@@ -246,16 +50,45 @@ Opening file: Programs/lab10_program3.mp
 69	OptionalRelationalPart	->	e
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITELN = writeln
-      Matched: MP_LPAREN = (
-      Matched: MP_STRING =  boo = 
-45	WriteParameterTail 	->	"," WriteParameter WriteParameterTail
-      Matched: MP_COMMA = ,
-      Matched: MP_IDENTIFIER = boo
-46	WriteParameterTail 	->	e
-      Matched: MP_RPAREN = )
+35	Statement   	->	WhileStatement
+54	WhileStatement	->	"while" BooleanExpression "do" Statement
+      Matched: MP_WHILE = while
+101	BooleanExpression   	->	Expression
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = test2
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+      Matched: MP_DO = do
+30	Statement   	->	CompoundStatement
+25	CompoundStatement 	->	"begin" StatementSequence "end"
+      Matched: MP_BEGIN = begin
+26	StatementSequence 	->	Statement StatementTail
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = test
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+116	Factor	->	"False"
+      Matched: MP_FALSE = false
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+29	Statement   	->	EmptyStatement
+38	Statement   	->	ProcedureStatement 
+28	StatementTail  	->	e
+      Matched: MP_END = end
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
 29	Statement   	->	EmptyStatement

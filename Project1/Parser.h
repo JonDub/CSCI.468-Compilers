@@ -62,7 +62,7 @@ private:
 	void ProcedureHeading();
 	void OptionalFormalParameterList();
 	void OptionalActualParameterList();
-	void OptionalRelationalPart(SemanticRecord* &);
+	void OptionalRelationalPart(SemanticRecord*);
 	void RelationalOperator();
 	void FormalParameterSectionTail();
 	void FormalParameterSection();
@@ -73,7 +73,7 @@ private:
 	void StatementPart();
 	void ControlVariable();
 	Token StepValue();
-	void FinalValue(SemanticRecord* &);
+	void FinalValue(SemanticRecord*);
 	void CompoundStatement();
 	void StatementSequence();
 	void StatementTail();
@@ -82,26 +82,26 @@ private:
 	void IdentifierList();	
 	void IdentifierTail();
 	void ReadStatement();
-	void WriteStatement(SemanticRecord* &);
-	void WriteParameter(SemanticRecord* &);
-	void WriteParameterTail(SemanticRecord* &);
+	void WriteStatement(SemanticRecord*);
+	void WriteParameter(SemanticRecord*);
+	void WriteParameterTail(SemanticRecord*);
 	void BooleanExpression();
 	void OptionalElsePart();
-	void AssignmentStatement(SemanticRecord* &);
-	void IfStatement(SemanticRecord* &);
+	void AssignmentStatement(SemanticRecord*);
+	void IfStatement(SemanticRecord*);
 	void WhileStatement();
 	void RepeatStatement();
-	void ForStatement(SemanticRecord* &);
+	void ForStatement(SemanticRecord*);
 	void ProcedureStatement();
-	void InitialValue(SemanticRecord* &);
-	void OrdinalExpression(SemanticRecord* &);
-	void Expression(SemanticRecord* &);
-	void SimpleExpression(SemanticRecord* &);
-	void Term(SemanticRecord* &);
-	void Factor(SemanticRecord* &);
-	void FactorTail(SemanticRecord* &);
+	void InitialValue(SemanticRecord*);
+	void OrdinalExpression(SemanticRecord*);
+	void Expression(SemanticRecord*);
+	void SimpleExpression(SemanticRecord*);
+	void Term(SemanticRecord*);
+	void Factor(SemanticRecord*);
+	void FactorTail(SemanticRecord*);
 	void MultiplyingOperator();
-	void TermTail(SemanticRecord* &);
+	void TermTail(SemanticRecord*);
 	void OptionalSign();
 	void AddingOperator();
 	void VariableIdentifier();
@@ -110,6 +110,6 @@ private:
 	
 	void Match(Token);
 	void Syntax_Error(Token = MP_NULL);
-	void Gen_Assembly(string s);
+	void Gen_Assembly(string);
 };
 

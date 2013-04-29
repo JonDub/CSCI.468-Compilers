@@ -739,7 +739,7 @@ void Parser::ReadParameter()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::WriteStatement(SemanticRecord* &expressionRec)
+void Parser::WriteStatement(SemanticRecord* expressionRec)
 {
 	string v = scanner->getLexeme();
 
@@ -771,7 +771,7 @@ void Parser::WriteStatement(SemanticRecord* &expressionRec)
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::WriteParameterTail(SemanticRecord* &expressionRec)
+void Parser::WriteParameterTail(SemanticRecord* expressionRec)
 {
 	switch(lookahead)
 	{
@@ -797,7 +797,7 @@ void Parser::WriteParameterTail(SemanticRecord* &expressionRec)
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::WriteParameter(SemanticRecord* &expressionRec)
+void Parser::WriteParameter(SemanticRecord* expressionRec)
 {
 	string v = scanner->getLexeme();
 
@@ -818,7 +818,7 @@ void Parser::WriteParameter(SemanticRecord* &expressionRec)
 		break;
 	case MP_TRUE:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "true"))
 	case MP_FALSE:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "false"))
-	case MP_IDENTIFIER:{			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> VariableIdentifier | FunctionIdentifier))
+	case MP_IDENTIFIER:{		// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> VariableIdentifier | FunctionIdentifier))
 		// lookup identifier from the symbol table and make assembly for it	
 		SymbolTable::Record* r = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE);		
 		Gen_Assembly("WRT " + to_string(r->offset) + "(D0)");
@@ -835,7 +835,7 @@ void Parser::WriteParameter(SemanticRecord* &expressionRec)
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::AssignmentStatement(SemanticRecord* &expressionRec)
+void Parser::AssignmentStatement(SemanticRecord* expressionRec)
 {
 	SymbolTable::Record* assignmentRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 
@@ -858,17 +858,17 @@ void Parser::AssignmentStatement(SemanticRecord* &expressionRec)
 		{
 			if (assignmentRecord->token==MP_FLOAT_LIT)
 			{
-				Gen_Assembly("CASTF		; result does not match assignemnt variable type cast to float");
+				Gen_Assembly("CASTF			; result does not match assignemnt variable type cast to float");
 				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
 			}
 			else if (assignmentRecord->token==MP_INTEGER_LIT)
 			{
-				Gen_Assembly("CASTI		; result does not match assignemnt variable type cast to integer");
+				Gen_Assembly("CASTI			; result does not match assignemnt variable type cast to integer");
 				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
 			}
 			else if (assignmentRecord->token == MP_BOOLEAN)
 			{
-				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)		; boolean assign");
+				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)			; boolean assign");
 			}
 		}
 		break;
@@ -881,7 +881,7 @@ void Parser::AssignmentStatement(SemanticRecord* &expressionRec)
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::IfStatement(SemanticRecord* &expressionRec)
+void Parser::IfStatement(SemanticRecord* expressionRec)
 {
 	string ifFalseLabel;
 
@@ -893,13 +893,13 @@ void Parser::IfStatement(SemanticRecord* &expressionRec)
 
 		caller->setKind(SemanticRecord::SIMPLE_PARAMETER);
 		Match(MP_IF);
-		ifFalseLabel=LabelMaker();
+		ifFalseLabel = LabelMaker();
 		BooleanExpression();
 		// The Result of booleanExpression should be the top of the stack
-		Gen_Assembly("BRFS "+ifFalseLabel);
+		Gen_Assembly("BRFS "+ ifFalseLabel);
 		Match(MP_THEN);
 		Statement();
-		Gen_Assembly(ifFalseLabel);
+		Gen_Assembly(ifFalseLabel + "		; if false");	// drop if false label
 		OptionalElsePart();
 
 		break;
@@ -942,12 +942,12 @@ void Parser::RepeatStatement()
 			string repeatStartLabel;
 
 			Match(MP_REPEAT);
-			repeatStartLabel=LabelMaker();
-			Gen_Assembly(repeatStartLabel);
+			repeatStartLabel  = LabelMaker();
+			Gen_Assembly(repeatStartLabel + ":			; repeat start");	// drop label to start loop
 			StatementSequence();
 			Match(MP_UNTIL);
 			BooleanExpression();
-			Gen_Assembly("BRTS "+ repeatStartLabel); //If the repeat test is false we just fall through no need for another label
+			Gen_Assembly("BRTS "+ repeatStartLabel + "		; repeat test fail"); //If the repeat test is false we just fall through no need for another label
 			break;
 		}
 	default:
@@ -968,17 +968,17 @@ void Parser::WhileStatement()
 			string whileTestLabel;
 			string whileFalseLabel;
 			Match(MP_WHILE);
-			whileTestLabel=LabelMaker();
-			whileFalseLabel=LabelMaker();
-			Gen_Assembly(whileTestLabel);
+			whileTestLabel = LabelMaker();
+			whileFalseLabel = LabelMaker();
+			
+			Gen_Assembly(whileTestLabel + ":");	// drop while test lable
 			BooleanExpression();
 			// The result of BooleanExpression is on the top of the stack
-
 			Match(MP_DO);
 
-			Gen_Assembly("BRFS "+ whileFalseLabel);
+			Gen_Assembly("BRFS "+ whileFalseLabel + "		; while false");
 			Statement();
-			Gen_Assembly("BR "+ whileTestLabel);
+			Gen_Assembly("BR "+ whileTestLabel + "		; while true");
 			Gen_Assembly(whileFalseLabel);
 			break;
 		}
@@ -990,7 +990,7 @@ void Parser::WhileStatement()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::ForStatement(SemanticRecord* &expressionRec)
+void Parser::ForStatement(SemanticRecord* expressionRec)
 {
 
 	switch(lookahead)
@@ -1029,18 +1029,23 @@ void Parser::ForStatement(SemanticRecord* &expressionRec)
 			}*/
 			stepType=StepValue();
 			FinalValue(expressionRec);
-
-
+			
 			Match(MP_DO);
-			forTestLabel=LabelMaker();
-			forFalseLabel=LabelMaker();
-			Gen_Assembly(forTestLabel);
+			forTestLabel = LabelMaker();
+			forFalseLabel = LabelMaker();
+
+			Gen_Assembly("");
+			Gen_Assembly(forTestLabel + ":");	// drop test label
 
 			//Test for condition
-			if (stepType==MP_TO)
-			{Gen_Assembly("BGT -2(SP) -1(SP) "+ forFalseLabel);}
+			if (stepType == MP_TO)
+			{
+				Gen_Assembly("BGT -2(SP) -1(SP) "+ forFalseLabel + "	; test condition");
+			}
 			else 
-			{Gen_Assembly("BLT -2(SP) -1(SP) "+ forFalseLabel);}
+			{
+				Gen_Assembly("BLT -2(SP) -1(SP) "+ forFalseLabel + "	; test condition");
+			}
 
 
 			Statement();
@@ -1048,30 +1053,29 @@ void Parser::ForStatement(SemanticRecord* &expressionRec)
 			if (stepType==MP_TO)
 			{
 				//increment the control variable
-				Gen_Assembly("PUSH #1");
+				Gen_Assembly("PUSH #1			; increment control variable");
 				Gen_Assembly("PUSH -2(SP)");
 				Gen_Assembly("ADDS");
-				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("POP -2(SP)		; increment done");
 
 			}
 			else 
 			{
 				//decrement the control variable
-				Gen_Assembly("PUSH #1");
+				Gen_Assembly("PUSH #1			; decrement control variable");
 				Gen_Assembly("NEGS");
 				Gen_Assembly("PUSH -2(SP)");
 				Gen_Assembly("ADDS");
-				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("POP -2(SP)		; decrement done");
 
 			}
 			// return to start of for loop
-			Gen_Assembly("BR "+ forTestLabel);
+			Gen_Assembly("BR "+ forTestLabel + "		; branch to loop start");
 			// Place loop exit label
 			Gen_Assembly(forFalseLabel);
 			break;
 		}
 	default:
-
 		Syntax_Error();
 		break;
 	}
@@ -1095,7 +1099,7 @@ void Parser::ControlVariable()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::InitialValue(SemanticRecord* &expressionRec)
+void Parser::InitialValue(SemanticRecord* expressionRec)
 {
 	switch(lookahead)
 	{	
@@ -1146,7 +1150,7 @@ Token Parser::StepValue()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::FinalValue(SemanticRecord* &expressionRec)
+void Parser::FinalValue(SemanticRecord* expressionRec)
 {
 	switch(lookahead)
 	{
@@ -1261,7 +1265,7 @@ void Parser::ActualParameter()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Expression(SemanticRecord* &expressionRec)
+void Parser::Expression(SemanticRecord* expressionRec)
 {
 	switch(lookahead)
 	{
@@ -1289,7 +1293,7 @@ void Parser::Expression(SemanticRecord* &expressionRec)
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::OptionalRelationalPart(SemanticRecord* &expressionRec)
+void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 {
 	SemanticRecord* rightExpressionRec = new SemanticRecord();
 	switch(lookahead)
@@ -1298,91 +1302,129 @@ void Parser::OptionalRelationalPart(SemanticRecord* &expressionRec)
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
+		
 		if (expressionRec->getType()==MP_INTEGER_LIT )
+		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+			{
 				Gen_Assembly("CMPEQS");  
+			}
 			else
 			{
-				Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
 				Gen_Assembly("CMPEQS");
 			}
+		}
 		else
+		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+			{
 				Gen_Assembly("CMPEQSF");  
+			}
 			else
 			{
-				Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
 				Gen_Assembly("CMPEQSF");
 			}
-			break;
+		}
+		break;
 	case MP_LTHAN:
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
+		
 		if (expressionRec->getType()==MP_INTEGER_LIT )
+		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+			{
 				Gen_Assembly("CMPLTS");  
+			}
 			else
 			{
-				Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
 				Gen_Assembly("CMPLTS");
 			}
+		}
 		else
+		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+			{
 				Gen_Assembly("CMPLTSF");  
+			}
 			else
 			{
-				Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
 				Gen_Assembly("CMPLTSF");
 			}
-			break;
+		}
+		break;
 	case MP_GTHAN:
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
+		
 		if (expressionRec->getType()==MP_INTEGER_LIT )
+		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+			{
 				Gen_Assembly("CMPGTS");  
+			}
 			else
 			{
-				Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
 				Gen_Assembly("CMPGTS");
 			}
+		}
 		else
+		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+			{
 				Gen_Assembly("CMPGTSF");  
+			}
 			else
 			{
-				Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
 				Gen_Assembly("CMPGTSF");
 			}
-			break;
+		}
+		break;
 	case MP_LEQUAL:
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
+		
 		if (expressionRec->getType()==MP_INTEGER_LIT )
+		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+			{
 				Gen_Assembly("CMPLES");  
+			}
 			else
 			{
-				Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
 				Gen_Assembly("CMPLES");
 			}
+		}
 		else
+		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+			{
 				Gen_Assembly("CMPLESF");  
+			}
 			else
 			{
-				Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
 				Gen_Assembly("CMPLESF");
 			}
-			break;
+		}
+		break;
 	case MP_GEQUAL:
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
+		
 		if (expressionRec->getType()==MP_INTEGER_LIT )
+		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
 				Gen_Assembly("CMPGES");  
 			else
@@ -1390,7 +1432,9 @@ void Parser::OptionalRelationalPart(SemanticRecord* &expressionRec)
 				Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
 				Gen_Assembly("CMPGES");
 			}
+		}
 		else
+		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
 				Gen_Assembly("CMPGESF");  
 			else
@@ -1398,26 +1442,37 @@ void Parser::OptionalRelationalPart(SemanticRecord* &expressionRec)
 				Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
 				Gen_Assembly("CMPGESF");
 			}
+		}
+		break; // needed or not? stuart
 	case MP_NEQUAL: // OptionalRelationalPart -> RelationalOperator SimpleExpression	Rule #68
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
+
 		if (expressionRec->getType()==MP_INTEGER_LIT )
+		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+			{
 				Gen_Assembly("CMPNES");  
+			}
 			else
 			{
 				Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
 				Gen_Assembly("CMPNES");
 			}
+		}
 		else
+		{
 			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+			{
 				Gen_Assembly("CMPNESF");  
+			}
 			else
 			{
 				Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
 				Gen_Assembly("CMPNESF");
 			}
+		}
 			break;
 	case MP_SCOLON:
 	case MP_END:
@@ -1474,7 +1529,7 @@ void Parser::RelationalOperator()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::SimpleExpression(SemanticRecord* &expressionRec)
+void Parser::SimpleExpression(SemanticRecord* expressionRec)
 {
 	string v = scanner->getLexeme();
 	SemanticRecord* termRec = new SemanticRecord();
@@ -1513,7 +1568,7 @@ void Parser::SimpleExpression(SemanticRecord* &expressionRec)
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::TermTail(SemanticRecord* &termTailRec)
+void Parser::TermTail(SemanticRecord* termTailRec)
 {
 	SemanticRecord* termRec = new SemanticRecord();
 	SemanticRecord* resultRec = new SemanticRecord();
@@ -1703,7 +1758,7 @@ void Parser::AddingOperator()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Term(SemanticRecord* &termRec)
+void Parser::Term(SemanticRecord* termRec)
 {
 	//SemanticRecord* termRec = new SemanticRecord();
 
@@ -1732,7 +1787,7 @@ void Parser::Term(SemanticRecord* &termRec)
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::FactorTail(SemanticRecord* &termTailRec)
+void Parser::FactorTail(SemanticRecord* termTailRec)
 {
 	SemanticRecord* termRec = new SemanticRecord();
 
@@ -2002,7 +2057,7 @@ void Parser::MultiplyingOperator()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::Factor(SemanticRecord* &termTailRec)
+void Parser::Factor(SemanticRecord* termTailRec)
 {
 	switch(lookahead)
 	{
@@ -2212,7 +2267,7 @@ void Parser::BooleanExpression()
 
 // precondition: (lookahead is a valid token)
 // postcondition: (method applies rules correctly)
-void Parser::OrdinalExpression(SemanticRecord* &expressionRec)
+void Parser::OrdinalExpression(SemanticRecord* expressionRec)
 {
 	switch(lookahead)
 	{
@@ -2368,11 +2423,7 @@ string Parser::LabelMaker()
 {
 	string newLabel;
 	labelCount++;
-	char tempBuffer [33];
-	itoa(labelCount-1, tempBuffer,10);
 	newLabel= "L";
-	newLabel.append(tempBuffer) ;
-
+	newLabel.append(to_string(labelCount));
 	return (newLabel);
-
 }

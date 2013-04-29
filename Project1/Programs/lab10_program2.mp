@@ -1,7 +1,7 @@
 program Program2;
 	var Apples : integer;
 		Fred : integer;
-	X : integer;
+		X : integer;
 	begin
 		Apples := 0;
 		X := 10;

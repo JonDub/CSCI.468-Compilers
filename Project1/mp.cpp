@@ -17,30 +17,9 @@ int TestParser(string);	// int TestParser(int, char*[]);
 int TestScanner(string);  // int TestScanner(int, char*[]);
 
 bool Debug(int argc, char* argv[])
-{
-	// How to use the symbol table
-	bool in,test;
-	SymbolTable::Record* r;	
-	SymbolTable* t = new SymbolTable();
-	t->createTable();
-
-	in = t->insertRecord("A",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
-	in = t->insertRecord("b",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
-	in = t->insertRecord("Cc",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
-	in = t->insertRecord("boo",SymbolTable::KIND_VARIABLE,Token::MP_INTEGER_LIT);
-	
-	test=t->contains("A", SymbolTable::KIND_VARIABLE);
-
-	SemanticAnalyzer* sa = new SemanticAnalyzer(t);
-	SemanticRecord* sr = new SemanticRecord();
-
-	sr->add("A");
-	sr->add("1");
-
-	//return 0;
-	
+{	
 	// test parser
-	string file = "Programs/lab10_program3.mp";
+	string file = "C:\\Users\\dub\\Dropbox\\CSCI 468 Test Programs\\group 7\\b\\booleanExp.up";
 	Parser * p = new Parser(file);
 
 	//TestScanner(file);
