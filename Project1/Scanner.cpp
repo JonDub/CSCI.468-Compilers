@@ -45,6 +45,8 @@ Scanner::Scanner()
 	tokens["while"]		= MP_WHILE;
 	tokens["write"]		= MP_WRITE;
 	tokens["writeln"]	= MP_WRITELN;
+	tokens["true"]		= MP_TRUE;
+	tokens["false"]		= MP_FALSE;
 }
 
 Scanner::~Scanner(void)

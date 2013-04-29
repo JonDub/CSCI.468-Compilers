@@ -550,7 +550,7 @@ void Parser::StatementTail()
 		StatementTail();
 		break;
 	case MP_END://StatementTail -> e , rule #28
-	//case MP_UNTIL:   // This may not be correct repeat until statements may should be bracketed in begin end?
+	case MP_UNTIL:   // This is correct do not comment again
 		parseTree->LogExpansion(28);
 		break;
 	//case MP_RETURN:
@@ -851,13 +851,13 @@ void Parser::AssignmentStatement(SemanticRecord* &expressionRec)
 		else
 			if (assignmentRecord->token==MP_FLOAT_LIT)
 			{
-				Gen_Assembly("CASTF ; expression result does not match assignemnt variable type cast to float");
+				Gen_Assembly("CASTF ;result does not match assignemnt variable type cast to float");
 				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
 			}
 		else
 			if (assignmentRecord->token==MP_INTEGER_LIT)
 			{
-				Gen_Assembly("CASTI ; expression result does not match assignemnt variable type cast to integer");
+				Gen_Assembly("CASTI ; result does not match assignemnt variable type cast to integer");
 				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
 			}
 
@@ -927,12 +927,19 @@ void Parser::RepeatStatement()
 	switch(lookahead)
 	{
 	case MP_REPEAT: // RepeatStatement -> "repeat" StatementSequence "until" BooleanExpression		Rule# 53
+		{
 		parseTree->LogExpansion(53);
+		string repeatStartLabel;
+		
 		Match(MP_REPEAT);
+		repeatStartLabel=LabelMaker();
+		Gen_Assembly(repeatStartLabel);
 		StatementSequence();
 		Match(MP_UNTIL);
 		BooleanExpression();
+		Gen_Assembly("BRTS "+ repeatStartLabel); //If the repeat test is false we just fall through no need for another label
 		break;
+		}
 	default:
 		Syntax_Error();
 		break;
@@ -946,12 +953,25 @@ void Parser::WhileStatement()
 	switch(lookahead)
 	{
 	case MP_WHILE: // WhileStatement -> "while" BooleanExpression "do" Statement		Rule# 54
+		{
 		parseTree->LogExpansion(54);
+		string whileTestLabel;
+		string whileFalseLabel;
 		Match(MP_WHILE);
+		whileTestLabel=LabelMaker();
+		whileFalseLabel=LabelMaker();
+		Gen_Assembly(whileTestLabel);
 		BooleanExpression();
+		// The result of BooleanExpression is on the top of the stack
+		
 		Match(MP_DO);
+		
+		Gen_Assembly("BRFS "+ whileFalseLabel);
 		Statement();
+		Gen_Assembly("BR "+ whileTestLabel);
+		Gen_Assembly(whileFalseLabel);
 		break;
+		}
 	default:
 		Syntax_Error();
 		break;
@@ -979,7 +999,7 @@ void Parser::ForStatement(SemanticRecord* &expressionRec)
 		
 		Match(MP_ASSIGN);
 		InitialValue(expressionRec);
-			// pop top value back into variable, these are included since as far as I can tell there is no explixit requirement that the controls be int's
+			
 	/*	if (expressionRec->getType()==assignmentRecord->token)
 		{
 			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
@@ -991,6 +1011,7 @@ void Parser::ForStatement(SemanticRecord* &expressionRec)
 				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
 			}
 		else
+
 			if (assignmentRecord->token==MP_INTEGER_LIT)
 			{
 				Gen_Assembly("CASTI ; expression result does not match assignemnt variable type cast to integer");
@@ -1260,52 +1281,142 @@ void Parser::Expression(SemanticRecord* &expressionRec)
 // postcondition: (method applies rules correctly)
 void Parser::OptionalRelationalPart(SemanticRecord* &expressionRec)
 {
+	SemanticRecord* rightExpressionRec = new SemanticRecord();
 	switch(lookahead)
 	{
 	case MP_EQUAL:
 		parseTree->LogExpansion(68);
 		RelationalOperator();
-		SimpleExpression(expressionRec);
-		Gen_Assembly("CMPEQS");  // This is only the int part
+		SimpleExpression(rightExpressionRec);
+		if (expressionRec->getType()==MP_INTEGER_LIT )
+			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+				Gen_Assembly("CMPEQS");  
+			else
+				{
+					Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+					Gen_Assembly("CMPEQS");
+			}
+		else
+			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+				Gen_Assembly("CMPEQSF");  
+			else
+				{
+					Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+					Gen_Assembly("CMPEQSF");
+			}
 		break;
 	case MP_LTHAN:
 		parseTree->LogExpansion(68);
 		RelationalOperator();
-		SimpleExpression(expressionRec);
-		Gen_Assembly("CMPLTS");  // This is only the int part
+		SimpleExpression(rightExpressionRec);
+		if (expressionRec->getType()==MP_INTEGER_LIT )
+			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+				Gen_Assembly("CMPLTS");  
+			else
+				{
+					Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+					Gen_Assembly("CMPLTS");
+			}
+		else
+			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+				Gen_Assembly("CMPLTSF");  
+			else
+				{
+					Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+					Gen_Assembly("CMPLTSF");
+			}
 		break;
 	case MP_GTHAN:
 		parseTree->LogExpansion(68);
 		RelationalOperator();
-		SimpleExpression(expressionRec);
-		Gen_Assembly("CMPGTS");  // This is only the int part
+		SimpleExpression(rightExpressionRec);
+		if (expressionRec->getType()==MP_INTEGER_LIT )
+			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+				Gen_Assembly("CMPGTS");  
+			else
+				{
+					Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+					Gen_Assembly("CMPGTS");
+			}
+		else
+			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+				Gen_Assembly("CMPGTSF");  
+			else
+				{
+					Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+					Gen_Assembly("CMPGTSF");
+			}
 		break;
 	case MP_LEQUAL:
 		parseTree->LogExpansion(68);
 		RelationalOperator();
-		SimpleExpression(expressionRec);
-		Gen_Assembly("CMPLES");  // This is only the int part
+		SimpleExpression(rightExpressionRec);
+		if (expressionRec->getType()==MP_INTEGER_LIT )
+			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+				Gen_Assembly("CMPLES");  
+			else
+				{
+					Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+					Gen_Assembly("CMPLES");
+			}
+		else
+			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+				Gen_Assembly("CMPLESF");  
+			else
+				{
+					Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+					Gen_Assembly("CMPLESF");
+			}
 		break;
 	case MP_GEQUAL:
 		parseTree->LogExpansion(68);
 		RelationalOperator();
-		SimpleExpression(expressionRec);
-		Gen_Assembly("CMPGES");  // This is only the int part
-		break;
+		SimpleExpression(rightExpressionRec);
+		if (expressionRec->getType()==MP_INTEGER_LIT )
+			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+				Gen_Assembly("CMPGES");  
+			else
+				{
+					Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+					Gen_Assembly("CMPGES");
+			}
+		else
+			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+				Gen_Assembly("CMPGESF");  
+			else
+				{
+					Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+					Gen_Assembly("CMPGESF");
+			}
 	case MP_NEQUAL: // OptionalRelationalPart -> RelationalOperator SimpleExpression	Rule #68
 		parseTree->LogExpansion(68);
 		RelationalOperator();
-		SimpleExpression(expressionRec);
-		Gen_Assembly("CMPNES");  // This is only the int part
+		SimpleExpression(rightExpressionRec);
+		if (expressionRec->getType()==MP_INTEGER_LIT )
+			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
+				Gen_Assembly("CMPNES");  
+			else
+				{
+					Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+					Gen_Assembly("CMPNES");
+			}
+		else
+			if (rightExpressionRec->getType()==MP_FLOAT_LIT || rightExpressionRec->getType()==MP_FIXED_LIT)
+				Gen_Assembly("CMPNESF");  
+			else
+				{
+					Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+					Gen_Assembly("CMPNESF");
+			}
 		break;
 	case MP_SCOLON:
 	case MP_END:
-	//case MP_THEN:
-	//case MP_ELSE:
+	case MP_THEN:
+	case MP_ELSE:
 	case MP_RPAREN:
-	//case MP_TO:
-	//case MP_DOWNTO:
-	//case MP_DO: // OptionalRelationalPart -> e		Rule #69
+	case MP_TO:
+	case MP_DOWNTO:
+	case MP_DO: // OptionalRelationalPart -> e		Rule #69
 	//case MP_COMMA: //added
 		parseTree->LogExpansion(69);
 		break;
@@ -1505,12 +1616,13 @@ void Parser::TermTail(SemanticRecord* &termTailRec)
 	case MP_GTHAN:
 	case MP_GEQUAL:
 	case MP_LEQUAL:
-	//case MP_DO:
-	//case MP_THEN:
+	case MP_DO:
+	case MP_THEN:
 	//case MP_LPAREN:
-	//case MP_TO:
-	//case MP_DOWNTO:
-	//case MP_ELSE:
+	case MP_TO:  //Do not comment required for for loops
+	case MP_DOWNTO:
+	case MP_ELSE:
+	case MP_MOD:
 	//case MP_COMMA: //added
 		parseTree->LogExpansion(78);
 		break;
@@ -1616,7 +1728,41 @@ void Parser::FactorTail(SemanticRecord* &termTailRec)
 
 	switch(lookahead)
 	{
-	// ADD CASE MP_DIVF
+	case MP_DIVF:
+		parseTree->LogExpansion(86);
+		MultiplyingOperator();
+		Factor(termRec);
+		if (termTailRec->getType() == MP_INTEGER_LIT)
+		{
+			if (termRec->getType() == MP_FLOAT_LIT || termRec->getType() == MP_FIXED_LIT)
+				{
+					// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
+					Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
+					Gen_Assembly("CASTSF");
+					Gen_Assembly("POP -2(SP)");
+					Gen_Assembly("DIVSF");
+					termTailRec->setType(MP_FLOAT_LIT);
+				}
+		}
+		else if (termTailRec->getType() == MP_FLOAT_LIT || termTailRec->getType() == MP_FIXED_LIT)
+		{
+			if (termRec->getType() == MP_FLOAT_LIT || termRec->getType() == MP_FIXED_LIT)
+			{
+				Gen_Assembly("DIVSF");
+				termTailRec->setType(MP_FLOAT_LIT);
+			}
+			else if (termRec->getType() == MP_INTEGER_LIT)
+			{
+				// now we have to push -2(D0) and cast, then move back to -2(SP)
+				Gen_Assembly("PUSH -1(SP)	;Float divison  Casting from int to float");
+				Gen_Assembly("CASTSF");
+				Gen_Assembly("POP -1(SP)");
+				Gen_Assembly("DIVSF");
+				termTailRec->setType(MP_FLOAT_LIT);
+			}
+		} 
+		FactorTail(termRec);
+		break;
 	case MP_DIV:
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
@@ -1624,35 +1770,44 @@ void Parser::FactorTail(SemanticRecord* &termTailRec)
 		
 		// check previous and check next to see if we need to cast
 		// rec is previous record, r, is the current record
-		if (termTailRec->getType() == MP_INTEGER_LIT)
+		if (termTailRec->getType() == MP_INTEGER_LIT) //Need an error here if trying to use a float
 		{
 			if (termRec->getType() == MP_INTEGER_LIT)
 			{
 				Gen_Assembly("DIVS");
+				termTailRec->setType(MP_INTEGER_LIT);
 			}
 			else if (termRec->getType() == MP_FLOAT_LIT || termRec->getType() == MP_FIXED_LIT)
-			{
-				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
-				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
-				Gen_Assembly("CASTSF");
-				Gen_Assembly("POP -2(SP)");
-				Gen_Assembly("DIVSF");
-			}
+				{
+					// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
+					Gen_Assembly("PUSH -1(SP)	; DIV cast float to int");
+					Gen_Assembly("CASTSI");
+					Gen_Assembly("POP -1(SP)");
+					Gen_Assembly("DIVS");
+					termTailRec->setType(MP_INTEGER_LIT);
+				}
 				
 		}
 		else if (termTailRec->getType() == MP_FLOAT_LIT || termTailRec->getType() == MP_FIXED_LIT)
 		{
 			if (termRec->getType() == MP_FLOAT_LIT || termRec->getType() == MP_FIXED_LIT)
 			{
-				Gen_Assembly("DIVSF");
-			}
-			else if (termRec->getType() == MP_INTEGER_LIT)
-			{
-				// now we have to push -2(D0) and cast, then move back to -2(SP)
-				Gen_Assembly("PUSH -2(SP)	; Casting from float to int");
+				Gen_Assembly("PUSH -1(SP)	; DIV cast float to int");
+				Gen_Assembly("CASTSI");
+				Gen_Assembly("POP -1(SP)");
+				Gen_Assembly("PUSH -2(SP)	; DIV cast float to int");
 				Gen_Assembly("CASTSI");
 				Gen_Assembly("POP -2(SP)");
 				Gen_Assembly("DIVS");
+				termTailRec->setType(MP_INTEGER_LIT);
+			}
+			else 
+			{
+				Gen_Assembly("PUSH -2(SP)	; DIV cast float to int");
+				Gen_Assembly("CASTSI");
+				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("DIVS");
+				termTailRec->setType(MP_INTEGER_LIT);
 			}
 		} 
 		
@@ -1679,6 +1834,7 @@ void Parser::FactorTail(SemanticRecord* &termTailRec)
 				Gen_Assembly("CASTSF");
 				Gen_Assembly("POP -2(SP)");
 				Gen_Assembly("MULSF");
+				termTailRec->setType(MP_FLOAT_LIT);
 			}
 				
 		}
@@ -1695,6 +1851,7 @@ void Parser::FactorTail(SemanticRecord* &termTailRec)
 				Gen_Assembly("CASTSI");
 				Gen_Assembly("POP -2(SP)");
 				Gen_Assembly("MULS");
+				termTailRec->setType(MP_INTEGER_LIT);
 			}
 		} 
 
@@ -1712,22 +1869,44 @@ void Parser::FactorTail(SemanticRecord* &termTailRec)
 			if (termRec->getType() == MP_INTEGER_LIT)
 			{
 				Gen_Assembly("MODS");
+				termTailRec->setType(MP_INTEGER_LIT);
 			}
-			else if (termRec->getType() == MP_FLOAT_LIT || termRec->getType() == MP_FIXED_LIT)
+			else if (termRec->getType() == MP_FLOAT_LIT || termRec->getType() == MP_FIXED_LIT) //I don't think this should be allowed if I am reading the grammer right
 			{
-				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
-				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
-				Gen_Assembly("CASTSF");
-				Gen_Assembly("POP -2(SP)");
-				Gen_Assembly("MULSF");
+				
+				Gen_Assembly("PUSH -1(SP)	; MOD only on ints float to int");
+				Gen_Assembly("CASTSI");
+				Gen_Assembly("POP -1(SP)");
+				Gen_Assembly("MODS");
+				termTailRec->setType(MP_INTEGER_LIT);
 			}
 				
 		}
+
 		else if (termTailRec->getType() == MP_FLOAT_LIT || termTailRec->getType() == MP_FIXED_LIT)
 		{
-			// cannot mod floats/fixed
-			Syntax_Error();
-		} 
+			if (termRec->getType() == MP_INTEGER_LIT|| termTailRec->getType() == MP_FIXED_LIT)
+			{
+				Gen_Assembly("PUSH -1(SP)	; MOD only on ints float to int");
+				Gen_Assembly("CASTSI");
+				Gen_Assembly("POP -1(SP)");
+				Gen_Assembly("PUSH -2(SP)	; MOD only on ints float to int");
+				Gen_Assembly("CASTSI");
+				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("MODS");
+				termTailRec->setType(MP_INTEGER_LIT);
+			}
+			else  
+			{
+				Gen_Assembly("PUSH -2(SP)	; MOD only on ints float to int");
+				Gen_Assembly("CASTSI");
+				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("MODS");
+				termTailRec->setType(MP_INTEGER_LIT);
+			} 
+		
+			
+		}
 				
 		FactorTail(termRec);
 		break;
@@ -1759,14 +1938,14 @@ void Parser::FactorTail(SemanticRecord* &termTailRec)
 	case MP_GTHAN:
 	case MP_LTHAN:
 	case MP_RPAREN:
-	//case MP_LPAREN:
+	case MP_LPAREN:
 	case MP_SCOLON:
 	case MP_END:
-	//case MP_DO:
-	//case MP_THEN:
-	//case MP_ELSE:
-	//case MP_TO:
-	//case MP_DOWNTO:
+	case MP_DO:
+	case MP_THEN:
+	case MP_ELSE:
+	case MP_TO:  // Must include here do not comment
+	case MP_DOWNTO:
 	case MP_NEQUAL: // FactorTail -> {e}	Rule# 87
 	//case MP_STRING: //added
 	//case MP_COMMA: //added

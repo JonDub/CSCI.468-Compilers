@@ -46,6 +46,15 @@ Opening file: C:\Temp\Test.txt
 108	Type	->	"Float" 
       Matched: MP_FLOAT_LIT = float
       Matched: MP_SCOLON = ;
+6	VariableDeclarationTail 	->	VariableDeclaration ";"
+8	VariableDeclaration 	->	Identifierlist ":" Type
+103	IdentifierList      	->	identifier IdentifierTail
+      Matched: MP_IDENTIFIER = l
+105	IdentifierTail      	->	e       
+      Matched: MP_COLON = :
+110	Type	->	"Boolean"
+      Matched: MP_BOOLEAN = boolean
+      Matched: MP_SCOLON = ;
 7	VariableDeclarationTail 	->	e
 11	ProcedureAndFunctionDeclarationPart	->	e 
 24	StatementPart  	->	CompoundStatement   
@@ -62,15 +71,67 @@ Opening file: C:\Temp\Test.txt
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 10
-86	FactorTail          	->	MultiplyingOperator Factor FactorTail
-89	MultiplyingOperator  	->	"div"
-      Matched: MP_DIV = DIV
+      Matched: MP_INTEGER_LIT = 9
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = f
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 0
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+36	Statement   	->	RepeatStatement
+53	RepeatStatement  	->	"repeat" StatementSequence "until" BooleanExpression             
+      Matched: MP_REPEAT = repeat
+26	StatementSequence 	->	Statement StatementTail
+30	Statement   	->	CompoundStatement
+25	CompoundStatement 	->	"begin" StatementSequence "end"
+      Matched: MP_BEGIN = begin
+26	StatementSequence 	->	Statement StatementTail
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = b
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = b
+87	FactorTail          	->	e             
+77	TermTail            	->	AddingOperator Term TermTail
+82	AddingOperator        	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 1
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
       Matched: MP_LPAREN = (
 
 File: C:\Temp\Test.txt: 
-Syntax error found on line 8, column 14.
-    Expected MP_NULL but found MP_LPAREN.
-    Next token: MP_INTEGER_LIT
-    Next Lexeme: (
+Syntax error found on line 14, column 11.
+    Expected MP_STRING but found MP_IDENTIFIER.
+    Next token: MP_RPAREN
+    Next Lexeme: b
