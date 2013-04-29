@@ -69,12 +69,12 @@ bool Parser::SystemGoal()
 		parseTree->LogExpansion(1);
 
 		// generate begin assembly
-		Gen_Assembly("MOV SP D0");
+		Gen_Assembly("MOV SP D0\n");
 		Program();
 		Match(MP_EOF);
 
 		// generate end assembly
-		Gen_Assembly("MOV D0 SP");
+		Gen_Assembly("\nMOV D0 SP");
 		Gen_Assembly("HLT");
 		return true;
 	default: //everything else
@@ -896,10 +896,10 @@ void Parser::IfStatement(SemanticRecord* expressionRec)
 		ifFalseLabel = LabelMaker();
 		BooleanExpression();
 		// The Result of booleanExpression should be the top of the stack
-		Gen_Assembly("BRFS "+ ifFalseLabel);
+		Gen_Assembly("BRFS "+ ifFalseLabel + "		; branch if false");
 		Match(MP_THEN);
 		Statement();
-		Gen_Assembly(ifFalseLabel + "		; if false");	// drop if false label
+		Gen_Assembly("\n" + ifFalseLabel + ":		; if false");	// drop if false label
 		OptionalElsePart();
 
 		break;
@@ -943,11 +943,11 @@ void Parser::RepeatStatement()
 
 			Match(MP_REPEAT);
 			repeatStartLabel  = LabelMaker();
-			Gen_Assembly(repeatStartLabel + ":			; repeat start");	// drop label to start loop
+			Gen_Assembly("\n" + repeatStartLabel + ":			; repeat start");	// drop label to start loop
 			StatementSequence();
 			Match(MP_UNTIL);
 			BooleanExpression();
-			Gen_Assembly("BRTS "+ repeatStartLabel + "		; repeat test fail"); //If the repeat test is false we just fall through no need for another label
+			Gen_Assembly("\nBRTS "+ repeatStartLabel + "		; repeat test fail"); //If the repeat test is false we just fall through no need for another label
 			break;
 		}
 	default:
@@ -971,15 +971,15 @@ void Parser::WhileStatement()
 			whileTestLabel = LabelMaker();
 			whileFalseLabel = LabelMaker();
 			
-			Gen_Assembly(whileTestLabel + ":");	// drop while test lable
+			Gen_Assembly("\n" + whileTestLabel + ":");	// drop while test lable
 			BooleanExpression();
 			// The result of BooleanExpression is on the top of the stack
 			Match(MP_DO);
 
-			Gen_Assembly("BRFS "+ whileFalseLabel + "		; while false");
+			Gen_Assembly("\nBRFS "+ whileFalseLabel + "		; while false");
 			Statement();
-			Gen_Assembly("BR "+ whileTestLabel + "		; while true");
-			Gen_Assembly(whileFalseLabel);
+			Gen_Assembly("\nBR "+ whileTestLabel + "		; while true");
+			Gen_Assembly("\n" + whileFalseLabel + ":		; while false");
 			break;
 		}
 	default:
@@ -1034,8 +1034,7 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 			forTestLabel = LabelMaker();
 			forFalseLabel = LabelMaker();
 
-			Gen_Assembly("");
-			Gen_Assembly(forTestLabel + ":");	// drop test label
+			Gen_Assembly("\n" + forTestLabel + ":");	// drop test label
 
 			//Test for condition
 			if (stepType == MP_TO)
@@ -1072,7 +1071,7 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 			// return to start of for loop
 			Gen_Assembly("BR "+ forTestLabel + "		; branch to loop start");
 			// Place loop exit label
-			Gen_Assembly(forFalseLabel);
+			Gen_Assembly("\n" + forFalseLabel + "		; loop exit");
 			break;
 		}
 	default:
@@ -1429,7 +1428,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPGES");  
 			else
 			{
-				Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
 				Gen_Assembly("CMPGES");
 			}
 		}
@@ -1439,7 +1438,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPGESF");  
 			else
 			{
-				Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
 				Gen_Assembly("CMPGESF");
 			}
 		}
@@ -1457,7 +1456,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTI ;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
 				Gen_Assembly("CMPNES");
 			}
 		}
@@ -1469,7 +1468,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTF ;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
 				Gen_Assembly("CMPNESF");
 			}
 		}
@@ -1562,8 +1561,6 @@ void Parser::SimpleExpression(SemanticRecord* expressionRec)
 		Syntax_Error();
 		break;
 	}
-
-
 }
 
 // precondition: (lookahead is a valid token)
@@ -1647,7 +1644,7 @@ void Parser::TermTail(SemanticRecord* termTailRec)
 				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
 				Gen_Assembly("CASTSF");
 				Gen_Assembly("POP -2(SP)	; Cast done");
-				Gen_Assembly("SUBSF			;1593");
+				Gen_Assembly("SUBSF");
 				termTailRec->setType(MP_FLOAT_LIT);
 			}
 		}
@@ -1804,7 +1801,7 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
 				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
 				Gen_Assembly("CASTSF");
-				Gen_Assembly("POP -2(SP)");
+				Gen_Assembly("POP -2(SP)	; casting done");
 				Gen_Assembly("DIVSF");
 				termTailRec->setType(MP_FLOAT_LIT);
 			}
@@ -1819,9 +1816,9 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 			else if (termRec->getType() == MP_INTEGER_LIT)
 			{
 				// now we have to push -2(D0) and cast, then move back to -2(SP)
-				Gen_Assembly("PUSH -1(SP)	;Float divison  Casting from int to float");
+				Gen_Assembly("PUSH -1(SP)	; Float divison  Casting from int to float");
 				Gen_Assembly("CASTSF");
-				Gen_Assembly("POP -1(SP)");
+				Gen_Assembly("POP -1(SP)	; casting done");
 				Gen_Assembly("DIVSF");
 				termTailRec->setType(MP_FLOAT_LIT);
 			}
@@ -1847,7 +1844,7 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
 				Gen_Assembly("PUSH -1(SP)	; DIV cast float to int");
 				Gen_Assembly("CASTSI");
-				Gen_Assembly("POP -1(SP)");
+				Gen_Assembly("POP -1(SP)	; cast done");
 				Gen_Assembly("DIVS");
 				termTailRec->setType(MP_INTEGER_LIT);
 			}
@@ -2070,7 +2067,11 @@ void Parser::Factor(SemanticRecord* termTailRec)
 		parseTree->LogExpansion(95);
 		termTailRec->setType(MP_INTEGER_LIT);
 		Gen_Assembly("PUSH #" + scanner->getLexeme());
-		if (negativeFlag==true) {Gen_Assembly("NEG -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
+		if (negativeFlag==true) 
+		{
+			Gen_Assembly("NEG -1(S)P -1(SP) ; optional sign negative");
+			negativeFlag=false;
+		}
 
 		Match(MP_INTEGER_LIT);
 		break;
@@ -2097,7 +2098,11 @@ void Parser::Factor(SemanticRecord* termTailRec)
 
 		termTailRec->setType(MP_FIXED_LIT);
 		Gen_Assembly("PUSH #" + scanner->getLexeme());
-		if (negativeFlag==true) {Gen_Assembly("NEGF -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;}
+		if (negativeFlag==true) 
+		{
+			Gen_Assembly("NEGF -1(S)P -1(SP) ; optional sign negative");
+			negativeFlag=false;
+		}
 
 		Match(MP_FIXED_LIT);
 		break;	

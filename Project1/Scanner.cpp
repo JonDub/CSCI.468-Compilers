@@ -38,6 +38,7 @@ Scanner::Scanner()
 	tokens["real"]		= MP_REAL;
 	tokens["return"]	= MP_RETURN;
 	tokens["repeat"]	= MP_REPEAT;
+	tokens["string"]	= MP_STRING;
 	tokens["then"]		= MP_THEN;
 	tokens["to"]		= MP_TO;
 	tokens["until"]		= MP_UNTIL;
