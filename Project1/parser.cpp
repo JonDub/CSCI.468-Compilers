@@ -222,7 +222,7 @@ void Parser::VariableDeclaration()
 	}
 
 	//add differencing offset for variable
-	Gen_Assembly("ADD SP #" + to_string(diff) + " SP");
+	Gen_Assembly("ADD SP #" + to_string(diff) + " SP	; space for " + to_string(diff) + " variables of type " + EnumToString(type));
 }
 
 // precondition: (lookahead is a valid token)
@@ -332,13 +332,6 @@ void Parser::FunctionHeading()
 		Syntax_Error();
 		break;
 	}
-
-	// update the last functin that was put into the table with its data return type
-	/*SymbolTable::Record* r = symbolTable->lookupRecord(offset, 0);
-	if (r != NULL)
-	{
-	r->token = type;
-	}*/
 }
 
 // precondition: (lookahead is a valid token)
@@ -457,7 +450,7 @@ void Parser::VariableParameterSection()
 		Match(MP_VAR);
 		IdentifierList();
 		Match(MP_COLON);
-		Type();
+		type = Type();
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -564,6 +557,7 @@ void Parser::StatementTail()
 void Parser::Statement()
 {
 	SemanticRecord* expressionRec = new SemanticRecord();
+	
 	switch(lookahead)
 	{	
 	case MP_END: //Statement -> EmptyStatement, rule #29
@@ -650,17 +644,17 @@ void Parser::ReadStatement()
 		// generate read assembly based on the variables data type
 		SymbolTable::Record* tempRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 
-		if (tempRecord->token == MP_FLOAT_LIT || tempRecord->token == MP_FIXED_LIT)
+		if (tempRecord->token == MP_FLOAT_LIT || tempRecord->token == MP_FIXED_LIT) // read float/fixed variable
 		{
 			Gen_Assembly("RDF D9		; Read Var " + tempRecord->name);
 			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		} 
-		else if (tempRecord->token == MP_STRING)
+		else if (tempRecord->token == MP_STRING)	// read string variable
 		{
 			Gen_Assembly("RDS D9		; Read Var " + tempRecord->name);
 			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
 		}
-		else  if (tempRecord->token == MP_INTEGER_LIT)
+		else  if (tempRecord->token == MP_INTEGER_LIT)	// read integer variable
 		{
 			Gen_Assembly("RD D9			; Read Var " + tempRecord->name);
 			Gen_Assembly("MOV D9 " + to_string(tempRecord->offset) + "(D0)");
@@ -796,8 +790,6 @@ void Parser::WriteParameterTail(SemanticRecord* expressionRec)
 // postcondition: (method applies rules correctly)
 void Parser::WriteParameter(SemanticRecord* expressionRec)
 {
-	string v = scanner->getLexeme();
-
 	switch(lookahead)
 	{
 	case MP_PLUS:				// WriteParameter -> OrdinalExpression		Rule# 47, when OrdinalExpression starts with an OptionalSign
@@ -855,12 +847,12 @@ void Parser::AssignmentStatement(SemanticRecord* expressionRec)
 		{
 			if (assignmentRecord->token==MP_FLOAT_LIT)
 			{
-				Gen_Assembly("CASTF			; result does not match assignemnt variable type cast to float");
+				Gen_Assembly("CASTSF			; result does not match assignemnt variable type cast to float");
 				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
 			}
 			else if (assignmentRecord->token==MP_INTEGER_LIT)
 			{
-				Gen_Assembly("CASTI			; result does not match assignemnt variable type cast to integer");
+				Gen_Assembly("CASTSI			; result does not match assignemnt variable type cast to integer");
 				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
 			}
 			else if (assignmentRecord->token == MP_BOOLEAN)
@@ -881,8 +873,7 @@ void Parser::AssignmentStatement(SemanticRecord* expressionRec)
 void Parser::IfStatement(SemanticRecord* expressionRec)
 {
 	string ifFalseLabel;
-
-
+	
 	switch (lookahead)
 	{
 	case MP_IF: // IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart		Rule# 50
@@ -1307,7 +1298,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTSI			; righthandside result is a float, left hand side is an int so cast");
 				Gen_Assembly("CMPEQS");
 			}
 		}
@@ -1319,7 +1310,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTSF			;righthandside result is an int, left hand side is a float so cast");
 				Gen_Assembly("CMPEQSF");
 			}
 		}
@@ -1337,7 +1328,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTSI			; righthandside result is a float, left hand side is an int so cast");
 				Gen_Assembly("CMPLTS");
 			}
 		}
@@ -1349,7 +1340,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTSF			; righthandside result is an int left hand side is a float so cast");
 				Gen_Assembly("CMPLTSF");
 			}
 		}
@@ -1367,7 +1358,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTSI			; righthandside result is a float, left hand side is an int so cast");
 				Gen_Assembly("CMPGTS");
 			}
 		}
@@ -1379,7 +1370,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTSF			; righthandside result is an int, left hand side is an float so cast");
 				Gen_Assembly("CMPGTSF");
 			}
 		}
@@ -1397,7 +1388,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTSI			; righthandside result is a float, left hand side is an int so cast");
 				Gen_Assembly("CMPLES");
 			}
 		}
@@ -1409,7 +1400,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTSF			; righthandside result is an int, left hand side is an float so cast");
 				Gen_Assembly("CMPLESF");
 			}
 		}
@@ -1425,7 +1416,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPGES");  
 			else
 			{
-				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTSI			; righthandside result is a float, left hand side is an int so cast");
 				Gen_Assembly("CMPGES");
 			}
 		}
@@ -1435,7 +1426,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 				Gen_Assembly("CMPGESF");  
 			else
 			{
-				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTSF			; righthandside result is an int, left hand side is an float so cast");
 				Gen_Assembly("CMPGESF");
 			}
 		}
@@ -1453,7 +1444,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTI			;righthandside result is a float left hand side is an int so cast");
+				Gen_Assembly("CASTSI			; righthandside result is a float, left hand side is an int so cast");
 				Gen_Assembly("CMPNES");
 			}
 		}
@@ -1465,7 +1456,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			}
 			else
 			{
-				Gen_Assembly("CASTF			;righthandside result is an int left hand side is an float so cast");
+				Gen_Assembly("CASTSF			; righthandside result is an int, left hand side is an float so cast");
 				Gen_Assembly("CMPNESF");
 			}
 		}
@@ -1527,7 +1518,6 @@ void Parser::RelationalOperator()
 // postcondition: (method applies rules correctly)
 void Parser::SimpleExpression(SemanticRecord* expressionRec)
 {
-	string v = scanner->getLexeme();
 	SemanticRecord* termRec = new SemanticRecord();
 	SemanticRecord* termTailRec = new SemanticRecord();
 	SemanticRecord* resultRec = new SemanticRecord();
@@ -1666,7 +1656,7 @@ void Parser::TermTail(SemanticRecord* termTailRec)
 
 		TermTail(termTailRec);
 		break;
-				   }
+	}
 	case MP_RPAREN: // TermTail -> {e} 		Rule# 78
 	case MP_END:
 	case MP_SCOLON: 
@@ -1845,7 +1835,6 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 				Gen_Assembly("DIVS");
 				termTailRec->setType(MP_INTEGER_LIT);
 			}
-
 		}
 		else if (termTailRec->getType() == MP_FLOAT_LIT || termTailRec->getType() == MP_FIXED_LIT)
 		{
@@ -1939,9 +1928,7 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 				Gen_Assembly("MODS");
 				termTailRec->setType(MP_INTEGER_LIT);
 			}
-
 		}
-
 		else if (termTailRec->getType() == MP_FLOAT_LIT || termTailRec->getType() == MP_FIXED_LIT)
 		{
 			if (termRec->getType() == MP_INTEGER_LIT|| termTailRec->getType() == MP_FIXED_LIT)
@@ -1963,8 +1950,6 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 				Gen_Assembly("MODS");
 				termTailRec->setType(MP_INTEGER_LIT);
 			} 
-
-
 		}
 
 		FactorTail(termRec);
@@ -2063,10 +2048,10 @@ void Parser::Factor(SemanticRecord* termTailRec)
 	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
 		termTailRec->setType(MP_INTEGER_LIT);
-		Gen_Assembly("PUSH #" + scanner->getLexeme());
+		Gen_Assembly("PUSH #" + scanner->getLexeme() + "		; Integer litaral");
 		if (negativeFlag==true) 
 		{
-			Gen_Assembly("NEG -1(S)P -1(SP) ; optional sign negative");
+			Gen_Assembly("NEG -1(SP) -1(SP)		; optional sign negative");
 			negativeFlag=false;
 		}
 
@@ -2079,11 +2064,11 @@ void Parser::Factor(SemanticRecord* termTailRec)
 
 		// set type of record to the factor type
 		termTailRec->setType(tempRecord->token);
-		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; " + tempRecord->name);
+		Gen_Assembly("PUSH " + to_string(tempRecord->offset) + "(D0)	; Identifier " + tempRecord->name);
 
 		VariableIdentifier();
 		break;
-						}
+	}
 	case MP_NOT: // "not" Factor  	Rule# 94
 		parseTree->LogExpansion(94);
 		Match(MP_NOT);
@@ -2094,10 +2079,10 @@ void Parser::Factor(SemanticRecord* termTailRec)
 		parseTree->LogExpansion(95);
 
 		termTailRec->setType(MP_FIXED_LIT);
-		Gen_Assembly("PUSH #" + scanner->getLexeme());
+		Gen_Assembly("PUSH #" + scanner->getLexeme() + "	; Fixed literal");
 		if (negativeFlag==true) 
 		{
-			Gen_Assembly("NEGF -1(S)P -1(SP) ; optional sign negative");
+			Gen_Assembly("NEGF -1(SP) -1(SP)	; optional sign negative");
 			negativeFlag=false;
 		}
 
@@ -2107,10 +2092,11 @@ void Parser::Factor(SemanticRecord* termTailRec)
 		parseTree->LogExpansion(95);
 
 		termTailRec->setType(MP_FLOAT_LIT);
-		Gen_Assembly("PUSH #" + scanner->getLexeme());
+		Gen_Assembly("PUSH #" + scanner->getLexeme() + "	; Float literal");
 		if (negativeFlag==true) 
 		{
-			Gen_Assembly("NEGF -1(S)P -1(SP) ; optional sign negative");negativeFlag=false;
+			Gen_Assembly("NEGF -1(SP) -1(SP)	; optional sign negative");
+			negativeFlag=false;
 		}
 
 		Match(MP_FLOAT_LIT);
@@ -2180,14 +2166,12 @@ void Parser::VariableIdentifier()
 		else if (caller->getKind()==SemanticRecord::ASSIGNMENT) // We are at the start of an assignment statement get the variables type and add it to the caller semantic record
 		{
 			SymbolTable::Record* rec=symbolTable->lookupRecord(v, SymbolTable::KIND_VARIABLE, 0);
-
 			caller->setType(rec->token);
 		}
 		// This is only being set up for control statements so far
 		else if (caller->getKind()==SemanticRecord::SIMPLE_PARAMETER) // variable in control statement
 		{
 			SymbolTable::Record* rec=symbolTable->lookupRecord(v, SymbolTable::KIND_VARIABLE, 0);
-
 			caller->setType(rec->token);
 		}
 

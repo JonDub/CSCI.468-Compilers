@@ -35,9 +35,6 @@ private:
 	SymbolTable* symbolTable;
 	SemanticRecord* caller;
 	int labelCount;	
-	//string operation; // probably a better way
-	//string operationSide; // ditto
-	//string currentRightHandSide;
 	
 	bool negativeFlag;
 

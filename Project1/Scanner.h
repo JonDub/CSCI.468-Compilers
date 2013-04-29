@@ -20,8 +20,6 @@ public:
 	unsigned int getColumnNumber();	// returns the current column counter
 	bool hasToken();
 
-	string _lexeme; // only for debugging
-
 protected:
 private:
 	// Variables
@@ -29,7 +27,7 @@ private:
 	unsigned int lines;
 	unsigned int cols;
 	Token _token;
-	//string _lexeme;
+	string _lexeme;
 	Token lookahead;
 	unordered_map <string, Token> tokens;
 
