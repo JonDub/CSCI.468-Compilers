@@ -93,14 +93,99 @@ Opening file: C:\Temp\Test.txt
 69	OptionalRelationalPart	->	e
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
-36	Statement   	->	RepeatStatement
-53	RepeatStatement  	->	"repeat" StatementSequence "until" BooleanExpression             
-      Matched: MP_REPEAT = repeat
-26	StatementSequence 	->	Statement StatementTail
-30	Statement   	->	CompoundStatement
-25	CompoundStatement 	->	"begin" StatementSequence "end"
-      Matched: MP_BEGIN = begin
-26	StatementSequence 	->	Statement StatementTail
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = b
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 10
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+34	Statement   	->	IfStatement
+50	IfStatement 	->	"if" BooleanExpression "then" Statement OptionalElsePart
+      Matched: MP_IF = if
+101	BooleanExpression   	->	Expression
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = b
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+68	OptionalRelationalPart	->	RelationalOperator SimpleExpression
+72	RelationalOperator	->	">"
+      Matched: MP_GTHAN = >
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = a
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+      Matched: MP_THEN = then
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = a
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = a
+86	FactorTail          	->	MultiplyingOperator Factor FactorTail
+112	 MultiplyingOperator  	->	"/"
+      Matched: MP_DIVF = /
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 3
+87	FactorTail          	->	e             
+77	TermTail            	->	AddingOperator Term TermTail
+82	AddingOperator        	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 1
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+51	OptionalElsePart  	->	"else" Statement
+      Matched: MP_ELSE = else
+34	Statement   	->	IfStatement
+50	IfStatement 	->	"if" BooleanExpression "then" Statement OptionalElsePart
+      Matched: MP_IF = if
+101	BooleanExpression   	->	Expression
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 9
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+68	OptionalRelationalPart	->	RelationalOperator SimpleExpression
+71	RelationalOperator	->	"<"
+      Matched: MP_LTHAN = <
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 6
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+      Matched: MP_THEN = then
 33	Statement   	->	AssignmentStatement
 48	AssignmentStatement	->	VariableIdentifier ":=" Expression
 98	VariableIdentifier 	->	Identifier
@@ -118,6 +203,24 @@ Opening file: C:\Temp\Test.txt
 82	AddingOperator        	->	"+"
       Matched: MP_PLUS = +
 85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = a
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+52	OptionalElsePart  	->	e
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+33	Statement   	->	AssignmentStatement
+48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = z
+      Matched: MP_ASSIGN = :=
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
       Matched: MP_INTEGER_LIT = 1
 87	FactorTail          	->	e             
@@ -125,13 +228,9 @@ Opening file: C:\Temp\Test.txt
 69	OptionalRelationalPart	->	e
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
-32	Statement   	->	WriteStatement
-44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
-      Matched: MP_WRITELN = writeln
-      Matched: MP_LPAREN = (
-
-File: C:\Temp\Test.txt: 
-Syntax error found on line 14, column 11.
-    Expected MP_STRING but found MP_IDENTIFIER.
-    Next token: MP_RPAREN
-    Next Lexeme: b
+29	Statement   	->	EmptyStatement
+38	Statement   	->	ProcedureStatement 
+28	StatementTail  	->	e
+      Matched: MP_END = end
+      Matched: MP_PERIOD = .
+      Matched: MP_EOF = ÿ

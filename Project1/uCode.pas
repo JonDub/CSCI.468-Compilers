@@ -7,9 +7,28 @@ POP 0(D0)
 PUSH #0
 CASTF ;result does not match assignemnt variable type cast to float
 POP 7(D0)
-L0
+PUSH #10
+POP 1(D0)
 PUSH 1(D0)	; b
+PUSH 0(D0)	; a
+CMPGTS
+BRFS L0
+PUSH 0(D0)	; a
+PUSH #3
 PUSH #1
 ADDS
+POP 0(D0)
+L0
+PUSH #9
+PUSH #6
+CMPLTS
+BRFS L1
+PUSH 1(D0)	; b
+PUSH 0(D0)	; a
+ADDS
 POP 1(D0)
-WRT #"b"
+L1
+PUSH #1
+POP 5(D0)
+MOV D0 SP
+HLT
