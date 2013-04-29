@@ -9,13 +9,11 @@ Parser::Parser(string fName)
 {
 	// create our scanner and parse trees
 	symbolTable = new SymbolTable();
-	/*analyzer = new SemanticAnalyzer(symbolTable);*/
 	scanner = new Scanner();
 	parseTree = new ParseTree("parse_tree.txt");
 	parseTree->ReadCFGRules("CFG_rules.txt");
 	setInputFile(fName);
 	caller = new SemanticRecord();
-	//analyzer= new SemanticAnalyzer("program.txt");
 	labelCount=0;
 	// open the ir file
 	irFilename = "uCode.pas";
@@ -40,7 +38,6 @@ Parser::~Parser(void)
 	irFile.close();
 
 	delete scanner;
-	delete analyzer;
 	delete parseTree;
 	delete symbolTable;
 }
@@ -1071,7 +1068,7 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 			// return to start of for loop
 			Gen_Assembly("BR "+ forTestLabel + "		; branch to loop start");
 			// Place loop exit label
-			Gen_Assembly("\n" + forFalseLabel + "		; loop exit");
+			Gen_Assembly("\n" + forFalseLabel + ":		; loop exit");
 			break;
 		}
 	default:
@@ -2430,5 +2427,5 @@ string Parser::LabelMaker()
 	labelCount++;
 	newLabel= "L";
 	newLabel.append(to_string(labelCount));
-	return (newLabel);
+	return newLabel;
 }

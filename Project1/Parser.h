@@ -7,7 +7,6 @@
 #include "Scanner.h"
 #include "Tokens.h"
 #include "ParseTree.h"
-#include "SemanticAnalyzer.h"
 #include "SemanticRecord.h"
 #include "SymbolTable.h"
 using namespace std;
@@ -33,7 +32,6 @@ private:
 	Token currentToken;
 	Scanner* scanner;
 	ParseTree* parseTree;
-	SemanticAnalyzer* analyzer;
 	SymbolTable* symbolTable;
 	SemanticRecord* caller;
 	int labelCount;	
