@@ -289,6 +289,8 @@ Token Scanner::handleComment()
 			{
 				next = get();
 				_token = MP_RUN_COMMENT;
+				lines++;
+				cols = 0;
 				//state = 2;
 			} 
 			else
