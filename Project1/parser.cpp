@@ -744,6 +744,7 @@ void Parser::WriteStatement(SemanticRecord* expressionRec)
 		WriteParameter(expressionRec);		
 		WriteParameterTail(expressionRec);
 		Match(MP_RPAREN);
+		Gen_Assembly("WRTLN #\"\"");
 		break;
 	case MP_WRITE: // WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")"	Rule# 44
 		parseTree->LogExpansion(44);
@@ -775,10 +776,7 @@ void Parser::WriteParameterTail(SemanticRecord* expressionRec)
 	case MP_RPAREN: // WriteParameterTail -> e		Rule# 46
 		parseTree->LogExpansion(46);
 
-		if (caller->getType() == MP_WRITELN)
-		{
-			Gen_Assembly("WRTLN #\"\"");
-		}
+		
 		break;
 	default:
 		Syntax_Error();
@@ -1526,7 +1524,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 	case MP_TO:
 	case MP_DOWNTO:
 	case MP_DO: // OptionalRelationalPart -> e		Rule #69
-		//case MP_COMMA: //added
+	case MP_COMMA: //added
 		parseTree->LogExpansion(69);
 		break;
 	default: //everything else
@@ -1731,7 +1729,7 @@ void Parser::TermTail(SemanticRecord* termTailRec)
 	case MP_DOWNTO:
 	case MP_ELSE:
 	case MP_MOD:
-		//case MP_COMMA: //added
+	case MP_COMMA: //added
 		parseTree->LogExpansion(78);
 		break;
 	default: //everything else
@@ -2046,12 +2044,13 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 	case MP_END:
 	case MP_DO:
 	case MP_THEN:
+
 	case MP_ELSE:
 	case MP_TO:  // Must include here do not comment
 	case MP_DOWNTO:
 	case MP_NEQUAL: // FactorTail -> {e}	Rule# 87
 		//case MP_STRING: //added
-		//case MP_COMMA: //added
+	case MP_COMMA: //added
 		parseTree->LogExpansion(87);
 		break;
 	default: //everything else
