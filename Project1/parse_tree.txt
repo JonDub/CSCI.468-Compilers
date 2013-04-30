@@ -6,7 +6,7 @@ Opening file: C:\Temp\Test.txt
 3	ProgramHeading 	->	"program" ProgramIdentifier
       Matched: MP_PROGRAM = program
 97	ProgramIdentifier  	->	Identifier
-      Matched: MP_IDENTIFIER = nasty
+      Matched: MP_IDENTIFIER = writelnTest
       Matched: MP_SCOLON = ;
 4	Block 	->	VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart         
 5	VariableDeclarationPart 	->	"var" VariableDeclaration ";" VariableDeclarationTail
@@ -20,6 +20,12 @@ Opening file: C:\Temp\Test.txt
 104	IdentifierTail      	->	"," identifier IdentifierTail
       Matched: MP_COMMA = ,
       Matched: MP_IDENTIFIER = c
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = d
+104	IdentifierTail      	->	"," identifier IdentifierTail
+      Matched: MP_COMMA = ,
+      Matched: MP_IDENTIFIER = e
 105	IdentifierTail      	->	e       
       Matched: MP_COLON = :
 107	Type 	->	 "Integer"
@@ -31,61 +37,299 @@ Opening file: C:\Temp\Test.txt
 25	CompoundStatement 	->	"begin" StatementSequence "end"
       Matched: MP_BEGIN = begin
 26	StatementSequence 	->	Statement StatementTail
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+31	Statement   	->	ReadStatement
+40	ReadStatement  	->	"read" "(" ReadParameter ReadParameterTail ")"
+      Matched: MP_READ = read
+      Matched: MP_LPAREN = (
+43	ReadParameter  	->	VariableIdentifier             
+      Matched: MP_IDENTIFIER = a
+42	ReadParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+31	Statement   	->	ReadStatement
+40	ReadStatement  	->	"read" "(" ReadParameter ReadParameterTail ")"
+      Matched: MP_READ = read
+      Matched: MP_LPAREN = (
+43	ReadParameter  	->	VariableIdentifier             
+      Matched: MP_IDENTIFIER = b
+42	ReadParameterTail 	->	e
+      Matched: MP_COMMA = ,
+43	ReadParameter  	->	VariableIdentifier             
+      Matched: MP_IDENTIFIER = c
+42	ReadParameterTail 	->	e
+      Matched: MP_COMMA = ,
+43	ReadParameter  	->	VariableIdentifier             
+      Matched: MP_IDENTIFIER = d
+42	ReadParameterTail 	->	e
+      Matched: MP_COMMA = ,
+43	ReadParameter  	->	VariableIdentifier             
+      Matched: MP_IDENTIFIER = e
+42	ReadParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 100
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
 98	VariableIdentifier 	->	Identifier
       Matched: MP_IDENTIFIER = a
-      Matched: MP_ASSIGN = :=
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 55
+      Matched: MP_INTEGER_LIT = 100
 87	FactorTail          	->	e             
 78	TermTail            	->	e
 69	OptionalRelationalPart	->	e
+      Matched: MP_RPAREN = )
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = a
+86	FactorTail          	->	MultiplyingOperator Factor FactorTail
+88	MultiplyingOperator  	->	"*"
+      Matched: MP_TIMES = *
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
 98	VariableIdentifier 	->	Identifier
       Matched: MP_IDENTIFIER = b
-      Matched: MP_ASSIGN = :=
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
-95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 65
-87	FactorTail          	->	e             
-78	TermTail            	->	e
-69	OptionalRelationalPart	->	e
-27	StatementTail  	->	";" Statement StatementTail
-      Matched: MP_SCOLON = ;
-33	Statement   	->	AssignmentStatement
-48	AssignmentStatement	->	VariableIdentifier ":=" Expression
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
 98	VariableIdentifier 	->	Identifier
       Matched: MP_IDENTIFIER = c
-      Matched: MP_ASSIGN = :=
+86	FactorTail          	->	MultiplyingOperator Factor FactorTail
+89	MultiplyingOperator  	->	"div"
+      Matched: MP_DIV = div
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = d
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
 81	OptionalSign         	->	e
 85	Term                   	->	Factor FactorTail             
-95	Factor               	->	"("Expression ")"
-      Matched: MP_INTEGER_LIT = 10
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = a
+86	FactorTail          	->	MultiplyingOperator Factor FactorTail
+90	MultiplyingOperator  	->	"mod"
+      Matched: MP_MOD = mod
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = e
 87	FactorTail          	->	e             
 78	TermTail            	->	e
 69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
 27	StatementTail  	->	";" Statement StatementTail
       Matched: MP_SCOLON = ;
-34	Statement   	->	IfStatement
-50	IfStatement 	->	"if" BooleanExpression "then" Statement OptionalElsePart
-      Matched: MP_IF = if
-101	BooleanExpression   	->	Expression
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
 67	Expression          	->	SimpleExpression OptionalRelationalPart
 76	SimpleExpression   	->	OptionalSign Term TermTail
 81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = a
+87	FactorTail          	->	e             
+77	TermTail            	->	AddingOperator Term TermTail
+82	AddingOperator        	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = b
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+81	OptionalSign         	->	e
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = c
+87	FactorTail          	->	e             
+77	TermTail            	->	AddingOperator Term TermTail
+83	AddingOperator        	->	"-"
+      Matched: MP_MINUS = -
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = b
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+79	OptionalSign         	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 88
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+80	OptionalSign         	->	"-"
+      Matched: MP_MINUS = -
+85	Term                   	->	Factor FactorTail             
+95	Factor               	->	"("Expression ")"
+      Matched: MP_INTEGER_LIT = 66
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+79	OptionalSign         	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = a
+87	FactorTail          	->	e             
+77	TermTail            	->	AddingOperator Term TermTail
+82	AddingOperator        	->	"+"
+      Matched: MP_PLUS = +
+85	Term                   	->	Factor FactorTail             
+96	Factor               	->	FunctionIdentifier OptionalActualParameterList
+98	VariableIdentifier 	->	Identifier
+      Matched: MP_IDENTIFIER = b
+87	FactorTail          	->	e             
+78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+32	Statement   	->	WriteStatement
+44	WriteStatement  	->	"write"  "(" WriteParameter WriteParameterTail ")"
+      Matched: MP_WRITELN = writeln
+      Matched: MP_LPAREN = (
+102	OrdinalExpression   	->	Expression             
+67	Expression          	->	SimpleExpression OptionalRelationalPart
+76	SimpleExpression   	->	OptionalSign Term TermTail
+80	OptionalSign         	->	"-"
+      Matched: MP_MINUS = -
 85	Term                   	->	Factor FactorTail             
 95	Factor               	->	"("Expression ")"
       Matched: MP_LPAREN = (
@@ -95,22 +339,29 @@ Opening file: C:\Temp\Test.txt
 85	Term                   	->	Factor FactorTail             
 96	Factor               	->	FunctionIdentifier OptionalActualParameterList
 98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = b
+      Matched: MP_IDENTIFIER = a
 87	FactorTail          	->	e             
-78	TermTail            	->	e
-68	OptionalRelationalPart	->	RelationalOperator SimpleExpression
-72	RelationalOperator	->	">"
-      Matched: MP_GTHAN = >
-76	SimpleExpression   	->	OptionalSign Term TermTail
-81	OptionalSign         	->	e
+77	TermTail            	->	AddingOperator Term TermTail
+82	AddingOperator        	->	"+"
+      Matched: MP_PLUS = +
 85	Term                   	->	Factor FactorTail             
 96	Factor               	->	FunctionIdentifier OptionalActualParameterList
 98	VariableIdentifier 	->	Identifier
-      Matched: MP_IDENTIFIER = c
+      Matched: MP_IDENTIFIER = b
 87	FactorTail          	->	e             
 78	TermTail            	->	e
+69	OptionalRelationalPart	->	e
       Matched: MP_RPAREN = )
 87	FactorTail          	->	e             
 78	TermTail            	->	e
 69	OptionalRelationalPart	->	e
-      Matched: MP_THEN = then
+46	WriteParameterTail 	->	e
+      Matched: MP_RPAREN = )
+27	StatementTail  	->	";" Statement StatementTail
+      Matched: MP_SCOLON = ;
+29	Statement   	->	EmptyStatement
+38	Statement   	->	ProcedureStatement 
+28	StatementTail  	->	e
+      Matched: MP_END = end
+      Matched: MP_PERIOD = .
+      Matched: MP_EOF = ÿ

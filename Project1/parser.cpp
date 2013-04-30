@@ -797,7 +797,11 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 	case MP_MINUS:				// WriteParameter -> OrdinalExpression		Rule# 47, when OrdinalExpression starts with an OptionalSign
 	case MP_INTEGER_LIT:		// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> UnsignedInteger))
 		OrdinalExpression(expressionRec);
-
+		if (negativeFlag==true) 
+		{
+			Gen_Assembly("NEG -1(SP) -1(SP)		; optional sign negative");
+			negativeFlag=false;
+		}
 		Gen_Assembly("WRTS");
 		//Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
 		//Match(MP_INTEGER_LIT);
@@ -807,11 +811,21 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 	case MP_LPAREN:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "(" expression ")"))
 		Match(MP_LPAREN);
 		OrdinalExpression(expressionRec);
+		if (negativeFlag==true) 
+		{
+			Gen_Assembly("NEG -1(SP) -1(SP)		; optional sign negative");
+			negativeFlag=false;
+		}
 		Gen_Assembly("WRTS");
 		Match(MP_RPAREN);
 		break;
 	case MP_FLOAT_LIT:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> unsignedFloat))
 		OrdinalExpression(expressionRec);
+		if (negativeFlag==true) 
+		{
+			Gen_Assembly("NEG -1(SP) -1(SP)		; optional sign negative");
+			negativeFlag=false;
+		}
 		Gen_Assembly("WRTS");
 		////Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
 		//
@@ -819,12 +833,22 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 		break;
 	case MP_FIXED_LIT:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> unsignedFloat))
 		OrdinalExpression(expressionRec);
+		if (negativeFlag==true) 
+		{
+			Gen_Assembly("NEG -1(SP) -1(SP)		; optional sign negative");
+			negativeFlag=false;
+		}
 		Gen_Assembly("WRTS");
 		////Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
 		//Match(MP_FIXED_LIT);
 		break;
 	case MP_STRING:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> stringLiteral))
 		Gen_Assembly("WRT #\"" + scanner->getLexeme() + "\"");
+		if (negativeFlag==true) 
+		{
+			Gen_Assembly("NEG -1(SP) -1(SP)		; optional sign negative");
+			negativeFlag=false;
+		}
 		//Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
 		Match(MP_STRING);
 		break;
@@ -833,7 +857,11 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 	case MP_IDENTIFIER:{		// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> VariableIdentifier | FunctionIdentifier))
 		// lookup identifier from the symbol table and make assembly for it	
 		OrdinalExpression(expressionRec);
-
+		if (negativeFlag==true) 
+		{
+			Gen_Assembly("NEG -1(SP) -1(SP)		; optional sign negative");
+			negativeFlag=false;
+		}
 		Gen_Assembly("WRTS");
 		break;
 	}
@@ -897,7 +925,7 @@ void Parser::AssignmentStatement(SemanticRecord* expressionRec)
 void Parser::IfStatement(SemanticRecord* expressionRec)
 {
 	string ifFalseLabel;
-	string elseLabel;
+	string exitLabel;
 	switch (lookahead)
 	{
 	case MP_IF: // IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart		Rule# 50
@@ -906,18 +934,19 @@ void Parser::IfStatement(SemanticRecord* expressionRec)
 		caller->setKind(SemanticRecord::SIMPLE_PARAMETER);
 		Match(MP_IF);
 		ifFalseLabel = LabelMaker();
-		
+		exitLabel = LabelMaker();
 		BooleanExpression();
 		// The Result of booleanExpression should be the top of the stack
 		Gen_Assembly("BRFS "+ ifFalseLabel + "		; branch if false");
 		Match(MP_THEN);
 		Statement();
-		
+		Gen_Assembly("BR "+ exitLabel + "		;after then statement branch exit label");
 		/*if (lookahead==MP_ELSE)
 		{*/
 			//elseLabel=LabelMaker();
-			OptionalElsePart();
-			Gen_Assembly("\n" + ifFalseLabel + ":		; if false");	// drop if false label
+		Gen_Assembly("\n" + ifFalseLabel + ":		; if false");	// drop if false label
+		OptionalElsePart();
+		Gen_Assembly("\n" + exitLabel + ":		; exit label ");	// drop if exit label
 		//}
 		break;
 	default:
@@ -2159,7 +2188,9 @@ void Parser::Factor(SemanticRecord* termTailRec)
 	case MP_NOT: // "not" Factor  	Rule# 94
 		parseTree->LogExpansion(94);
 		Match(MP_NOT);
+		
 		Factor(termTailRec);
+		Gen_Assembly("NOTS");
 		break;
 
 	case MP_FIXED_LIT: // Factor -> FIXED_LIT  	Rule# 95		// DEBUG - conflict
