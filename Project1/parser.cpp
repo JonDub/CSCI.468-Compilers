@@ -959,7 +959,7 @@ void Parser::RepeatStatement()
 			StatementSequence();
 			Match(MP_UNTIL);
 			BooleanExpression();
-			Gen_Assembly("\nBRTS "+ repeatStartLabel + "		; repeat test fail"); //If the repeat test is false we just fall through no need for another label
+			Gen_Assembly("\nBRFS "+ repeatStartLabel + "		; repeat test fail"); //If the repeat test is false we just fall through no need for another label
 			break;
 		}
 	default:
@@ -1016,11 +1016,14 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 			Match(MP_FOR);
 			// I think we can only have int lits here so commented this bit 
 			//caller->setKind(SemanticRecord::ASSIGNMENT);
-			//SymbolTable::Record* assignmentRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
+			SymbolTable::Record* assignmentRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 			ControlVariable();
 
 			Match(MP_ASSIGN);
 			InitialValue(expressionRec);
+
+			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
+			
 
 			/*	if (expressionRec->getType()==assignmentRecord->token)
 			{
@@ -1040,8 +1043,12 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
 			}*/
 			stepType=StepValue();
+			SymbolTable::Record* finalRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 			FinalValue(expressionRec);
 			
+			string finalValue = to_string(finalRecord->offset) + "(D0)";
+			Gen_Assembly("POP " + finalValue);
+
 			Match(MP_DO);
 			forTestLabel = LabelMaker();
 			forFalseLabel = LabelMaker();
@@ -1051,11 +1058,11 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 			//Test for condition
 			if (stepType == MP_TO)
 			{
-				Gen_Assembly("BGT -2(SP) -1(SP) "+ forFalseLabel + "	; test condition");
+				Gen_Assembly("BGT " + to_string(assignmentRecord->offset) + "(D0) " + finalValue + " "  + forFalseLabel + "		; test condition");
 			}
 			else 
 			{
-				Gen_Assembly("BLT -2(SP) -1(SP) "+ forFalseLabel + "	; test condition");
+				Gen_Assembly("BLT " + to_string(assignmentRecord->offset) + "(D0) " + finalValue + " " + forFalseLabel + "		; test condition");
 			}
 
 
@@ -1065,9 +1072,9 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 			{
 				//increment the control variable
 				Gen_Assembly("PUSH #1			; increment control variable");
-				Gen_Assembly("PUSH -2(SP)");
+				Gen_Assembly("PUSH " + to_string(assignmentRecord->offset) + "(D0)");
 				Gen_Assembly("ADDS");
-				Gen_Assembly("POP -2(SP)		; increment done");
+				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)		; increment done");
 
 			}
 			else 
@@ -1075,9 +1082,9 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 				//decrement the control variable
 				Gen_Assembly("PUSH #1			; decrement control variable");
 				Gen_Assembly("NEGS");
-				Gen_Assembly("PUSH -2(SP)");
+				Gen_Assembly("PUSH " + to_string(assignmentRecord->offset) + "(D0)");
 				Gen_Assembly("ADDS");
-				Gen_Assembly("POP -2(SP)		; decrement done");
+				Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)		; decrement done");
 
 			}
 			// return to start of for loop

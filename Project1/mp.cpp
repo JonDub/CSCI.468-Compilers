@@ -19,9 +19,21 @@ int TestScanner(string);  // int TestScanner(int, char*[]);
 bool Debug(int argc, char* argv[])
 {	
 	// test parser
-	string file = "Programs/testsuite-spring2013/C/C_2writeTest.txt";
-	//file = "Programs/testsuite-spring2013/C/C_3nasty.txt";
-	//file = "Programs/testsuite-spring2013/C/C_4floats.txt";
+	string file = "";
+	
+	// C level
+	file = "Programs/testsuite-spring2013/C/C_2writeTest.txt";
+	file = "Programs/testsuite-spring2013/C/C_3nasty.txt";
+	file = "Programs/testsuite-spring2013/C/C_4floats.txt";
+
+	// B level
+	file = "Programs/testsuite-spring2013/B/B_2forTest.txt";
+	file = "Programs/testsuite-spring2013/B/B_3repeatTest.txt";
+	file = "Programs/testsuite-spring2013/B/B_4simpleWhileTst.txt";
+	file = "Programs/testsuite-spring2013/B/B_6combine.txt";
+	file = "Programs/testsuite-spring2013/B/B_7harderWhileTest.txt";
+	//file = "Programs/testsuite-spring2013/B/B_8nastyIf.txt";
+
 	Parser * p = new Parser(file);
 
 	//TestScanner(file);
@@ -77,8 +89,8 @@ bool Debug(int argc, char* argv[])
 int main (int argc, char* argv[])
 {
 	// USE THIS BRANCH
-	//Debug(argc, &(*argv));
-	TestParser( argv[1]);
+	Debug(argc, &(*argv));
+	//TestParser( argv[1]);
 	//TestScanner(argc, &(*argv));
 }
 
