@@ -1,0 +1,103 @@
+Test Cases
+
+T AND T AND T > T 	input: 0,9,0,3	section 1 test 1 (output: 1, 2, 3)  PASSED
+T AND T AND F > F	input: 0,11,0,3	section 1 test 2 (output: nothing)	PASSED
+T AND F AND F > F	input: 0,11,0,1	section 1 test 2 (output: nothing)	PASSED
+T AND F AND T > F	input: 0,9,0,1	section 1 test 4 (output: nothing)	PASSED 
+
+
+T OR T AND T > T	input: 0,9,0,1	section 2 test 1 (output: 1, 2, 3)	FAILED INFINITE LOOP
+T OR T AND F > T	input: 0,11,0,1	section 2 test 2 (output: 1, 2, 3)	PASSED
+T OR F AND T > T	input: 0,9,0,3	section 2 test 3 (output: 1, 2, 3)  PASSED 
+T OR F AND F > T	input: 0,11,0,3	section 2 test 4 (output: 1, 2, 3)	PASSED
+
+
+T AND T OR T > T	input: 0,11,0,3	section 3 test 1 (output: 1, 2, 3)	FAILED INFINITE LOOP
+T AND F OR T > T	input: 0,11,0,1	section 3 test 2 (output: 1, 2, 3)	FAILED INFINITE LOOP
+T AND F OR F > F	input: 0,9,0,3	section 3 test 4 (output: nothing)  FAILED WRONG OUTPUT
+T AND T OR F > T	input: 0,9,0,1	section 3 test 3 (output: 1, 2, 3)	FAILED WRONG OUTPUT
+
+Since a is initialized to 0 at the start of each loop, a < 3 will ALWAY be true, so it doens't need to be tested. Similarly, since c is never, ever used, it doesn't need to be tested.
+
+Section 1: 
+(a < 3) and (2 < d) and (b < 10)
+ T  AND  T  AND  T  > T (output: 1, 2, 3)
+	a = (anything) = 0
+	b = 9
+	c = (anything) = never used
+	d = 3
+	input: 0,9,0,3
+ T  AND  T  AND  F  > F (output: nothing)
+ 	a = (anything) = 0
+	b = 11
+	c = (anything) = never used
+	d = 3
+	input: 0,11,0,3
+ T  AND  F  AND  F  > F (output: nothing)
+ 	a = (anything) = 0
+	b = 11
+	c = (anything) = never used
+	d = 1
+	input: 0,11,0,2
+ T  AND  F  AND  T  > F (output: nothing)
+	a = (anything) = 0
+	b = 9
+	c = (anything) = never used
+	d = 1
+	input: 0,9,0,1
+
+Section 2: 
+(a < 3) or (2 > d) and (b < 10) ->
+(a < 3) or ((2 > d) and (b < 10))
+ T  OR ( T  AND  T) > T (output: 1, 2, 3)
+	a = (anything) = 0
+	b = 9
+	c = (anything) = never used
+	d = 1
+	input: 0,9,0,1
+ T  OR ( T  AND  F) > T (output: 1, 2, 3)
+ 	a = (anything) = 0
+	b = 11
+	c = (anything) = never used
+	d = 1
+	input: 0,11,0,1
+ T  OR ( F  AND  T) > T (output: 1, 2, 3)
+ 	a = (anything) = 0
+	b = 9
+	c = (anything) = never used
+	d = 3
+	input: 0,9,0,3
+ T  OR ( F  AND  F) > T (output: 1, 2, 3)
+	a = (anything) = 0
+	b = 11
+	c = (anything) = never used
+	d = 3
+	input: 0,11,0,3
+	
+Section 3: 
+(a < 3) and (2 < d) or (b > 10) ->
+((a < 3) and (2 < d)) or (b > 10)
+( T  AND  T ) OR  T > T (output: 1, 2, 3)
+	a = (anything) = 0
+	b = 11
+	c = (anything) = never used
+	d = 3
+	input: 0,11,0,3
+( T  AND  F ) OR  T > T (output: 1, 2, 3)
+	a = (anything) = 0
+	b = 11
+	c = (anything) = never used
+	d = 1
+	input: 0,11,0,1
+( T  AND  F ) OR  F > F (output: nothing)
+	a = (anything) = 0
+	b = 9
+	c = (anything) = never used
+	d = 1
+	input: 0,9,0,1
+( T  AND  T ) OR  F > T (output: 1, 2, 3)
+	a = (anything) = 0
+	b = 9
+	c = (anything) = never used
+	d = 3
+	input: 0,9,0,3

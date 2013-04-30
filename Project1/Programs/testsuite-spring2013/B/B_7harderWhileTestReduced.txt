@@ -1,0 +1,32 @@
+program harderWhileTest;          
+var a, b, c, d, e, f, g, h, i, j, k, l, m: integer;        
+begin
+{DOUBLE COMPARISON}
+	read(a, b, c, d);
+	{ exp AND exp AND exp }
+	{writeln(2222222);
+	a := 0;
+        while (a < 3) and (2 < d) and (b < 10) do
+        begin
+          a := a + 1;
+          writeln(a);
+        end;}
+	
+	{ exp OR exp AND exp }
+	{writeln(3333333);
+	a := 0;
+        while (a < 3) or (2 > d) and (b < 10) do
+        begin
+          a := a + 1;
+          writeln(a);
+        end;}
+	
+	{ exp AND exp OR exp }
+	writeln(4444444);
+	a := 0;
+        while (a < 3) and (2 < d) or (b > 10) do
+        begin
+          a := a + 1;
+          writeln(a);
+        end;
+end.
