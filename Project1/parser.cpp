@@ -897,7 +897,7 @@ void Parser::AssignmentStatement(SemanticRecord* expressionRec)
 void Parser::IfStatement(SemanticRecord* expressionRec)
 {
 	string ifFalseLabel;
-	
+	string elseLabel;
 	switch (lookahead)
 	{
 	case MP_IF: // IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart		Rule# 50
@@ -906,14 +906,19 @@ void Parser::IfStatement(SemanticRecord* expressionRec)
 		caller->setKind(SemanticRecord::SIMPLE_PARAMETER);
 		Match(MP_IF);
 		ifFalseLabel = LabelMaker();
+		
 		BooleanExpression();
 		// The Result of booleanExpression should be the top of the stack
 		Gen_Assembly("BRFS "+ ifFalseLabel + "		; branch if false");
 		Match(MP_THEN);
 		Statement();
-		Gen_Assembly("\n" + ifFalseLabel + ":		; if false");	// drop if false label
-		OptionalElsePart();
-
+		
+		/*if (lookahead==MP_ELSE)
+		{*/
+			//elseLabel=LabelMaker();
+			OptionalElsePart();
+			Gen_Assembly("\n" + ifFalseLabel + ":		; if false");	// drop if false label
+		//}
 		break;
 	default:
 		break;
@@ -929,6 +934,7 @@ void Parser::OptionalElsePart()
 	case MP_ELSE: // OptionalElsePart -> "else" Statement		Rule# 51
 		parseTree->LogExpansion(51);
 		Match(MP_ELSE);
+		//Gen_Assembly("\n" + elseLabel + ":		; if false");	// drop if false label
 		Statement();
 		break;
 		//case MP_ELSE CONFLICT POSSIBLE
@@ -2482,8 +2488,8 @@ void Parser::Syntax_Error(Token expected)
 void Parser::Gen_Assembly(string s)
 {
 	irFile << s << endl;
-	//printf(s.c_str());
-	//printf("\n");
+	printf(s.c_str());
+	printf("\n");
 }
 
 string Parser::LabelMaker()
