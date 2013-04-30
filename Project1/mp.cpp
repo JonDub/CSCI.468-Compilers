@@ -77,8 +77,8 @@ bool Debug(int argc, char* argv[])
 int main (int argc, char* argv[])
 {
 	// USE THIS BRANCH
-	Debug(argc, &(*argv));
-	//TestParser( argv[1]);
+	//Debug(argc, &(*argv));
+	TestParser( argv[1]);
 	//TestScanner(argc, &(*argv));
 }
 

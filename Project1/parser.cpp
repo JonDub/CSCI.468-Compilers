@@ -795,11 +795,33 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 	case MP_PLUS:				// WriteParameter -> OrdinalExpression		Rule# 47, when OrdinalExpression starts with an OptionalSign
 	case MP_MINUS:				// WriteParameter -> OrdinalExpression		Rule# 47, when OrdinalExpression starts with an OptionalSign
 	case MP_INTEGER_LIT:		// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> UnsignedInteger))
+		OrdinalExpression(expressionRec);
+
+		Gen_Assembly("WRTS");
+		//Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
+		//Match(MP_INTEGER_LIT);
+		break;
 	case MP_UNSIGNEDINTEGER:	// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> UnsignedInteger))
 	case MP_NOT:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "not" factor))
 	case MP_LPAREN:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "(" expression ")"))
+		Match(MP_LPAREN);
+		OrdinalExpression(expressionRec);
+		Gen_Assembly("WRTS");
+		Match(MP_RPAREN);
+		break;
 	case MP_FLOAT_LIT:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> unsignedFloat))
+		OrdinalExpression(expressionRec);
+		Gen_Assembly("WRTS");
+		////Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
+		//
+		//Match(MP_FLOAT_LIT);
+		break;
 	case MP_FIXED_LIT:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> unsignedFloat))
+		OrdinalExpression(expressionRec);
+		Gen_Assembly("WRTS");
+		////Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
+		//Match(MP_FIXED_LIT);
+		break;
 	case MP_STRING:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> stringLiteral))
 		Gen_Assembly("WRT #\"" + scanner->getLexeme() + "\"");
 		//Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
@@ -809,9 +831,9 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 	case MP_FALSE:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "false"))
 	case MP_IDENTIFIER:{		// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> VariableIdentifier | FunctionIdentifier))
 		// lookup identifier from the symbol table and make assembly for it	
-		SymbolTable::Record* r = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE);		
-		Gen_Assembly("WRT " + to_string(r->offset) + "(D0)");
-		Match(MP_IDENTIFIER);
+		OrdinalExpression(expressionRec);
+
+		Gen_Assembly("WRTS");
 		break;
 	}
 	default:
