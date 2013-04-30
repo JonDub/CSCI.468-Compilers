@@ -605,6 +605,9 @@ void Parser::Statement()
 		//	parseTree->LogExpansion(38);
 		//	ProcedureStatement();
 		//	break;
+	case MP_ELSE:
+		OptionalElsePart();
+		break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -1722,6 +1725,7 @@ void Parser::TermTail(SemanticRecord* termTailRec)
 	case MP_GTHAN:
 	case MP_GEQUAL:
 	case MP_LEQUAL:
+	case MP_NEQUAL:
 	case MP_DO:
 	case MP_THEN:
 		//case MP_LPAREN:
@@ -1846,6 +1850,18 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
 				Gen_Assembly("CASTSF");
 				Gen_Assembly("POP -2(SP)	; casting done");
+				Gen_Assembly("DIVSF");
+				termTailRec->setType(MP_FLOAT_LIT);
+			}
+			else 
+			{
+				// now we have to push the -2(SP) to top of stack, cast it, then push back to -2(SP)
+				Gen_Assembly("PUSH -2(SP)	; Casting from int to float");
+				Gen_Assembly("CASTSF");
+				Gen_Assembly("POP -2(SP)	; casting done");
+				Gen_Assembly("PUSH -1(SP)	; Casting from int to float");
+				Gen_Assembly("CASTSF");
+				Gen_Assembly("POP -1(SP)	; casting done");
 				Gen_Assembly("DIVSF");
 				termTailRec->setType(MP_FLOAT_LIT);
 			}
