@@ -134,4 +134,3 @@ static std::string EnumToString(Token t)
 	default: return "UNKNOWN";
 	}
 };
-

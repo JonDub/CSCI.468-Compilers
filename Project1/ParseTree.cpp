@@ -1,18 +1,15 @@
 #include "ParseTree.h"
 
-
 ParseTree::ParseTree(std::string filename)
 {
-	// open the log file 
+	//Open the log file 
 	outFile.open(filename, std::ofstream::out);
 }
-
 
 ParseTree::~ParseTree(void)
 {
 	outFile.close();
 }
-
 
 void ParseTree::LogExpansion(int rule)
 {
@@ -30,7 +27,7 @@ void ParseTree::LogMessage(std::string msg)
 
 bool ParseTree::ReadCFGRules(std::string filename)
 {
-	// open our file of rules and read them in
+	// Open our file of rules and read them in
 	std::ifstream infile;
 	infile.open(filename, std::ifstream::in);
 

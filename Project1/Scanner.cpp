@@ -3,15 +3,12 @@
 
 Scanner::Scanner()
 {
-	/*
-		Constructor. Initialize the lines and columns counters. 
-		Setup and populate the TOKENS hash map with reserved words.
-	*/
+	// Constructor. Initialize the lines and columns counters. 
+	// Setup and populate the TOKENS hash map with reserved words.
 	lines = 0;
 	cols = 0;
 
-	// initialize the hash map of all our tokens
-	// to retrieve values from hash map --> Token t = tokens["read"];
+	// Token initialization
 	tokens["and"]		= MP_AND;
 	tokens["begin"]		= MP_BEGIN;
 	tokens["boolean"]	= MP_BOOLEAN;
@@ -57,9 +54,7 @@ Scanner::~Scanner(void)
 
 bool Scanner::openFile(std::string fName)
 {
-	/*
-		Open file and initialize the file pointer
-	*/
+	// Open file and initialize the file pointer
 	file.open(fName, fstream::in);
 
 	if (file.is_open())
@@ -73,18 +68,16 @@ bool Scanner::openFile(std::string fName)
 
 bool Scanner::hasToken()
 {
-	/*
-		Scanns the input to see if there is a character left. 
-		Skips over white space, new lines, and tabs. 
-		Leaves file pointer at beginning of next available character. 
-	*/
+	// Scans the input to see if there is a character left. 
+	// Skips over white space, new lines, and tabs. 
+	// Leaves file pointer at beginning of next available character. 
 
 	char next = peek();
 	while ((next == ' ') || (next == '\n') || (next == '\t'))
 	{
 		if (next == '\n')
 		{
-			// reset the col counter, add to line counter
+			// Reset the col counter, add to line counter
 			lines++;
 			cols = 0;
 		}
@@ -94,38 +87,35 @@ bool Scanner::hasToken()
 	if (next != EOF)
 		return true;
 
-	// set lexeme to EOF ascii value
+	// Set lexeme to EOF ascii value
 	_lexeme = get();
 	return false;
 }
 
 Token Scanner::getToken()
 {
-	/*
-		Reads the next available character and dispatches to the
-		appropriate FSA for them to parse. 
-	*/		
+	// Reads the next available character and dispatches to the
+	// appropriate FSA for them to parse. 
 
-
-	// do not return MP_COMMENT to the parser
+	// Does not return MP_COMMENT to the parser
 	do 
 	{	
-		// detect EOF and skip whitespace
+		// Detect EOF and skip whitespace
 		hasToken();	
 		char next = peek();	
 
-		// reset the TOKEN and LEXEME variables, FSA will set new values
+		// Reset the TOKEN and LEXEME variables, FSA will set new values
 		_token = MP_NULL;
 		_lexeme = "";
 
-		// which FSA to call 
-		if (next == '\'') // handle strings, start with ' (single quote)
+		// Which FSA to call 
+		if (next == '\'') // Handle strings, start with ' (single quote)
 			handleString();
 		else if (isdigit(next))
 			handleNumberic();
-		else if (isalpha(next) || next=='_' ) // check for identifier
+		else if (isalpha(next) || next=='_' ) // Check for identifier
 			handleWord();
-		else if (next == '{' || next == '}') // handle comments first becuase {} are considered punctation
+		else if (next == '{' || next == '}') // Handle comments first becuase {} are punctation
 			handleComment();
 		else if (ispunct(next))
 			handleSymbol();
@@ -140,52 +130,44 @@ Token Scanner::getToken()
 
 string Scanner::getLexeme()
 {
-	/*
-		Returns the last lexeme that was filled in
-	*/
+	// Returns the last lexeme that was filled in
 	return _lexeme;
 };
 
 Token Scanner::token()
 {
-		return _token;
+	return _token;
 }
 
 unsigned int Scanner::getLineNumber()
 {
-	/*
-		Returns the current line number
-	*/
+	// Returns the current line number
 	return lines;
 };
 
 unsigned int Scanner::getColumnNumber()
 {
-	/*
-		Returns the current column counter from the start of the lexeme. 
-	*/
+	// Returns the current column counter from the start of the lexeme. 
 	return (cols - _lexeme.length());
 };
 
 Token Scanner::handleWord()
 {
-	/*
-		Parses input file to try to read an identifier or reserved word.
-		Assumes that file pointer is on first available character.
-	*/
+	// Parses input file to try to read an identifier or reserved word.
+	// Assumes that file pointer is on first available character.
 	bool done = false;
 	bool accept = false;
 	int state = 0;
 
 	while (!done)
 	{
-		// see whats next, dont consume
+		// See whats next, dont consume
 		char next = peek();
 
 		switch (state)
 		{
 		case 0:
-			// the start of an identifier
+			// The start of an identifier
 			accept = false;
 			if (next == '_'){
 				state = 2;
@@ -216,7 +198,7 @@ Token Scanner::handleWord()
 			}
 			break;
 		case 2:
-			// do not accept
+			// Do not accept
 			accept = false;
 			if (isalpha(next) || isdigit(next) ){
 				state = 1;
@@ -232,25 +214,24 @@ Token Scanner::handleWord()
 		}
 	}
 
-	// check to see if lexeme == '_'
+	// Check to see if lexeme == '_'
 	if (!accept && _lexeme.size() == 1){
 		_token = MP_ERROR;
 		return _token;
 	}		
-	// must check to see if this lexeme is a reserved word or not
+	// Must check to see if this lexeme is a reserved word or not
 	isReservedWord(_lexeme);
 	return _token;
 }
 
 Token Scanner::handleComment()
 {
-	/*
-		Parse input file to read in comments. 
-		Comments start with { and end with }
-		If EOF is reached before closing comment brace, then MP_RUN_COMMENT
-		is returned. 
-		Comments must stay on the same line also. 
-	*/
+	// Parse input file to read in comments. 
+	// Comments start with { and end with }
+	// If EOF is reached before closing comment brace, then MP_RUN_COMMENT
+	// is returned. 
+	// Comments must stay on the same line also. 
+
 	bool done = false;
 	int state = 0;
 
@@ -275,22 +256,21 @@ Token Scanner::handleComment()
 				_token = MP_ERROR;
 				state = 2;
 			}
-			break;
+			break;	
 		case 1:
-			if (next == '}') // end comment
+			if (next == '}') // End comment
 			{
 				next = get();
 				_lexeme.push_back(next);
 				_token = MP_COMMENT;
 				state = 2;
 			}
-			else if (next == '\n') // run on comment
+			else if (next == '\n') // Run on comment
 			{
 				next = get();
 				_token = MP_RUN_COMMENT;
 				lines++;
 				cols = 0;
-				//state = 2;
 			} 
 			else
 			{
@@ -309,13 +289,12 @@ Token Scanner::handleComment()
 
 Token Scanner::handleString()
 {
-	/*
-		Parse input file to try to read strings. 
-		Strings start and end with ' (single quote)
-		If EOF is reached before closing string quote, then MP_RUN_STRING
-		is returned. 
-		Strings must stay on the same line. 
-	*/
+	// Parse input file to try to read strings. 
+	// Strings start and end with ' (single quote)
+	// If EOF is reached before closing string quote, then MP_RUN_STRING
+	// is returned. 
+	// Strings must stay on the same line. 
+
 	bool done = false;
 	int state = 0;
 
@@ -326,10 +305,9 @@ Token Scanner::handleString()
 		switch (state)
 		{
 		case 0:
-			if (next == '\'') // comment start
+			if (next == '\'') // Comment start
 			{
 				next = get();
-				//_lexeme.push_back(next);
 				_token = MP_STRING;
 				state = 1;
 			} 
@@ -342,16 +320,14 @@ Token Scanner::handleString()
 			}
 			break;
 		case 1:
-			if (next == '\'') // closing ' for string
+			if (next == '\'') // Closing ' for string
 			{
 				next = get();
-				//_lexeme.push_back(next);
 				_token = MP_STRING;
 				state = 2;
 			} 
 			else if (next == '\n')
 			{
-				//get(); // consume EOF
 				_token = MP_RUN_STRING;
 				state = 2;
 			}
@@ -372,22 +348,21 @@ Token Scanner::handleString()
 
 Token Scanner::handleNumberic()
 {
-	/*
-		Parse input file and try to read in a number identifier. 
-		Numbers can be either integer, fixed, or floating point numbers.
-	*/
+	// Parse input file and try to read in a number identifier. 
+	// Numbers can be either integer, fixed, or floating point numbers.
+
 	int state = 0;
 	bool done = false;
 	bool accept = false;
 
-	// cycle through states until done
+	// Cycle through states until done
 	while (!done)
 	{
 		char next = peek();
 
 		switch(state)
 		{
-		case 0:	// DO NOT ACCEPT
+		case 0:	// Do not accept
 			accept = false;
 			if (isdigit((int)next))
 			{
@@ -421,7 +396,7 @@ Token Scanner::handleNumberic()
 				done = true;
 			}
 			break;
-		case 2:	// DO NOT ACCEPT
+		case 2:	// Do not accept
 			accept = false;
 			if (isdigit((int)next))
 			{
@@ -453,7 +428,7 @@ Token Scanner::handleNumberic()
 				done = true;
 			}
 			break;
-		case 4: // DO NOT ACCEPT
+		case 4: // Do not accept
 			accept = false;
 			if ((next == '+') | (next == '-'))
 			{
@@ -481,8 +456,8 @@ Token Scanner::handleNumberic()
 			break;
 		}
 	}
-	
-	// back up the file pointer to the last acceptable state
+
+	// Back up the file pointer to the last acceptable state
 	if (!accept)
 	{
 		seek(-1);
@@ -493,22 +468,21 @@ Token Scanner::handleNumberic()
 
 Token Scanner::handleSymbol()
 {
-	/*
-		Parse input file and try to read they symbols.
-		Assumes file pointer is on the first available character.
-	*/
+	// Parse input file and try to read they symbols.
+	// Assumes file pointer is on the first available character.
+	
 	int state = 0;
 	bool done = false;
 	bool accept = false;
 
-	// cycle through states until done
+	// Cycle through states until done
 	while (!done)
 	{
 		char next = peek();
 
 		switch(state)
 		{
-		case 0: //setup
+		case 0: // Setup
 			accept = false;
 			if(next == '.')
 			{
@@ -590,75 +564,75 @@ Token Scanner::handleSymbol()
 			}
 			else
 			{
-				//error=true;
 				_lexeme.push_back(get());
 				_token = MP_ERROR;
 				done=true;
 				accept=true;
 			}
 			break;
+			
 		//Trivial cases
-		case 1: //symbol is period
+		case 1: // Symbol is period
 			accept = true;
 			_token = MP_PERIOD;
 			done = true;
 			break;
 
-		case 2: //symbol is comma
+		case 2: // Symbol is comma
 			accept = true;
 			_token = MP_COMMA;
 			done = true;
 			break;
 
-		case 3: //symbol is semicolon
+		case 3: // Symbol is semicolon
 			accept = true;
 			_token = MP_SCOLON;
 			done = true;
 			break;
 
-		case 4: //symbol is left paren
+		case 4: // Symbol is left paren
 			accept = true;
 			_token = MP_LPAREN;
 			done = true;
 			break;
 
-		case 5: //symbol is right paren
+		case 5: // Symbol is right paren
 			accept = true;
 			_token = MP_RPAREN;
 			done = true;
 			break;
 
-		case 6: //symbol is equal
+		case 6: // Symbol is equal
 			accept = true;
 			_token = MP_EQUAL;
 			done = true;
 			break;
 
-		case 7: //symbol is plus
+		case 7: // Symbol is plus
 			accept = true;
 			_token = MP_PLUS;
 			done = true;
 			break;
 
-		case 8: //symbol is minus
+		case 8: // Symbol is minus
 			accept = true;
 			_token = MP_MINUS;
 			done = true;
 			break;
 
-		case 9: //symbol is times
+		case 9: // Symbol is times
 			accept = true;
 			_token = MP_TIMES;
 			done = true;
 			break;
-		case 13: //symbol is / (float divide)
+		case 13: // Symbol is / (float divide)
 			accept = true;
 			_token = MP_DIVF;
 			done = true;
 			break;
 
-		//Non trivial cases
-		case 10: //symbol is greater than
+		// Non trivial cases
+		case 10: // Symbol is greater than
 			accept = true;
 			if (next == '=') 
 			{
@@ -673,7 +647,7 @@ Token Scanner::handleSymbol()
 				done = true;
 			}
 			break;
-		case 11: //symbol is less than
+		case 11: // Symbol is less than
 			accept = true;
 			if (next == '=') 
 			{
@@ -695,7 +669,7 @@ Token Scanner::handleSymbol()
 				done = true;
 			}
 			break;
-		case 12: //symbol is colon
+		case 12: // Symbol is colon
 			accept = true;
 			if (next == '=') 
 			{
@@ -712,8 +686,8 @@ Token Scanner::handleSymbol()
 			break;
 		}
 	}
-	
-	// back up the file pointer to the last acceptable state
+
+	// Back up the file pointer to the last acceptable state
 	if (!accept)
 	{
 		seek(-1);
@@ -724,17 +698,16 @@ Token Scanner::handleSymbol()
 
 bool Scanner::isReservedWord(string word)
 {
-	/*
-		Checks the string to see if it is a reserved word. 
-		First converts the string to lowercase, then checks to see
-		if it is in the hash map of reserved words. 
-	*/
+	// Checks the string to see if it is a reserved word. 
+	// First converts the string to lowercase, then checks to see
+	// if it is in the hash map of reserved words. 
+	
 	string w = word;
 	for (int i = 0; i < word.size(); i++)
 		w.at(i) = tolower(word.at(i));
 
 	unordered_map<string, Token>::const_iterator got = tokens.find (w);
-	
+
 	if (got != tokens.end()) {
 		_token = got->second;
 		return true;
@@ -745,17 +718,15 @@ bool Scanner::isReservedWord(string word)
 
 char Scanner::peek()
 {
-	/*
-		Returns the character that would be consumed next.
-	*/
+	// Returns the character that would be consumed next.
 	return file.peek();
 }
 
 char Scanner::get()
 {
-	/*
-		Returns the next available character in the file pointer. 
-	*/
+	
+	// Returns the next available character in the file pointer. 
+	
 	char n = file.get();
 	cols++;
 	return n;
@@ -763,11 +734,10 @@ char Scanner::get()
 
 void Scanner::seek(int n)
 {
-	/*
-		Moves forward or backward in the file pointer. 
-		Positive values will move forwards.
-		Negative values will move backwards.
-	*/
+	// Moves forward or backward in the file pointer. 
+	// Positive values will move forwards.
+	// Negative values will move backwards.
+	
 	file.seekg(n, ios::cur);
 	cols += n;
 }

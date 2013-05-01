@@ -19,7 +19,7 @@ int TestScanner(string);
 // Used for unit testing the components of the parser
 bool Debug(int argc, char* argv[])
 {	
-	// test parser
+	// Test parser
 	string file = "";
 
 	// C level
@@ -44,8 +44,7 @@ bool Debug(int argc, char* argv[])
 	//file = "Programs/program1.up";
 	//p->setInputFile(file);
 	//TestScanner(file);
-	//assert(p->parse() == true);	// this test program has parameters going into the main program call. I don't know if this is legal or not. 
-
+	//assert(p->parse() == true);
 
 	return 0;
 }
@@ -61,10 +60,10 @@ int main (int argc, char* argv[])
 // Used to test the parser
 int TestParser(string argv)
 {
-	// name of the file to parse through
+	// Name of the file to parse through
 	std::string fName = argv;
 
-	// create our parser
+	// Create our parser
 	Parser* parser = new Parser(fName);
 
 	if (parser->parse())
@@ -72,7 +71,7 @@ int TestParser(string argv)
 		cout << "The input program parses!" << endl;
 	} 
 
-	// press enter to exit
+	// Press enter to exit
 	cout << endl << "Done. Press Enter to exit." << endl;
 	cin.get();
 	return 0;
@@ -81,7 +80,7 @@ int TestParser(string argv)
 // Used to test the scanner
 int TestScanner(  string argv ) // int TestScanner(  int argc, char* argv[] )
 {
-	// name of the file to parse through
+	// Name of the file to parse through
 	std::string fName = argv;
 
 	Scanner* dispatcher = new Scanner();
@@ -116,9 +115,9 @@ int TestScanner(  string argv ) // int TestScanner(  int argc, char* argv[] )
 		<< setw(8) << dispatcher->getLineNumber() << setw(10) << dispatcher->getColumnNumber() 
 		<< setw(45) << dispatcher->getLexeme() << endl << endl;
 
-	std::cout.rdbuf(coutbuf); //reset to standard output
+	std::cout.rdbuf(coutbuf); // Reset to standard output
 
-	// press enter to exit
+	// Press enter to exit
 	printf("Done. Press Enter to exit.\n");
 	cin.get();
 	return 0;
