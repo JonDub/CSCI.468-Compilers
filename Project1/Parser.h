@@ -11,7 +11,6 @@
 #include "SymbolTable.h"
 using namespace std;
 
-
 class Parser
 {
 public:
@@ -35,7 +34,7 @@ private:
 	SymbolTable* symbolTable;
 	SemanticRecord* caller;
 	int labelCount;	
-	
+
 	bool negativeFlag;
 
 	string LabelMaker();
@@ -102,9 +101,8 @@ private:
 	void VariableIdentifier();
 	void ReadParameter();
 	void ReadParameterTail();
-	
+
 	void Match(Token);
 	void Syntax_Error(Token = MP_NULL);
 	void Gen_Assembly(string);
 };
-

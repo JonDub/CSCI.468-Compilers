@@ -13,11 +13,11 @@ public:
 	virtual ~Scanner(void);
 
 	bool openFile(string);
-	Token getToken(); // retrieves the next token
-	string getLexeme();	// returns the current lexeme
-	Token token();	// returns the current token
-	unsigned int getLineNumber(); // returns the current line counter
-	unsigned int getColumnNumber();	// returns the current column counter
+	Token getToken();				// Retrieves the next token
+	string getLexeme();				// Returns the current lexeme
+	Token token();					// Returns the current token
+	unsigned int getLineNumber();	// Returns the current line counter
+	unsigned int getColumnNumber();	// Returns the current column counter
 	bool hasToken();
 
 protected:
@@ -42,7 +42,7 @@ private:
 	Token handleComment();
 	Token handleString();
 	Token handleWord();
-	
+
 	bool isReservedWord(string);
 };
 

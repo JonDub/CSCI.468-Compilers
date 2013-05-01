@@ -12,39 +12,39 @@ class SymbolTable
 public:
 	SymbolTable();
 	~SymbolTable();
-	
 
 	static enum Kind { 
 		KIND_VARIABLE,
 		KIND_FUNCTION,
 		KIND_PROCEDURE
 	};
+
 	static enum Mode {
 		MODE_IN,
 		MODE_OUT,
 		MODE_REFERENCE
-
-
 	};
+
 	struct Record {
-		string name; //Might want to change this actually be lexeme to match Rocky's Pattern
+		string name;
 		Kind kind;
-		Token token; //Might want to change this actually be type to match Rocky's Pattern
+		Token token;
 		Mode mode;
 		int offset;
-			
 	};
+
 	// Get nextOffset value and increment it
 	int getNextOffset();
-	
+
 	// Insert a record into the top most table in the vector
 	bool insertRecord(string name, Kind kind, Token token); // insert a Var type
 	bool insertRecord(string name, Kind kind, Token token, Mode mode);
 
 	// Returns a pointer to the record of information, returns a NULL pointer otherwise
 	Record* lookupRecord(string name,Kind kind,int table = -1);	
-	
-	// Returns a pointer to the record of information, returns a NULL pointer otherwise version used to modify records externally, not very good encapsulation
+
+	// Returns a pointer to the record of information, returns a NULL pointer otherwise version 
+	// used to modify records externally, not very good encapsulation
 	Record* lookupRecord(int offset, int table = -1);
 
 	// Check to see if record is in table or not
@@ -58,7 +58,8 @@ public:
 	// Returns true if table was removed
 	bool removeTable();
 
-	// Returns the size of the specified table, or the size of the topmost table if no index is specified
+	// Returns the size of the specified table, or the size of the topmost table if no index is 
+	// specified
 	int tableSize(int table = -1);
 
 private:

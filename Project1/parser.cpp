@@ -1,6 +1,5 @@
 #include "Parser.h"
 
-
 Parser::Parser(void)
 {
 }
@@ -15,6 +14,7 @@ Parser::Parser(string fName)
 	setInputFile(fName);
 	caller = new SemanticRecord();
 	labelCount=0;
+
 	// open the ir file
 	irFilename = "uCode.pas";
 	irFile.open(irFilename, ofstream::out);
@@ -534,7 +534,7 @@ void Parser::StatementTail()
 void Parser::Statement()
 {
 	SemanticRecord* expressionRec = new SemanticRecord();
-	
+
 	switch(lookahead)
 	{	
 	case MP_END: //Statement -> EmptyStatement, rule #29
@@ -823,7 +823,7 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 		}
 		Gen_Assembly("WRTS");
 		break;
-	}
+					   }
 	default:
 		parseTree->LogExpansion(47);
 		OrdinalExpression(expressionRec);
@@ -1004,10 +1004,10 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 			InitialValue(expressionRec);
 			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
 			stepType=StepValue();
-			
+
 			SymbolTable::Record* finalRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 			FinalValue(expressionRec);
-		
+
 			string finalValue = to_string(finalRecord->offset) + "(D0)";
 			Gen_Assembly("POP " + finalValue);
 			Match(MP_DO);
@@ -1279,7 +1279,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
-		
+
 		if (expressionRec->getType()==MP_INTEGER_LIT )
 		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
@@ -1314,7 +1314,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
-		
+
 		if (expressionRec->getType()==MP_INTEGER_LIT )
 		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
@@ -1349,7 +1349,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
-		
+
 		if (expressionRec->getType()==MP_INTEGER_LIT )
 		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
@@ -1385,7 +1385,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
-		
+
 		if (expressionRec->getType()==MP_INTEGER_LIT )
 		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
@@ -1421,7 +1421,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 		parseTree->LogExpansion(68);
 		RelationalOperator();
 		SimpleExpression(rightExpressionRec);
-		
+
 		if (expressionRec->getType()==MP_INTEGER_LIT )
 		{
 			if (rightExpressionRec->getType()==MP_INTEGER_LIT)
@@ -1680,7 +1680,7 @@ void Parser::TermTail(SemanticRecord* termTailRec)
 
 		TermTail(termTailRec);
 		break;
-	}
+				   }
 	case MP_RPAREN: // TermTail -> {e} 		Rule# 78
 	case MP_END:
 	case MP_SCOLON: 
@@ -2084,11 +2084,11 @@ void Parser::Factor(SemanticRecord* termTailRec)
 
 		VariableIdentifier();
 		break;
-	}
+						}
 	case MP_NOT: // "not" Factor  	Rule# 94
 		parseTree->LogExpansion(94);
 		Match(MP_NOT);
-		
+
 		Factor(termTailRec);
 		Gen_Assembly("NOTS");
 		break;
@@ -2400,7 +2400,7 @@ void Parser::Match(Token token)
 
 void Parser::Syntax_Error(Token expected)
 {
-	//stops everything and gives a meaningful error message 
+	// stops everything and gives a meaningful error message 
 	string msg = "";
 	msg.append("\nFile: " + fileName + ": \nSyntax error found on line " + to_string(scanner->getLineNumber()) + ", column " + to_string(scanner->getColumnNumber()) + 
 		".\n    Expected " + EnumToString(expected) + " but found " + EnumToString(lookahead) + ".\n    Next token: " + EnumToString(scanner->getToken())

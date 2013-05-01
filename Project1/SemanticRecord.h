@@ -23,6 +23,7 @@ public:
 	{
 		kind=_kind;
 	}
+
 	void setType(Token _type)
 	{
 		type=_type;
@@ -32,12 +33,13 @@ public:
 	{
 		return kind;
 	}
+
 	Token getType()
 	{
 		return type;
 	}
+
 private:
 	RecordKind kind;
 	Token type;
 };
-

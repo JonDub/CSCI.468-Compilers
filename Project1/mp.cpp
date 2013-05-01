@@ -21,7 +21,7 @@ bool Debug(int argc, char* argv[])
 {	
 	// test parser
 	string file = "";
-	
+
 	// C level
 	file = "Programs/testsuite-spring2013/C/C_2writeTest.txt";
 	file = "Programs/testsuite-spring2013/C/C_3nasty.txt";
@@ -33,54 +33,19 @@ bool Debug(int argc, char* argv[])
 	file = "Programs/testsuite-spring2013/B/B_4simpleWhileTst.txt";
 	file = "Programs/testsuite-spring2013/B/B_6combine.txt";
 	file = "Programs/testsuite-spring2013/B/B_7harderWhileTest.txt";
-	//file = "Programs/testsuite-spring2013/B/B_8nastyIf.txt";
+	file = "Programs/testsuite-spring2013/B/B_8nastyIf.txt";
 
 	Parser * p = new Parser(file);
 
 	//TestScanner(file);
 	//TestParser(file);
 	p->parse();
-	
-	//file = "Programs/lab10_program1.mp";
-	//p->setInputFile(file);
-	//TestScanner(file);
-	//assert(p->parse() == true);
-	
-	//file = "Programs/lab10_program2.mp";
-	//p->setInputFile(file);
-	//TestScanner(file);
-	//assert(p->parse() == true);
-
-	//file = "Programs/lab10_program3.mp";
-	//p->setInputFile(file);
-	//TestScanner(file); // added MP_WRITELN
-	//assert(p->parse() == true);
-	//return 0;
 
 	//file = "Programs/program1.up";
 	//p->setInputFile(file);
 	//TestScanner(file);
 	//assert(p->parse() == true);	// this test program has parameters going into the main program call. I don't know if this is legal or not. 
 
-	//file = "Programs/program2.up";
-	//p->setInputFile(file);
-	//TestScanner(file);
-	//assert(p->parse() == true);
-
-	//file = "Programs/program3.up";
-	//p->setInputFile(file);
-	//TestScanner(file);
-	//assert(p->parse() == true);
-
-	//file = "Programs/program4.up";
-	//p->setInputFile(file);
-	//TestScanner(file);
-	//assert(p->parse() == true);
-
-	//file = "Programs/program5.up";
-	//p->setInputFile(file);
-	//TestScanner(file);
-	//assert(p->parse() == true);
 
 	return 0;
 }
@@ -99,21 +64,21 @@ int TestParser(string argv)
 	// name of the file to parse through
 	std::string fName = argv;
 
-	// create our parser and start getting shit done
+	// create our parser
 	Parser* parser = new Parser(fName);
 
 	if (parser->parse())
 	{
 		cout << "The input program parses!" << endl;
 	} 
-	
+
 	// press enter to exit
 	cout << endl << "Done. Press Enter to exit." << endl;
 	cin.get();
 	return 0;
 }
 
-// was used to test the scanner
+// Used to test the scanner
 int TestScanner(  string argv ) // int TestScanner(  int argc, char* argv[] )
 {
 	// name of the file to parse through
@@ -124,17 +89,19 @@ int TestScanner(  string argv ) // int TestScanner(  int argc, char* argv[] )
 
 	// Adjusted to print tokens to text file
 	std::ofstream out("tokens.txt");
-    std::streambuf *coutbuf = std::cout.rdbuf();	//save old buffer
-    std::cout.rdbuf(out.rdbuf());					//redirect std::cout to tokens.txt
+	std::streambuf *coutbuf = std::cout.rdbuf();	//save old buffer
+	std::cout.rdbuf(out.rdbuf());					//redirect std::cout to tokens.txt
 
 
 	// Adjusted to print in the proper order
-	cout << setw(15) << left << "Token" << setw(8) << "Line #" << setw(10) << "Column #" << setw(45) << "Lexeme"<< endl;	 
+	cout << setw(15) << left << "Token" << setw(8) << "Line #" << setw(10) << "Column #" 
+		<< setw(45) << "Lexeme"<< endl;	 
 	while (dispatcher->hasToken())
 	{
-		 //Keep on separate couts so that getToken() executes first
+		// Keep on separate couts so that getToken() executes first
 		cout << setw(15) << left << EnumToString(dispatcher->getToken()); //set the token	
-			cout << setw(8) << dispatcher->getLineNumber() << setw(10) << dispatcher->getColumnNumber();
+		cout << setw(8) << dispatcher->getLineNumber() << setw(10) 
+			<< dispatcher->getColumnNumber();
 
 		if (dispatcher->getLexeme().size() > 45){
 			string temp;
@@ -149,7 +116,7 @@ int TestScanner(  string argv ) // int TestScanner(  int argc, char* argv[] )
 		<< setw(8) << dispatcher->getLineNumber() << setw(10) << dispatcher->getColumnNumber() 
 		<< setw(45) << dispatcher->getLexeme() << endl << endl;
 
-	std::cout.rdbuf(coutbuf);						//reset to standard output
+	std::cout.rdbuf(coutbuf); //reset to standard output
 
 	// press enter to exit
 	printf("Done. Press Enter to exit.\n");

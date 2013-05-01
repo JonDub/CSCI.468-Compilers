@@ -17,8 +17,6 @@ public:
 	void LogMessage(string);
 
 private:
-	ofstream outFile; // outfile to write parse tree
+	ofstream outFile; // Outfile to write parse tree
 	vector<string> rules;
-		
 };
-
