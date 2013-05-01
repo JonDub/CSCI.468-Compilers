@@ -10,7 +10,6 @@ Scanner::Scanner()
 	lines = 0;
 	cols = 0;
 
-	// Is this still a hash map?
 	// initialize the hash map of all our tokens
 	// to retrieve values from hash map --> Token t = tokens["read"];
 	tokens["and"]		= MP_AND;

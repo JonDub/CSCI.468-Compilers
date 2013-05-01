@@ -13,9 +13,10 @@ using namespace std;
 /*
 *	FUNCTION PROTOTYPES
 */
-int TestParser(string);	// int TestParser(int, char*[]);
-int TestScanner(string);  // int TestScanner(int, char*[]);
+int TestParser(string);	
+int TestScanner(string);
 
+// Used for unit testing the components of the parser
 bool Debug(int argc, char* argv[])
 {	
 	// test parser
@@ -84,17 +85,16 @@ bool Debug(int argc, char* argv[])
 	return 0;
 }
 
-// Program Driver
-
+// Main Entry
 int main (int argc, char* argv[])
 {
-	// USE THIS BRANCH
 	//Debug(argc, &(*argv));
 	TestParser( argv[1]);
 	//TestScanner(argc, &(*argv));
 }
 
-int TestParser(string argv) // int TestParser(int argc, char* argv[])
+// Used to test the parser
+int TestParser(string argv)
 {
 	// name of the file to parse through
 	std::string fName = argv;

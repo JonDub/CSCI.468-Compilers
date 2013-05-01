@@ -322,9 +322,7 @@ void Parser::FunctionHeading()
 		// get offset where the last function was inserted
 		offset = symbolTable->tableSize(0);
 		FunctionIdentifier();
-
 		OptionalFormalParameterList();
-		//Match(MP_COLON);	//DEBUG
 		Match(MP_RETURN);
 		type = Type();
 		break;
@@ -354,7 +352,6 @@ void Parser::OptionalFormalParameterList()
 	case MP_STRING:
 	case MP_BOOLEAN:
 	case MP_SCOLON: //OptionalFormalParameterList -> e, rule #17
-		//case MP_COLON: //OptionalFormalParameterList -> e, rule #17
 		parseTree->LogExpansion(17);
 		break;
 	default: //everything else
@@ -424,17 +421,6 @@ void Parser::ValueParameterSection()
 		Syntax_Error();
 		break;
 	}
-
-	/*int end = symbolTable->tableSize();
-	for (int i = start; i < end; i++)
-	{
-	SymbolTable::Record* r = symbolTable->lookupRecord(i);
-	if (r != NULL)
-	{
-	r->token = type;
-	}
-	}*/
-
 }
 
 // precondition: (lookahead is a valid token)
@@ -486,11 +472,6 @@ void Parser::CompoundStatement()
 		StatementSequence();
 		Match(MP_END);
 		break;
-		//case MP_RETURN:	//added for function, no rul
-		//	parseTree->LogMessage("No rule defined. Function immediately returns.");
-		//	Match(MP_RETURN);
-		//	StatementSequence();
-		//	break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -515,7 +496,6 @@ void Parser::StatementSequence()
 	case MP_IDENTIFIER: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_FOR: //StatementSequence -> Statement StatementTail, rule #26
 	case MP_WHILE: //StatementSequence -> Statement StatementTail, rule #26
-		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(26);
 		Statement();
 		StatementTail();
@@ -543,9 +523,6 @@ void Parser::StatementTail()
 	case MP_UNTIL:   // This is correct do not comment again
 		parseTree->LogExpansion(28);
 		break;
-		//case MP_RETURN:
-		//	Match(MP_RETURN);
-		//	break;
 	default: //everything else
 		Syntax_Error();
 		break;
@@ -563,8 +540,6 @@ void Parser::Statement()
 	case MP_END: //Statement -> EmptyStatement, rule #29
 	case MP_SCOLON: //Statement -> EmptyStatement, rule #29
 	case MP_UNTIL:	// uncommented for repeat...until
-		//case MP_ELSE:
-		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(29);
 		EmptyStatement();
 		break;
@@ -601,10 +576,6 @@ void Parser::Statement()
 		parseTree->LogExpansion(37);
 		ForStatement(expressionRec);
 		break;
-		//case MP_IDENTIFIER: //Statement -> ProcedureStatement, rule #38			// DEBUG - this case block is commented out but has a rule for it
-		//	parseTree->LogExpansion(38);
-		//	ProcedureStatement();
-		//	break;
 	case MP_ELSE:
 		OptionalElsePart();
 		break;
@@ -623,8 +594,6 @@ void Parser::EmptyStatement()
 	case MP_SCOLON:
 	case MP_END:  // EmptyStatement -> e Rule #38 
 	case MP_UNTIL:	//uncommented for repeat...until
-		//case MP_ELSE:
-		//case MP_RETURN: //added for function
 		parseTree->LogExpansion(38);
 		break;
 	default:
@@ -778,8 +747,6 @@ void Parser::WriteParameterTail(SemanticRecord* expressionRec)
 		break;
 	case MP_RPAREN: // WriteParameterTail -> e		Rule# 46
 		parseTree->LogExpansion(46);
-
-		
 		break;
 	default:
 		Syntax_Error();
@@ -803,8 +770,6 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 			negativeFlag=false;
 		}
 		Gen_Assembly("WRTS");
-		//Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
-		//Match(MP_INTEGER_LIT);
 		break;
 	case MP_UNSIGNEDINTEGER:	// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> UnsignedInteger))
 	case MP_NOT:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "not" factor))
@@ -827,9 +792,6 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 			negativeFlag=false;
 		}
 		Gen_Assembly("WRTS");
-		////Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
-		//
-		//Match(MP_FLOAT_LIT);
 		break;
 	case MP_FIXED_LIT:			// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> unsignedFloat))
 		OrdinalExpression(expressionRec);
@@ -839,8 +801,6 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 			negativeFlag=false;
 		}
 		Gen_Assembly("WRTS");
-		////Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
-		//Match(MP_FIXED_LIT);
 		break;
 	case MP_STRING:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> stringLiteral))
 		Gen_Assembly("WRT #\"" + scanner->getLexeme() + "\"");
@@ -849,7 +809,6 @@ void Parser::WriteParameter(SemanticRecord* expressionRec)
 			Gen_Assembly("NEG -1(SP) -1(SP)		; optional sign negative");
 			negativeFlag=false;
 		}
-		//Gen_Assembly("WRT #\"" + scanner->getLexeme().substr(1, scanner->getLexeme().length()-2) + "\"");
 		Match(MP_STRING);
 		break;
 	case MP_TRUE:				// WriteParameter -> OrdinalExpression		Rule# 47, OptionalSign -> e and OrdinalExpression starts with Term (-> factor -> "true"))
@@ -887,7 +846,7 @@ void Parser::AssignmentStatement(SemanticRecord* expressionRec)
 		caller->setKind(SemanticRecord::ASSIGNMENT);
 		VariableIdentifier();
 		Match(MP_ASSIGN);
-		expressionRec->setType(caller->getType()); // DEBUG - added to fix casting issue
+		expressionRec->setType(caller->getType()); 
 		Expression(expressionRec);
 
 		// pop top value back into variable
@@ -913,7 +872,6 @@ void Parser::AssignmentStatement(SemanticRecord* expressionRec)
 			}
 		}
 		break;
-		//	DEBUG - see rule 49, need to find follow set and add rule
 	default:
 		Syntax_Error();
 		break;
@@ -941,13 +899,9 @@ void Parser::IfStatement(SemanticRecord* expressionRec)
 		Match(MP_THEN);
 		Statement();
 		Gen_Assembly("BR "+ exitLabel + "		;after then statement branch exit label");
-		/*if (lookahead==MP_ELSE)
-		{*/
-			//elseLabel=LabelMaker();
 		Gen_Assembly("\n" + ifFalseLabel + ":		; if false");	// drop if false label
 		OptionalElsePart();
 		Gen_Assembly("\n" + exitLabel + ":		; exit label ");	// drop if exit label
-		//}
 		break;
 	default:
 		break;
@@ -963,10 +917,8 @@ void Parser::OptionalElsePart()
 	case MP_ELSE: // OptionalElsePart -> "else" Statement		Rule# 51
 		parseTree->LogExpansion(51);
 		Match(MP_ELSE);
-		//Gen_Assembly("\n" + elseLabel + ":		; if false");	// drop if false label
 		Statement();
 		break;
-		//case MP_ELSE CONFLICT POSSIBLE
 	case MP_END:
 	case MP_SCOLON: // OptionalElsePart -> e	Rule #52
 		parseTree->LogExpansion(52);
@@ -987,7 +939,6 @@ void Parser::RepeatStatement()
 		{
 			parseTree->LogExpansion(53);
 			string repeatStartLabel;
-
 			Match(MP_REPEAT);
 			repeatStartLabel  = LabelMaker();
 			Gen_Assembly("\n" + repeatStartLabel + ":			; repeat start");	// drop label to start loop
@@ -1016,13 +967,11 @@ void Parser::WhileStatement()
 			string whileFalseLabel;
 			Match(MP_WHILE);
 			whileTestLabel = LabelMaker();
-			whileFalseLabel = LabelMaker();
-			
+			whileFalseLabel = LabelMaker();			
 			Gen_Assembly("\n" + whileTestLabel + ":");	// drop while test lable
 			BooleanExpression();
 			// The result of BooleanExpression is on the top of the stack
 			Match(MP_DO);
-
 			Gen_Assembly("\nBRFS "+ whileFalseLabel + "		; while false");
 			Statement();
 			Gen_Assembly("\nBR "+ whileTestLabel + "		; while true");
@@ -1049,45 +998,21 @@ void Parser::ForStatement(SemanticRecord* expressionRec)
 			Token stepType;
 			parseTree->LogExpansion(55);
 			Match(MP_FOR);
-			// I think we can only have int lits here so commented this bit 
-			//caller->setKind(SemanticRecord::ASSIGNMENT);
 			SymbolTable::Record* assignmentRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 			ControlVariable();
-
 			Match(MP_ASSIGN);
 			InitialValue(expressionRec);
-
 			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
-			
-
-			/*	if (expressionRec->getType()==assignmentRecord->token)
-			{
-			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
-			}
-			else
-			if (assignmentRecord->token==MP_FLOAT_LIT)
-			{
-			Gen_Assembly("CASTF ; expression result does not match assignemnt variable type cast to float");
-			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
-			}
-			else
-
-			if (assignmentRecord->token==MP_INTEGER_LIT)
-			{
-			Gen_Assembly("CASTI ; expression result does not match assignemnt variable type cast to integer");
-			Gen_Assembly("POP " + to_string(assignmentRecord->offset) + "(D0)");
-			}*/
 			stepType=StepValue();
+			
 			SymbolTable::Record* finalRecord = symbolTable->lookupRecord(scanner->getLexeme(), SymbolTable::KIND_VARIABLE, 0);
 			FinalValue(expressionRec);
-			
+		
 			string finalValue = to_string(finalRecord->offset) + "(D0)";
 			Gen_Assembly("POP " + finalValue);
-
 			Match(MP_DO);
 			forTestLabel = LabelMaker();
 			forFalseLabel = LabelMaker();
-
 			Gen_Assembly("\n" + forTestLabel + ":");	// drop test label
 
 			//Test for condition
@@ -1308,7 +1233,6 @@ void Parser::ActualParameter()
 	case MP_TRUE:
 	case MP_FALSE: 
 		parseTree->LogExpansion(66);
-		//OrdinalExpression(expressionRec);
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -1524,7 +1448,7 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			Gen_Assembly("; ERROR in operation " + EnumToString(lookahead));
 		}
 
-		break; // needed or not? stuart
+		break;
 	case MP_NEQUAL: // OptionalRelationalPart -> RelationalOperator SimpleExpression	Rule #68
 		parseTree->LogExpansion(68);
 		RelationalOperator();
@@ -1559,7 +1483,6 @@ void Parser::OptionalRelationalPart(SemanticRecord* expressionRec)
 			// should not get here.
 			Gen_Assembly("; ERROR in operation " + EnumToString(lookahead));
 		}
-
 		break;
 	case MP_SCOLON:
 	case MP_END:
@@ -1672,7 +1595,6 @@ void Parser::TermTail(SemanticRecord* termTailRec)
 		AddingOperator();
 		Term(termRec);
 
-
 		// check the -1(SP) and -2(SP) to see if they are the same types
 		if (termTailRec->getType() == MP_INTEGER_LIT)
 		{
@@ -1770,7 +1692,6 @@ void Parser::TermTail(SemanticRecord* termTailRec)
 	case MP_NEQUAL:
 	case MP_DO:
 	case MP_THEN:
-		//case MP_LPAREN:
 	case MP_TO:  //Do not comment required for for loops
 	case MP_DOWNTO:
 	case MP_ELSE:
@@ -1806,7 +1727,6 @@ void Parser::OptionalSign()
 	case MP_INTEGER_LIT:
 	case MP_FIXED_LIT:
 	case MP_FLOAT_LIT:
-		//case MP_RPAREN:
 	case MP_LPAREN: // OptionalSign -> {e}	Rule #81
 	case MP_TRUE:
 	case MP_FALSE:
@@ -1847,8 +1767,6 @@ void Parser::AddingOperator()
 // postcondition: (method applies rules correctly)
 void Parser::Term(SemanticRecord* termRec)
 {
-	//SemanticRecord* termRec = new SemanticRecord();
-
 	switch(lookahead)
 	{
 	case MP_UNSIGNEDINTEGER:
@@ -1864,7 +1782,6 @@ void Parser::Term(SemanticRecord* termRec)
 		parseTree->LogExpansion(85);
 		Factor(termRec);
 		FactorTail(termRec);
-		//TermTail();		// DEBUG - this is not in the grammar
 		break;
 	default: //everything else
 		Syntax_Error();
@@ -2073,21 +1990,9 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 		parseTree->LogExpansion(86);
 		MultiplyingOperator();
 		Factor(termRec);
-
 		Gen_Assembly("ANDS");
-
-		//if (caller->getType()==MP_INTEGER_LIT) // Need to look at this block not sure you can even and a float?
-		//{
-		//		Gen_Assembly("ANDS");
-		//}
-		//else if (caller->getType()==MP_FLOAT_LIT || caller->getType() == MP_FIXED_LIT)
-		//{
-		//		Gen_Assembly("ANDS");
-		//}
-
 		FactorTail(termRec);
 		break;
-
 	case MP_OR:
 	case MP_MINUS:
 	case MP_PLUS:
@@ -2102,12 +2007,10 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 	case MP_END:
 	case MP_DO:
 	case MP_THEN:
-
 	case MP_ELSE:
 	case MP_TO:  // Must include here do not comment
 	case MP_DOWNTO:
 	case MP_NEQUAL: // FactorTail -> {e}	Rule# 87
-		//case MP_STRING: //added
 	case MP_COMMA: //added
 		parseTree->LogExpansion(87);
 		break;
@@ -2115,7 +2018,6 @@ void Parser::FactorTail(SemanticRecord* termTailRec)
 		Syntax_Error();
 		break;
 	}
-
 }
 
 // precondition: (lookahead is a valid token)
@@ -2160,7 +2062,6 @@ void Parser::Factor(SemanticRecord* termTailRec)
 		parseTree->LogExpansion(92);
 		Match(MP_UNSIGNEDINTEGER);
 		break;
-		//////////////////////// Conflict 96, 99
 	case MP_INTEGER_LIT: // Factor -> UnsignedInteger  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
 		termTailRec->setType(MP_INTEGER_LIT);
@@ -2170,7 +2071,6 @@ void Parser::Factor(SemanticRecord* termTailRec)
 			Gen_Assembly("NEG -1(SP) -1(SP)		; optional sign negative");
 			negativeFlag=false;
 		}
-
 		Match(MP_INTEGER_LIT);
 		break;
 	case MP_IDENTIFIER:	{// Factor -> VariableIdentifier		Rule # 93
@@ -2192,7 +2092,6 @@ void Parser::Factor(SemanticRecord* termTailRec)
 		Factor(termTailRec);
 		Gen_Assembly("NOTS");
 		break;
-
 	case MP_FIXED_LIT: // Factor -> FIXED_LIT  	Rule# 95		// DEBUG - conflict
 		parseTree->LogExpansion(95);
 
@@ -2203,7 +2102,6 @@ void Parser::Factor(SemanticRecord* termTailRec)
 			Gen_Assembly("NEGF -1(SP) -1(SP)	; optional sign negative");
 			negativeFlag=false;
 		}
-
 		Match(MP_FIXED_LIT);
 		break;	
 	case MP_FLOAT_LIT:
@@ -2216,7 +2114,6 @@ void Parser::Factor(SemanticRecord* termTailRec)
 			Gen_Assembly("NEGF -1(SP) -1(SP)	; optional sign negative");
 			negativeFlag=false;
 		}
-
 		Match(MP_FLOAT_LIT);
 		break;
 	case MP_LPAREN: // Factor -> "(" Expression ")"  	Rule# 95
@@ -2225,7 +2122,6 @@ void Parser::Factor(SemanticRecord* termTailRec)
 		Expression(termTailRec);
 		Match(MP_RPAREN);
 		break;
-		//////////////////////// Conflict 96, 99
 	case MP_STRING: // Factor -> String Literal Rule # 114
 		parseTree->LogExpansion(114);
 		Match(MP_STRING);
@@ -2244,8 +2140,6 @@ void Parser::Factor(SemanticRecord* termTailRec)
 		Syntax_Error();
 		break;
 	}
-
-	// set right side of record
 }
 
 // precondition: (lookahead is a valid token)

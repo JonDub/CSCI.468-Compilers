@@ -2,9 +2,7 @@
 
 #include <string>
 
-// Does not work for what we need
-//#define stringify( name ) # name
-
+// Global list of enumerated tokens to use
 enum Token
 {
 	MP_NULL = 0,
@@ -69,7 +67,6 @@ enum Token
 	MP_WRITELN
 };
 
-// Sorry, I couldn't find any easier way to do this. 
 // Takes a token enum and returns the string equivalent for output
 static std::string EnumToString(Token t)
 {

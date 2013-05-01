@@ -16,19 +16,8 @@ public:
 		SIMPLE_PARAMETER
 	};
 
-	//static enum RecordType {
-	//	MP_INTEGER_LIT,
-	//	MP_FIXED_LIT,
-	//	MP_FLOAT_LIT, 
-	//	MP_NULL	// This is questionable
-
-	//};
 	SemanticRecord(void);
 	virtual ~SemanticRecord(void);
-
-	void add(string r);
-	string get();
-	//RecordType type;
 
 	void setKind(RecordKind _kind)
 	{
@@ -50,8 +39,5 @@ public:
 private:
 	RecordKind kind;
 	Token type;
-
-	vector< string > records;
-	
 };
 

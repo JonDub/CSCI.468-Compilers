@@ -1,13 +1,10 @@
  #include "SymbolTable.h"
 #include "Tokens.h"
  
-
-
 SymbolTable::SymbolTable()
  {
 	nextOffset=0;
 	activationRecordSize=0;
-	
  }
  
  
@@ -26,19 +23,15 @@ int SymbolTable::getNextOffset()
 }
  
  // Insert a record into the top most table in the vector
-
 bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token)
  {
- 	Record* r;
- 
+ 	Record* r; 
 
 	switch (kind)
  	{
-
 	case SymbolTable::KIND_PROCEDURE:
 	case SymbolTable::KIND_FUNCTION:
  		// add the function to the main symbol table 0
-
 		r = lookupRecord(name,kind);
  
  		if (r == NULL)
@@ -53,11 +46,9 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token)
  			r->token = token;
 
 			r->kind = kind;
-			//r->offset=nextOffset; nextOffset++;
  			t->records.push_back(r);
  		}
  		// do not put break here
-
 	case SymbolTable::KIND_VARIABLE:
 		r = lookupRecord(name, kind);
  
@@ -78,13 +69,11 @@ bool SymbolTable::insertRecord(string name, SymbolTable::Kind kind, Token token)
  		break;
  	default:
 		 	return true;
- }
-
+	}
 }
 
 bool SymbolTable::contains(string s, Kind k)
  {
-
 	if (lookupRecord(s, k) == NULL) return false; else return true;
  }
  
@@ -110,15 +99,6 @@ SymbolTable::Record* SymbolTable::lookupRecord(string name, Kind kind, int table
 	return NULL;
 }
 
-
-
-
-
-
-
-
-
-
 SymbolTable::Record* SymbolTable::lookupRecord(int offset, int table)
 {
 	// if a table number is specified then search that table, otherwise just search the top table
@@ -127,7 +107,8 @@ SymbolTable::Record* SymbolTable::lookupRecord(int offset, int table)
 		if (table < tables.size() && table >= 0)		
 		{			
 			if (offset < tables.at(table)->records.size() && offset >= 0)			
-			{				return tables.at(table)->records.at(offset);			
+			{				
+				return tables.at(table)->records.at(offset);			
 			}		
 		}	
 	}	
@@ -159,9 +140,11 @@ bool SymbolTable::createTable()
 int SymbolTable::tableSize(int t)
 {	// get the size of the topmost table or a specific table
 	if (t > -1 && t < tables.size())
-		{		return tables.at(t)->records.size();	
-		} 	
+	{		
+		return tables.at(t)->records.size();	
+	} 	
 	else 	
-		{		return tables.back()->records.size();	
+	{		
+		return tables.back()->records.size();	
 	}
 }
